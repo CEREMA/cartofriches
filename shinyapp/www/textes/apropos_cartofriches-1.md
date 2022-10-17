@@ -1,0 +1,3 @@
+*Cartofriches* est un outil d'**aide au recensement à l’échelle nationale des friches** (industrielles, commerciales, d’habitat, tertiaires, etc.), ouvert au grand public via un portail de visualisation sur Internet.
+
+En proposant une base nationale de sites potentiellement en friches, mais surtout **en s’appuyant sur les connaissances locales** (observatoires locaux, expertises terrain…), l’objectif est de promouvoir et faciliter la réutilisation des friches par les collectivités locales et les porteurs de projets.
