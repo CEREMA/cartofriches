@@ -143,21 +143,13 @@ server <- function(input, output, session) {
     
     # f <- Data$points %>% get_objects_bounds(bb)
     f <- r_friches()
-    print(nrow(f))
-    
     
     f_in_bounds <- f %>% get_objects_bounds(bb)
-    print(nrow(f_in_bounds))
-    
-    # if(!input$chk_all) { ## si on choisit seulement les friches qualifiées
-    #   f <- f %>% filter(checked)
-    # }
     
     if(nrow(f_in_bounds) > 0) return()
     
     # Coordonnées du point central
     coords <- c(mean(bb$west, bb$east), mean(bb$south, bb$north))
-    print(coords)
     
     # On cherche les friches les plus proches
     res <- find_closest_friche(coords = coords, 
@@ -181,7 +173,6 @@ server <- function(input, output, session) {
     } else {
       rv_filtres$value <- input$chk_filtres
     }
-    print(rv_filtres$value)
   })
   
   # lnk_filtre ----
@@ -204,7 +195,6 @@ server <- function(input, output, session) {
     showModal(modalDialog(title = NULL,
                           tagList(tags$p(tags$img(src="logo-ademe.png", width="33%")),
                                   tags$p("Site potentiellement en friche, dont la destination pour du photovoltaïque au sol a été confirmée comme intéressante par une étude Ademe en 2021."),
-                                  # Source : https://commons.wikimedia.org/wiki/File:Panneaux_PhotV_Les_M%C3%A9es.JPG
                                   tags$div(tags$img(src="images/panneaux.jpeg", width="100%"), 
                                   style="margin-right: -31px;
                                          margin-left: -31px;"),
@@ -292,10 +282,6 @@ server <- function(input, output, session) {
                       f$is_ademe ~ "ademe",
                       f$is_mte_pv ~  "mte_pv")
     
-    # icone_site <- get_icon_legende(type_friche = type_friche,
-    #                                type        = "bouton")
-    # print(icone_site)
-
     type_friche <- case_when(
       f$is_mte ~ "Donnée nationale",
       f$is_observatoire ~ "Donnée locale",
@@ -339,7 +325,6 @@ server <- function(input, output, session) {
   # slc_observatoires (Choix d'un observatoire) ----
   observeEvent(input$slc_observatoires, {
     req(input$slc_observatoires)
-    print(input$slc_observatoires)
     proxy %>% zoom_observatoire(input$slc_observatoires)
   }, ignoreInit = TRUE)
   
@@ -394,8 +379,6 @@ server <- function(input, output, session) {
         }
       }
     }
-    
-    print("fin add_points, add_circles, add_polygons")
   })
   
   # mymap_marker_click (Clic sur marqueur ou cercle statistique) ----
@@ -519,8 +502,6 @@ server <- function(input, output, session) {
   # Légende de la carte
   output$ui_legende <- renderUI({
     
-    message(">> ui_legende")
-    
     req(input$mymap_zoom)
     req(input$mymap_bounds)
     
@@ -548,15 +529,8 @@ server <- function(input, output, session) {
                  height     = "400px")
   })
   
-  observe({
-    req(input$mymap_zoom)
-    print(input$mymap_zoom)
-  })
-  
   # mymap ----
   output$mymap <- renderLeaflet({
-    
-    message(">> mymap")
     
     m <- leaflet(options = leafletOptions(zoomControl = TRUE, 
                                           minZoom = 0, 
@@ -598,7 +572,6 @@ server <- function(input, output, session) {
       m <- m %>% zoom_to_coords(r_bbox(), type = "site")
     }
     
-    
     m
   })
   
@@ -607,5 +580,4 @@ server <- function(input, output, session) {
   
   # waiter ----
   waiter_hide() # on ferme la fenêtre d'attente
-  
 }

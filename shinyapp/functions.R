@@ -18,19 +18,14 @@ add_tiles <- function(m) {
     
     # Villes
     addProviderTiles(providers$CartoDB.PositronOnlyLabels, group = "Villes"
-                     # , 
-                     # options = pathOptions(pane = "Villes")
     ) %>% 
     # Dark
     addProviderTiles(providers$CartoDB.DarkMatter, group = "Dark Matter"
-                     # , 
-                     # options = pathOptions(pane = "Dark Matter")
     ) %>%
     
     # Plan
     addTiles("http://wxs.ign.fr/choisirgeoportail/wmts?REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0&STYLE=normal&TILEMATRIXSET=PM&FORMAT=image/png&LAYER=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}",
              options = WMSTileOptions(tileSize = 256, minZoom = 1, maxZoom = 20),
-             # options = WMSTileOptions(minzoom = 1, maxzoom = 21),
              group = "Plan IGN") %>%
     
     # Parcelles
@@ -38,8 +33,6 @@ add_tiles <- function(m) {
              options = WMSTileOptions(tileSize = 256),
              attribution='<a target="_blank" href="https://www.geoportail.gouv.fr/">Geoportail France</a>',
              group = "Parcelles IGN"
-             # ,
-             # options = pathOptions(pane = "Parcelles IGN")
     ) %>%
     
     # Ortho
@@ -48,8 +41,6 @@ add_tiles <- function(m) {
                          providerTileOptions(minZoom = 1, maxZoom = 22)),
              attribution='<a target="_blank" href="https://www.geoportail.gouv.fr/">Geoportail France</a>',
              group = "Ortho IGN"
-             # ,
-             # options = pathOptions(pane = "Ortho IGN")
     )
 }
 
@@ -287,14 +278,7 @@ add_points <- function(proxy, f, replaceMarkers = TRUE) {
   activites <- ifelse(is.na(f$activite_libelle), "Non renseignée", f$activite_libelle)
   activites <- sapply(activites, function(x) paste(strwrap(x, width), collapse=br_code))
   
-  # SOURCE
-  # sources <- sapply(f$source_r, function(x) {
-  #   theSource <- x
-  #   theSource <- ifelse(theSource == "Ademe", "MTE", theSource) # !! Si données Ademe, on met la source MTE
-  #   paste(strwrap(theSource, width), collapse="<br>")
-  #   })
-  
-  
+  # SOURCES  
   sources <- sapply(f$producteur, function(x) paste(strwrap(x, width), 
                                                     collapse=br_code))
   
@@ -346,7 +330,6 @@ add_points <- function(proxy, f, replaceMarkers = TRUE) {
   ##=##=##=##=##=##=#
   
   # Supprime les marqueurs
-  print("remove markers")
   if(replaceMarkers) {
     layerIds <- f$layerId
     proxy %>% removeMarker(layerIds)
@@ -1053,12 +1036,10 @@ transform_string <- function(s) {
 # Matomo (suivi consultation du site)
 get_matomo <- function() {
   if (file.exists(matomo)) {
-    # print("matomo existe")
     s <- readLines(matomo) %>% paste(collapse = "\n")
     res <- HTML(s)
     return(res)
   } else {
-    # print("matomo n'existe pas")
     return()
   }
 }
@@ -1412,19 +1393,6 @@ get_ui_apropos_cartofriches <- function() {
            LAST_UPDATE_DATE, 
            style="color: #808285;font-size: 1em;"),
     includeMarkdown("www/textes/apropos_cartofriches-1.md"),
-    
-    # h2("Une version test"),
-    # tags$p("Cette application est en cours de développement par le Cerema, et nous vous proposons une ", tags$b("première version beta à expérimenter.")),
-    # tags$p("Cette version présente les données de ", 
-    #        tags$a(href = "https://artificialisation.developpement-durable.gouv.fr/cartofriches/observatoires-locaux",
-    #               "plusieurs observatoires locaux",
-    #               target = "_blank"), 
-    #        ", et l'expertise du Cerema est mise à profit afin de tirer le meilleur parti de bases de données institutionnelles telles que les ",
-    #        tags$b("données BASIAS et BASOL"),
-    #        tags$a(tags$a(href = "https://artificialisation.developpement-durable.gouv.fr/cartofriches/donnees-utilisees",
-    #                      "(en savoir plus sur les données)",
-    #                      target = "_blank"))
-    # ),
     
     includeMarkdown("www/textes/apropos_cartofriches-2.md"),
     
@@ -1960,10 +1928,6 @@ goto <- function(proxy, id) {
                      options       = layersControlOptions(collapsed = collapsed)) %>% 
     showGroup("Ortho IGN") %>%
     hideGroup("Parcelles IGN")
-  
-  # # Libellé de l'élément sélectionné
-  # libelle <- f %>% pull(libelle) %>% head(1)
-  # showNotification(glue("Zoom sur {libelle}"), type="message")
 }
 
 
@@ -2081,7 +2045,6 @@ find_friches <- function(s, mode = "commune", distance = SEARCH_DISTANCE) {
       st_sfc %>%
       st_set_crs(4326) %>% 
       st_buffer(distance)
-    # %>% st_transform(4326)
     
     i <- st_intersects(buffer, Data$points %>% filter(checked)) %>% unlist
     n_friches <- length(i)

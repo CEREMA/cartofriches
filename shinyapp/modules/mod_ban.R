@@ -1,8 +1,6 @@
 my_modal <- function(labels, session) {
   ns <- session$ns
   
-  print(labels)
-  
   ui_precision <- NULL
   if(any(grepl("\\*", names(labels)))) {
     ui_precision <- div(glue("* dans un rayon de {round(SEARCH_DISTANCE/1000)} km"),
@@ -95,15 +93,6 @@ mod_ban <- function(id, session_parent){
     observeEvent(input$search, {
       req(input$search)
       
-      # OFF
-      # Si la recherche est vide, alors on va juste sur l'onglet
-      # if(input$search == "") {
-      #   print("on va sur l'adresse")
-      #   updateNavbarPage(session_parent, "app_navbar", selected = tab)
-      #   return()
-      # }
-      # /OFF
-
       adresse <- input$search
       message(">> input$search ", adresse)
 

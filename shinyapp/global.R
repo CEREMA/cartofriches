@@ -2,7 +2,6 @@ source("functions.R", encoding = "UTF-8")
 source("libraries.R", encoding = "UTF-8")
 source("load_data.R", encoding = "UTF-8")
 
-# source("modules/mod_carte.R", encoding = "UTF-8")
 source("modules/mod_ban.R", encoding = "UTF-8")
 
 Sys.setlocale("LC_TIME", "French")
@@ -41,9 +40,6 @@ coords_fr <- c(as.numeric(bb_ini[1]),
                as.numeric(bb_ini[3]),
                as.numeric(bb_ini[4]))
 
-# # LOAD_DATA ####
-# load_data()
-
 # ZOOM LEVELS ####
 # Niveaux de zoom conditionnant l'affichage de certaines entités (cercles statistiques, marqueurs ou surfaces)
 ZOOM_LEVELS <- c("Région"      = 6, 
@@ -79,7 +75,6 @@ couleur_friche$mte               <- "#5ab1ce"
 couleur_friche$ademe              <- "#5ab1ce"
 couleur_friche$observatoire       <- "#ff90e9"
 couleur_friche$aap                <- "#39a855"
-# couleur_friche$mte_pv             <- "#39a855"
 couleur_friche$mte_pv             <- "#f69730"
 couleur_friche$user               <- "#d152b8"
 couleur_friche$mte_non_expertise  <- "#c5c5c5"
@@ -92,7 +87,6 @@ couleur_icone$mte               <- "blue"
 couleur_icone$ademe              <- "blue"
 couleur_icone$observatoire       <- "pink"
 couleur_icone$aap                <- "green"
-# couleur_icone$mte_pv             <- "green"
 couleur_icone$mte_pv             <- "orange"
 couleur_icone$user               <- "purple"
 couleur_icone$mte_non_expertise <- "lightgray"
