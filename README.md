@@ -24,12 +24,12 @@ Ensuite, vous pouvez [installer **RStudio**](https://rstudio.com/products/rstudi
 ### Télécharger Cartofriches
 Pour installer Cartofriches, vous pouvez passer, soit par un téléchargement depuis le répertoire github soit par la commande git
 
-#### En zip
+#### Télécharger en zip
 [Vous pouvez aussi télécharger l'application sous forme de zip](url)
 
 ![](https://raw.githubusercontent.com/wiki/CEREMA/cartofriches/images/install/zip.png)
 
-#### Via git
+#### Télécharger avec git
 
 [Installez **git**](https://git-scm.com/downloads)
 
