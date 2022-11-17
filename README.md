@@ -52,7 +52,7 @@ Ouvrez le script [`install-packages.R`](https://github.com/CEREMA/cartofriches/b
 [Plus d'infos sur les librairies utilisées](https://github.com/CEREMA/cartofriches/wiki/Librairies)
 
 ### ⚡ Lancer Cartofriches
-Ouvrez le fichier `cartofriches.RProj`, ce qui ouvre l'environnement de développement de Cartofriches dans RStudio que vous avez installé précédemment
+Allez dans le dossier [`shinyapp`](https://github.com/CEREMA/cartofriches/tree/main/shinyapp), puis ouvrez le fichier `cartofriches.RProj`, ce qui ouvre l'environnement de développement de Cartofriches dans RStudio que vous avez installé précédemment
 
 ![](https://raw.githubusercontent.com/wiki/CEREMA/cartofriches/images/install/rproj.png)
 
