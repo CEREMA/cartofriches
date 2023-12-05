@@ -1112,8 +1112,10 @@ get_n_friches <- function(f) {
 get_icon_legende <- function(type_friche, 
                              type = "legende") {
   
-  # get_icon_legende("mte", type="bouton")
-  # get_icon_legende("mte")
+  # get_icon_legende("avec projet")
+  # get_icon_legende("sans projet")
+  # get_icon_legende("potentielle")
+  # get_icon_legende("reconvertie")
   
   # Valeurs par défaut
   
@@ -1155,7 +1157,8 @@ get_icon_legende <- function(type_friche,
     padding_bottom  <- "6px"
   }
   
-  get_icon_element <- function(fa, color, 
+  get_icon_element <- function(fa, 
+                               color, 
                                margin_right, 
                                padding_right, padding_left, padding_top, padding_bottom) {
     tags$span(
@@ -1172,49 +1175,34 @@ get_icon_legende <- function(type_friche,
     )
   }
   
-  if(type_friche == "mte") {
+  if(type_friche == "potentielles") {
     
-    get_icon_element(icone_friche$mte, 
-                     couleur_friche$mte, 
+    get_icon_element(icone_friche$potentielles, 
+                     couleur_friche$potentielles, 
                      margin_right,
                      padding_right, padding_left, padding_top, padding_bottom)
     
-  } else if (type_friche == "observatoire") {
+  } else if (type_friche == "sans projet") {
     
-    get_icon_element(icone_friche$observatoire, 
-                     couleur_friche$observatoire, 
+    get_icon_element(icone_friche$sans_projet, 
+                     couleur_friche$sans_projet, 
                      margin_right,
                      padding_right, padding_left, padding_top, padding_bottom)
     
-  } else if (type_friche == "aap") {
+  } else if (type_friche == "avec projet") {
     
-    get_icon_element(icone_friche$aap, 
-                     couleur_friche$aap, 
+    get_icon_element(icone_friche$avec_projet, 
+                     couleur_friche$avec_projet, 
                      margin_right,
                      padding_right, padding_left, padding_top, padding_bottom)
     
-  } else if (type_friche == "user") {
+  } else if (type_friche == "reconverties") {
     
-    get_icon_element(icone_friche$user, 
-                     couleur_friche$user, 
+    get_icon_element(icone_friche$reconverties, 
+                     couleur_friche$reconverties, 
                      margin_right,
                      padding_right, padding_left, padding_top, padding_bottom)
-    
-  } else if (type_friche == "mte_pv") {
-    
-    get_icon_element(icone_friche$mte_pv, 
-                     couleur_friche$mte_pv, 
-                     margin_right,
-                     padding_right, padding_left, padding_top, padding_bottom)
-    
-  } else if (type_friche == "mte_non_expertise") {
-    
-    get_icon_element(icone_friche$mte_non_expertise, 
-                     couleur_friche$mte_non_expertise, 
-                     margin_right,
-                     padding_right, padding_left, padding_top, padding_bottom)
-    
-  }
+  } 
 }
 
 # Retourne un élément de légende
@@ -1295,10 +1283,10 @@ get_ui_legende <- function(stats, chk_all = FALSE, popup = FALSE) {
            tags$p(nFriches %>% get_texte_nFriches,
                   class = "nb_friches"
            )),
-    get_elt_legende("mte", "Friches avec projet", stats$avec_projet, popup), # Sites industriels MTE et Ademe
-    get_elt_legende("observatoire", "Friches sans projet", stats$sans_projet, popup), # Observatoires
-    get_elt_legende("aap", "Friches potentielles", stats$potentielles, popup), # AAP
-    get_elt_legende("mte_pv", "Friches reconverties", stats$reconverties, popup), # PV au sol
+    get_elt_legende("avec projet", "Friches avec projet", stats$avec_projet, popup), # Sites industriels MTE et Ademe
+    get_elt_legende("sans projet", "Friches sans projet", stats$sans_projet, popup), # Observatoires
+    get_elt_legende("potentielles", "Friches potentielles", stats$potentielles, popup), # AAP
+    get_elt_legende("reconverties", "Friches reconverties", stats$reconverties, popup), # PV au sol
     bloc_sites_non_expertises # Non expertisé
     , style="padding-top:0px;padding-bottom:5px;color:black;font-size:0.9em;margin-bottom: -15px;")
   
