@@ -63,14 +63,15 @@ server <- function(input, output, session) {
     
     sf_points <- Data$points
     
+    # OFF
     # Toutes les friches (y compris celles non vérifiées) ?
-    if(is.null(input$chk_all)) {
-      sf_points <- sf_points %>% filter(checked)
-    } else {
-      if(!input$chk_all) {
-        sf_points <- sf_points %>% filter(checked)
-      }
-    }
+    # if(is.null(input$chk_all)) {
+    #   sf_points <- sf_points %>% filter(checked)
+    # } else {
+    #   if(!input$chk_all) {
+    #     sf_points <- sf_points %>% filter(checked)
+    #   }
+    # }
     
     # Choix de friches
     choices <- rv_filtres$value

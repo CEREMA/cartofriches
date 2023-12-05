@@ -440,8 +440,9 @@ get_objects_bounds <- function(f, map_bb) {
 # FUNC
 # Récupère un site friche depuis son identifiant
 get_friche_from_id <- function(id) {
+  message(">> get_friche_from_id")
   num_site <- gsub("^industrielle_[a-z]*_(.*)$", "\\1", id)
-  f <- Data$points %>% filter(site_numero == num_site)
+  f <- Data$points %>% filter(site_id == num_site)
   return(f)
 }
 
@@ -604,9 +605,9 @@ show_info_friche_industrielle <- function(id) {
   sf_points <- get_friche_from_id(id)
   num_site <- sf_points$site_numero
   if(nrow(sf_points) == 0) {
-    sf_points <- Data$polygons %>% filter(site_numero == num_site) %>% st_centroid
+    sf_points <- Data$polygons %>% filter(site_id == num_site) %>% st_centroid
   }
-  sf_polygons <- Data$polygons %>% filter(site_numero == num_site)
+  sf_polygons <- Data$polygons %>% filter(site_id == num_site)
   
   ##=##=##=##=##
   # Content  ##
