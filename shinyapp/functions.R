@@ -58,14 +58,11 @@ add_circles <- function(proxy, f, group = "group") {
   ##=##=##=##=##=##=##=##=##
   # On calcule le nb de friches total
   # ce dernier sera affiché dans le cercle et conditionnera sa taille
-  f$n_friches <- f$n_friches_industrielles_observatoires + 
-    f$n_friches_industrielles_mte_qualifiees + 
-    f$n_friches_industrielles_user + 
-    f$n_friches_industrielles_aap  + 
-    f$n_friches_industrielles_ademe + 
-    f$n_friches_industrielles_mte_pv
+  f$n_friches <- f$n_friches_avec_projet + 
+    f$n_friches_sans_projet + 
+    f$n_friches_reconverties + 
+    f$n_friches_potentielles
   if(group %in% c("stat_comm", "stat_iris")) f <- f %>% filter(n_friches > 0)
-  
   
   ##=##=##=##=##=##=##=##=##
   #  Tailles de cercles  ##
@@ -125,23 +122,16 @@ add_circles <- function(proxy, f, group = "group") {
   # n_friches_qualifiees    <- f$n_friches_industrielles_mte_qualifiees
   
   popup_stats <- lapply(1:nrow(f), function(x) {
-    f <- f[x, ]
+    print(x)
+    f_sel <- f[x, ]
     
     stats <- list()
     
-    stats$observatoire       <- f$n_friches_industrielles_observatoires
-    stats$aap                <- f$n_friches_industrielles_aap
-    stats$mte_pv             <- f$n_friches_industrielles_mte_pv
-    stats$user               <- f$n_friches_industrielles_user
+    stats$avec_projet       <- f_sel$n_friches_avec_projet
+    stats$sans_projet                <- f_sel$n_friches_sans_projet
+    stats$reconverties             <- f_sel$n_friches_reconverties
+    stats$potentielles               <- f_sel$n_friches_potentielles
     
-    stats$ademe              <- f$n_friches_industrielles_ademe
-    stats$mte_qualifiees     <- (f$n_friches_industrielles_mte_qualifiees + stats$ademe) # Nb de friches qualifiées selon le MTE + Ademe
-    
-    stats$n_qualifiees       <- stats$mte_qualifiees + 
-      stats$observatoire + 
-      stats$aap + 
-      stats$user + 
-      stats$mte_pv
     div(
       get_ui_legende(stats, 
                      chk_all = FALSE, 
@@ -1100,25 +1090,20 @@ filtrer_friches <- function(f.xy, choices) {
 get_n_friches <- function(f) {
   res <- list()
   
-  res$observatoire       <- f %>% filter(is_observatoire) %>% nrow
-  res$aap                <- f %>% filter(is_aap) %>% nrow
-  res$mte_pv             <- f %>% filter(is_mte_pv) %>% nrow
-  res$user               <- f %>% filter(is_user) %>% nrow
+  res$avec_projet       <- f %>% 
+    filter(site_statut == "friche avec projet") %>% nrow
   
-  res$ademe              <- f %>% filter(is_ademe) %>% nrow
+  res$sans_projet                <- f %>% 
+    filter(site_statut == "friche sans projet") %>% nrow
   
-  res$mte_qualifiees     <- nrow(f %>% filter((source_r == "MTE" & checked))) + res$ademe # Friches MTE et ADEME
-  res$mte_non_qualifiees <- nrow(f %>% filter(source_r == "MTE" & !checked))
+  res$reconverties             <- f %>% 
+    filter(site_statut == "friche reconvertie") %>% nrow
   
-  # TOTAUX
-  res$n_qualifiees <- res$mte_qualifiees + 
-    res$observatoire + 
-    res$aap + 
-    res$user + 
-    res$mte_pv
+  res$potentielles               <- f %>% 
+    filter(site_statut == "friche potentielle") %>% nrow
   
-  message("Bon comptage des friches qualifiees : ", 
-          res$n_qualifiees == nrow(f %>% filter(checked))) # Doit être à TRUE
+  # TOTAL
+  res$totales <- sum(unlist(res))
   
   return(res)
 }
@@ -1279,38 +1264,45 @@ get_elt_legende <- function(type, label, n = 10, popup) {
 }
 
 # Crée la légende de la carte
-get_ui_legende <- function(stats, chk_all = FALSE, popup) {
+get_ui_legende <- function(stats, chk_all = FALSE, popup = FALSE) {
   
-  # Bloc sites non expertisés
-  if(!chk_all) {
-    bloc_sites_non_expertises <- ""
-  } else {
-    bloc_sites_non_expertises <- get_elt_legende("mte_non_expertise", 
-                                                 "Site industriel non vérifié", 
-                                                 stats$mte_non_qualifiees,
-                                                 popup)
-  }
+  # get_ui_legende(stats)
   
-  if(chk_all) {
-    nFriches <- stats$n_qualifiees + stats$mte_non_qualifiees
-  } else {
-    nFriches <- stats$n_qualifiees
-  }
+  # # Bloc sites non expertisés
+  # if(!chk_all) {
+  #   bloc_sites_non_expertises <- ""
+  # } else {
+  #   bloc_sites_non_expertises <- get_elt_legende("mte_non_expertise", 
+  #                                                "Site industriel non vérifié", 
+  #                                                stats$mte_non_qualifiees,
+  #                                                popup)
+  # }
+  
+  bloc_sites_non_expertises <- ""
+  
+  # if(chk_all) {
+  #   nFriches <- stats$n_qualifiees + stats$mte_non_qualifiees
+  # } else {
+  #   nFriches <- stats$avec_projet + stats$sans_projet + stats$reconverties + stats$potentielles
+  # }
+  
+  nFriches <- stats$avec_projet + stats$sans_projet + stats$reconverties + stats$potentielles
   
   # Bloc final
-  fluidRow(
+  res <- fluidRow(
     column(10, 
            offset = 1, 
            tags$p(nFriches %>% get_texte_nFriches,
                   class = "nb_friches"
            )),
-    get_elt_legende("mte", "Données nationales", stats$mte_qualifiees, popup), # Sites industriels MTE et Ademe
-    get_elt_legende("observatoire", "Données locales", stats$observatoire, popup), # Observatoires
-    get_elt_legende("aap", "Appels à Projets", stats$aap, popup), # AAP
-    get_elt_legende("mte_pv", "Potentiel solaire au sol", stats$mte_pv, popup), # PV au sol
-    get_elt_legende("user", "Retours utilisateurs", stats$user, popup), # LimeSurvey + Retours utilisateurs
+    get_elt_legende("mte", "Friches avec projet", stats$avec_projet, popup), # Sites industriels MTE et Ademe
+    get_elt_legende("observatoire", "Friches sans projet", stats$sans_projet, popup), # Observatoires
+    get_elt_legende("aap", "Friches potentielles", stats$potentielles, popup), # AAP
+    get_elt_legende("mte_pv", "Friches reconverties", stats$reconverties, popup), # PV au sol
     bloc_sites_non_expertises # Non expertisé
     , style="padding-top:0px;padding-bottom:5px;color:black;font-size:0.9em;margin-bottom: -15px;")
+  
+  return(res)
 }
 
 

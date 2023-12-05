@@ -11,10 +11,10 @@ ui <-
   
   # NAVBARPAGE ####
   navbarPage(
-    id="app_navbar",
+    id = "app_navbar",
     windowTitle = "Cartofriches",
     collapsible = TRUE,
-    responsive = TRUE,
+    # responsive = TRUE,
     title = tagList(
       
       # WAITER ----
