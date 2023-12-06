@@ -39,7 +39,7 @@ server <- function(input, output, session) {
       
     } else if("site" %in% names(query)) {
       # On récupère la BBOX du site
-      f <- Data$polygons %>% filter(site_numero == query$site)
+      f <- Data$polygons %>% filter(site_id == query$site)
       bbox <- st_bbox(f)
       
       xmin <- bbox$xmin  %>% as.numeric
@@ -121,7 +121,7 @@ server <- function(input, output, session) {
         message(">> r_data : Points1")
         return(list(points = sf_points))
       } else {
-        sf_polygons <- Data$polygons %>% filter(site_numero %in% sf_points$site_numero)
+        sf_polygons <- Data$polygons %>% filter(site_id %in% sf_points$site_id)
         if(nrow(sf_polygons) == 0) {
           message(">> r_data : Points2")
           return(list(points = sf_points))
@@ -275,7 +275,7 @@ server <- function(input, output, session) {
   #   
   #   distance_txt <- res$distance_txt
   #   
-  #   f <- Data$points %>% filter(site_numero == res$site_numero)
+  #   f <- Data$points %>% filter(site_id == res$site_id)
   #   
   #   type_friche <- case_when(f$is_mte ~ "mte", 
   #                     f$is_observatoire ~ "observatoire",
@@ -397,9 +397,9 @@ server <- function(input, output, session) {
     
     # On met à jour l'URL avec le numéro du site
     f <- get_friche_from_id(id)
-    site_numero <- f$site_numero
+    site_id <- f$site_id
     updateQueryString(
-      glue("?site={site_numero}"),
+      glue("?site={site_id}"),
       mode = c("replace")
     )
     

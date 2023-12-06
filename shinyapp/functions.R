@@ -261,7 +261,7 @@ add_points <- function(proxy, f, replaceMarkers = TRUE) {
   
   width <- 40
   
-  # SITE_NUMERO
+  # SITE_ID
   sitesNumeros <- f$site_id
   
   # BR
@@ -344,6 +344,8 @@ add_points <- function(proxy, f, replaceMarkers = TRUE) {
 # Les UFs sont affichées au niveau de zoom le plus fort
 add_polygons <- function(proxy, f, group = "Locaux vacants") {
   
+  message(">> add_polygons")
+  
   labels <- glue("<div class='map_popup'>Unit&eacute fonci&egravere de <b>{round(f$site_surface) %>% format_number}m<sup>2</sup></b><br><i><small>Regroupement de parcelles contig&uuml;es<br>appartenant au m&ecirc;me propri&eacutetaire</small></i></div>") %>% 
     as.list(labels) %>% 
     lapply(HTML)  
@@ -351,18 +353,19 @@ add_polygons <- function(proxy, f, group = "Locaux vacants") {
   # Add Polygons
   proxy %>% addPolygons(data = f,
                         label = labels,
-                        layerId=~layerId,
-                        color = "#e632ef", 
-                        weight = 1, 
+                        layerId = f$site_id,
+                        color = "#e632ef",
+                        weight = 1,
                         smoothFactor = 0.5,
-                        opacity = 1.0, 
+                        opacity = 1.0,
                         fillOpacity = 0.3,
                         fillColor = "#ad24ad",
-                        highlightOptions = highlightOptions(color = "#ad24ad", 
+                        highlightOptions = highlightOptions(color = "#ad24ad",
                                                             fillOpacity = 0,
                                                             weight = 2,
                                                             bringToFront = FALSE),
-                        group = group)
+                        group = group
+                        )
 }
 
 # CARTE
@@ -442,9 +445,11 @@ get_objects_bounds <- function(f, map_bb) {
 # FUNC
 # Récupère un site friche depuis son identifiant
 get_friche_from_id <- function(id) {
-  message(">> get_friche_from_id")
-  num_site <- gsub("^industrielle_[a-z]*_(.*)$", "\\1", id)
+  message(">> get_friche_from_id ", id)
+  # num_site <- gsub("^industrielle_[a-z]*_(.*)$", "\\1", id)
+  num_site <- id
   f <- Data$points %>% filter(site_id == num_site)
+  
   return(f)
 }
 
@@ -517,9 +522,9 @@ find_closest_friche <- function(coords, f) {
                          glue("{round((minDistance/1000), 1)} km"))
   f_sel <- f[which.min(distances), ]
   coords <- f_sel %>% st_coordinates
-  sie_numero <- f_sel$site_numero
+  sie_numero <- f_sel$site_id
   
-  return(list(site_numero  = f_sel$site_numero,
+  return(list(site_id  = f_sel$site_id,
               coords       = f_sel %>% st_coordinates, 
               distance     = minDistance, 
               distance_txt = distance_txt))
@@ -565,7 +570,10 @@ add_contour <- function(proxy, f, label, group) {
 # - soit showInfoFricheIndustrielle : affiche la popup du site
 # - soit gotoRegComm : zoome vers une commune, un département, ou une région
 show_info <- function(proxy = NULL, id) {
-  if (grepl("industrielle", id)) {
+  
+  message(">> show_info")
+  
+  if (grepl("[0-9]+_[0-9]+", id)) {
     message(">> On affiche la popup pour la friche ", id)
     # on affiche la popup des friches
     show_info_friche_industrielle(id) 
@@ -588,6 +596,8 @@ show_info <- function(proxy = NULL, id) {
 # Affiche la popup d'une friche industrielle
 show_info_friche_industrielle <- function(id) {
   
+  message(">> show_info_friche_industrielle ", id)
+  
   mymap_modalDialog <- leaflet(width = 50, height = 50, 
                                options = leafletOptions(minZoom = 0, maxZoom = 20)) %>%
     add_tiles() %>%
@@ -597,15 +607,12 @@ show_info_friche_industrielle <- function(id) {
     showGroup("Ortho IGN") %>% 
     hideGroup("Parcelles IGN")
   
-  
-  message(">> show_info_friche_industrielle ", id)
-  
   ##=##=##=##
   # Filtre ##
   ##=##=##=##
   
   sf_points <- get_friche_from_id(id)
-  num_site <- sf_points$site_numero
+  num_site <- sf_points$site_id
   if(nrow(sf_points) == 0) {
     sf_points <- Data$polygons %>% filter(site_id == num_site) %>% st_centroid
   }
@@ -623,8 +630,10 @@ show_info_friche_industrielle <- function(id) {
   
   # BLOC FICHE
   # Les fiches ne sont pas affichées pour les AAP
-  if(!is.na(sf_points$url_fiche) & sf_points$source_r != "AAP") {
-    bloc_fiche <- tags$a(href = sf_points$url_fiche, 
+  if(!is.na(sf_points$site_numero_basias) & sf_points$source_r != "AAP") {
+    site_numero_basias <- sf_points$site_numero_basias
+    url <- glue("https://fiches-risques.brgm.fr/georisques/casias/{site_numero_basias}")
+    bloc_fiche <- tags$a(href = url, 
                          tagList(icon("info-circle"), "fiche"), 
                          target="_blank", style="font-size: 1em; margin-left: 10px;")
   } else {
@@ -636,15 +645,7 @@ show_info_friche_industrielle <- function(id) {
                       glue("Friche {toupper(sf_points$source_r)}"), 
                       toupper(sf_points$site_nom))
   
-  tag_color <- case_when(
-    sf_points$is_observatoire ~ couleur_friche$observatoire,
-    sf_points$is_user         ~ couleur_friche$user,
-    sf_points$is_mte_pv       ~ couleur_friche$mte_pv,
-    sf_points$is_aap          ~ couleur_friche$aap,
-    sf_points$is_ademe        ~ couleur_friche$ademe,
-    sf_points$checked         ~ couleur_friche$mte,
-    TRUE                      ~ couleur_friche$mte_non_expertise
-  )
+  tag_color <- get_color(sf_points)
   
   ##=##=##=##=##
   # The map  ##
@@ -663,14 +664,21 @@ show_info_friche_industrielle <- function(id) {
       fitBounds(bb[1], bb[2], bb[3], bb[4])
   } else {
     coords <- sf_points %>% st_coordinates
-    mymap_modalDialog <- mymap_modalDialog %>% setView(coords[1], coords[2], zoom = 18)
+    mymap_modalDialog <- mymap_modalDialog %>% 
+      setView(coords[1], 
+              coords[2], 
+              zoom = 18)
   }
   
-  # Ajout de Marqueur
-  mymap_modalDialog <- mymap_modalDialog %>% add_points(sf_points, replaceMarkers = TRUE)
+  # 1. Ajout de Marqueur
+  mymap_modalDialog <- mymap_modalDialog %>% 
+    add_points(sf_points, 
+               replaceMarkers = TRUE)
   
-  # Ajout de Surface
+  # 2. Ajout de Surface
   if(!is.null(sf_polygons)) {
+    # print(sf_polygons$site_id)
+    # sf_polygons <- sf_points %>% st_buffer(1)
     mymap_modalDialog <- mymap_modalDialog %>% 
       add_polygons(sf_polygons,
                    group = "Unités foncières")
@@ -688,25 +696,36 @@ show_info_friche_industrielle <- function(id) {
                        style="margin-top: -20px;
                text-align: right;")
   
+  message(">> bloc_title")
   if(sf_points$source_r == "MTE") {
-    if(sf_points$checked) {
-      bloc_title <- fluidRow(
-        fluidRow(
-          column(10, 
-                 bloc_site, 
-                 bloc_fiche),
-          bloc_close))
-    } else {
-      # On n'affiche pas de logo pour les Sources MTE
-      bloc_title <- fluidRow(
-        fluidRow(
-          column(8, 
-                 bloc_site, 
-                 bloc_fiche),
-          column(2,
-                 tags$span("Non qualifiée", style=glue("color:{tag_color};"))),
-          bloc_close))
-    }
+    
+    bloc_title <- fluidRow(
+      fluidRow(
+        column(10, 
+               bloc_site, 
+               bloc_fiche),
+        bloc_close))
+    
+    # OFF
+    # if(sf_points$checked) {
+    #   bloc_title <- fluidRow(
+    #     fluidRow(
+    #       column(10, 
+    #              bloc_site, 
+    #              bloc_fiche),
+    #       bloc_close))
+    # } else {
+    #   # On n'affiche pas de logo pour les Sources MTE
+    #   bloc_title <- fluidRow(
+    #     fluidRow(
+    #       column(8, 
+    #              bloc_site, 
+    #              bloc_fiche),
+    #       column(2,
+    #              tags$span("Non qualifiée", 
+    #                        style = glue("color:{tag_color};"))),
+    #       bloc_close))
+    # }
     
   } else {
     
@@ -723,19 +742,20 @@ show_info_friche_industrielle <- function(id) {
     bloc_title <- fluidRow(
       fluidRow(
         column(10, 
-               bloc_site, 
+               toupper(sf_points$site_nom), 
                bloc_fiche),
         bloc_close),
       fluidRow(column(12, 
                       bloc_logo,
-                      style="margin-top: 10px;")))
+                      style = "margin-top: 10px;")))
   }
   
   ##=##=##=##=##=##=##=##=##=##
   # Affiche la boîte modale ##
   ##=##=##=##=##=##=##=##=##=##
-  
-  showModal(modalDialog(
+  message(">> showModal")
+  showModal(
+    modalDialog(
     
     # Titre
     title = bloc_title,
@@ -757,8 +777,9 @@ show_info_friche_industrielle <- function(id) {
       tags$hr(style="margin-top:10px;margin-bottom:10px;"),
       
       # Partage du site
-      div(tagList(tags$a(href=get_url_site(sf_points$site_numero), 
-                         tagList(icon("share"), get_url_site(sf_points$site_numero)),
+      div(tagList(tags$a(href = get_url_site(sf_points$site_id), 
+                         tagList(icon("share"), 
+                                 get_url_site(sf_points$site_id)),
                          target="_blank"),
       ), 
       style="
@@ -769,7 +790,7 @@ show_info_friche_industrielle <- function(id) {
                           padding-bottom: 2px;"),
       
       # Ce site n'est pas une friche ?
-      div(tags$a(href=get_mailto(sf_points$site_numero), 
+      div(tags$a(href = get_mailto(sf_points$site_id), 
                  tagList("Ce site n'est pas une friche ?",
                          tags$br(), 
                          "Contactez-nous à l'adresse cartofriches@cerema.fr ! ", 
@@ -818,6 +839,8 @@ get_docs_depollution <- function(value){
 # Soit une mise en forme des attributs du site en HTML
 # Fait appel à d'autres fonctions présentes dans helpers.R comme get_docs_depollution, etc...
 get_popup_content <- function(f) {
+  
+  message(">> get_popup_content")
   
   coords <- f %>% st_coordinates
   
@@ -894,14 +917,13 @@ get_popup_content <- function(f) {
   source <- f$source_r
   
   ## Source des données
-  if(!is.na(f$url_source) & f$url_source != "") {
+  if(!is.na(f$source_url) & f$source_url != "") {
     bloc_source_data <- tagList(
       h4("Source des données"),
       tagList(icon("database"),
-              tags$a(href=f$url_source, target="_blank", "Source des données")))
+              tags$a(href=f$source_url, target="_blank", "Source des données")))
   } else {
     bloc_source_data <- ""
-    
   }
   
   #--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#
@@ -913,7 +935,7 @@ get_popup_content <- function(f) {
     # Infos générales
     ##=##=##=##=##=##
     h4("Informations générales"),
-    tags$b("Code du site : "), f$site_numero, tags$br(),
+    tags$b("Code du site : "), f$site_id, tags$br(),
     tags$b("Surface (de l'unité de propriété) : "), coalesce(format_number(f$site_surface), "Non calculée"), " m²", tags$br(),
     tags$b("Activité : "), ifelse(is.na(f$activite_libelle),
                                   "Non renseigné",
@@ -1525,17 +1547,17 @@ get_ui_encart <- function(titre, titreSuite, body, image, isMobile) {
 }
 
 # Crée l'URL du site friche
-get_url_site <- function(site_numero) {
-  glue("https://cartofriches.cerema.fr/?site={site_numero}")
+get_url_site <- function(site_id) {
+  glue("https://cartofriches.cerema.fr/?site={site_id}")
 }
 
 # Formate le mailto pour retourner un courriel pré-construit
-get_mailto <- function(site_numero) {
+get_mailto <- function(site_id) {
   paste0("mailto:cartofriches@cerema.fr",
          "?subject=[Cartofriches] Informations sur le site n°", 
-         site_numero,
+         site_id,
          "&body=Je vous contacte au sujet du site ", 
-         get_url_site(site_numero))
+         get_url_site(site_id))
 }
 
 # Second bandeau

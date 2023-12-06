@@ -70,10 +70,10 @@ SEARCH_DISTANCE <- 2000
 
 # COULEURS DES FRICHES DANS LA LEGENDE ----
 couleur_friche <- list()
-couleur_friche$potentielles               <- "#a2a2a2"
-couleur_friche$sans_projet              <- "#ffc98f"
-couleur_friche$avec_projet       <- "#eb912e"
-couleur_friche$reconverties                <- "lightblue"
+couleur_friche$potentielles <- "#a2a2a2"
+couleur_friche$sans_projet  <- "#ffc98f"
+couleur_friche$avec_projet  <- "#eb912e"
+couleur_friche$reconverties <- "lightblue"
 
 # COULEUR DES ICONES SUR LA CARTE ----
 # Le couleur des choix est plus limité pour les icônes de la carte
