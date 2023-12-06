@@ -337,12 +337,13 @@ server <- function(input, output, session) {
     
     req(r_data())
     message(">> Observe : affichage des objets")
+    message(">> names(r_data()) ", paste(names(r_data()), collapse = ", "))
     
     # Si pas de résultat, alors pas de friche à l'endroit souhaité
     # on enlève alors les marqueurs de sites et les unités foncières affichées précédemment
     
     # REGIONS 
-    if(names(r_data()) == "regs") {
+    if(any(names(r_data()) == "regs")) {
       message(">> Affichage des cercles régionaux")
       
       f <- r_data()$regs
@@ -355,7 +356,7 @@ server <- function(input, output, session) {
       message(">> Fin - Affichage des cercles régionaux")
       
     # DEPARTEMENTS
-    } else if(names(r_data()) == "deps") {
+    } else if(any(names(r_data()) == "deps")) {
       message(">> Affichage des cercles stats départementaux")
       proxy %>%
         clearGroup("Basias et Basol") %>% 
@@ -364,7 +365,7 @@ server <- function(input, output, session) {
         add_circles(r_data()$deps, group = "stat_dep")
      
     # FRICHES 
-    } else if(names(r_data()) == "points") {
+    } else if(any(names(r_data()) == "points")) {
       message(">> Affichage des points")
       proxy %>% clearGroup("Basias et Basol") %>% clearGroup("Unités foncières")
       if(!is.null(r_data()$points)) {
