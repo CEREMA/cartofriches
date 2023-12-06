@@ -7,7 +7,7 @@ source("modules/mod_ban.R", encoding = "UTF-8")
 Sys.setlocale("LC_TIME", "French")
 
 # DATE DE MISE A JOUR ####
-LAST_UPDATE_DATE <- "5 Avril 2022"
+LAST_UPDATE_DATE <- "6 Décembre 2023"
 
 # PALETTE CEREMA ####
 couleurs_cerema <- readRDS("data/couleurs_cerema.rds")

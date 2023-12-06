@@ -52,7 +52,6 @@ add_circles <- function(proxy,
                         chk_all = FALSE) {
   
   message(">> add_circles")
-  print(chk_all)
   
   scale_linear <- function(value) {
     scaled <- (value - min(value)) / diff(range(value))
@@ -135,7 +134,7 @@ add_circles <- function(proxy,
   # n_friches_qualifiees    <- f$n_friches_industrielles_mte_qualifiees
   
   popup_stats <- lapply(1:nrow(f), function(x) {
-    print(x)
+    # print(x)
     f_sel <- f[x, ]
     
     stats <- list()
@@ -1325,7 +1324,9 @@ get_ui_legende <- function(stats, chk_all = FALSE, popup = FALSE) {
 
 # Retourne le nombre de friches sur la page d'accueil
 get_ui_nb_friches_accueil <- function() {
-  n <- f.xy %>% filter(checked) %>% nrow
+  
+  n <- f.xy %>% filter(site_statut != "friche potentielle") %>% nrow
+  
   res <- div(tags$p(n, " friches", style="
                               font-weight: 700;
                               font-size: 1.4em;
