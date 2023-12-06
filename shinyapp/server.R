@@ -336,6 +336,8 @@ server <- function(input, output, session) {
   observe({
     
     req(r_data())
+    req(!is.null(input$chk_all))
+    
     message(">> Observe : affichage des objets")
     message(">> names(r_data()) ", paste(names(r_data()), collapse = ", "))
     
@@ -348,21 +350,30 @@ server <- function(input, output, session) {
       
       f <- r_data()$regs
       
+      chk_all <- input$chk_all
+      
       proxy %>%
         clearGroup("Basias et Basol") %>%
         clearGroup("Unités foncières") %>%
         clearGroup("stat_dep") %>%
-        add_circles(f, group = "stat_reg")
+        add_circles(f, 
+                    group = "stat_reg", 
+                    chk_all = input$chk_all)
       message(">> Fin - Affichage des cercles régionaux")
       
     # DEPARTEMENTS
     } else if(any(names(r_data()) == "deps")) {
       message(">> Affichage des cercles stats départementaux")
+      
+      chk_all <- input$chk_all
+      
       proxy %>%
         clearGroup("Basias et Basol") %>% 
         clearGroup("Unités foncières") %>% 
         clearGroup("stat_reg") %>% 
-        add_circles(r_data()$deps, group = "stat_dep")
+        add_circles(r_data()$deps, 
+                    group = "stat_dep",
+                    chk_all = chk_all)
      
     # FRICHES 
     } else if(any(names(r_data()) == "points")) {
@@ -453,7 +464,8 @@ server <- function(input, output, session) {
     
     req(input$mymap_zoom)
     
-    if(input$mymap_zoom <= ZOOM_LEVELS["Département"]) return()
+    # OFF
+    # if(input$mymap_zoom <= ZOOM_LEVELS["Département"]) return()
     
     # Afficher le nombre de filtres activés
     if(is.na(rv_filtres$value)) {
@@ -470,12 +482,18 @@ server <- function(input, output, session) {
     
     # Bloc final
     fluidRow(
-      column(8, offset=2,
-        tags$p(actionLink("lnk_filtre", label, icon=icon("filter")),
-               style="text-align:center;font-size:1em"),
-        tags$p(checkboxInput("chk_all", 
-                             "Afficher les sites non vérifiés", 
-                             value = FALSE))))
+      column(8,
+             offset = 2,
+             
+             tags$p(checkboxInput("chk_all", 
+                                  "Afficher les friches potentielles", 
+                                  value = FALSE)),
+             
+             tags$p(actionLink("lnk_filtre", 
+                               label,
+                               icon = icon("filter")),
+               style="text-align:center;font-size:1em")
+        ))
   })
   
   # ui_pave ----

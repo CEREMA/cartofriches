@@ -46,7 +46,13 @@ add_tiles <- function(m) {
 
 # Ajoute les cercles statistiques à la carte
 # Lors du lancement de Cartofriches, ce sont les stats qui sont affichées
-add_circles <- function(proxy, f, group = "group") {
+add_circles <- function(proxy, 
+                        f, 
+                        group = "group", 
+                        chk_all = FALSE) {
+  
+  message(">> add_circles")
+  print(chk_all)
   
   scale_linear <- function(value) {
     scaled <- (value - min(value)) / diff(range(value))
@@ -58,10 +64,17 @@ add_circles <- function(proxy, f, group = "group") {
   ##=##=##=##=##=##=##=##=##
   # On calcule le nb de friches total
   # ce dernier sera affiché dans le cercle et conditionnera sa taille
-  f$n_friches <- f$n_friches_avec_projet + 
+  if(chk_all) {
+    f$n_friches <- f$n_friches_avec_projet + 
+      f$n_friches_sans_projet + 
+      f$n_friches_reconverties + 
+      f$n_friches_potentielles
+  } else {
+    f$n_friches <- f$n_friches_avec_projet + 
     f$n_friches_sans_projet + 
-    f$n_friches_reconverties + 
-    f$n_friches_potentielles
+    f$n_friches_reconverties
+  }
+  
   if(group %in% c("stat_comm", "stat_iris")) f <- f %>% filter(n_friches > 0)
   
   ##=##=##=##=##=##=##=##=##
@@ -134,7 +147,7 @@ add_circles <- function(proxy, f, group = "group") {
     
     div(
       get_ui_legende(stats, 
-                     chk_all = FALSE, 
+                     chk_all = chk_all, 
                      popup = TRUE)
     )
   })
@@ -1272,24 +1285,24 @@ get_ui_legende <- function(stats, chk_all = FALSE, popup = FALSE) {
   # get_ui_legende(stats)
   
   # # Bloc sites non expertisés
-  # if(!chk_all) {
-  #   bloc_sites_non_expertises <- ""
-  # } else {
-  #   bloc_sites_non_expertises <- get_elt_legende("mte_non_expertise", 
-  #                                                "Site industriel non vérifié", 
-  #                                                stats$mte_non_qualifiees,
-  #                                                popup)
-  # }
+  if(!chk_all) {
+    bloc_potentielles <- ""
+  } else {
+    bloc_potentielles <- get_elt_legende("potentielles",
+                                                 "Friches potentielles",
+                                                 stats$potentielles,
+                                                 popup)
+  }
+  # 
+  # bloc_sites_non_expertises <- ""
   
-  bloc_sites_non_expertises <- ""
+  if(chk_all) {
+    nFriches <- stats$avec_projet + stats$sans_projet + stats$reconverties + stats$potentielles
+  } else {
+    nFriches <- stats$avec_projet + stats$sans_projet + stats$reconverties
+  }
   
-  # if(chk_all) {
-  #   nFriches <- stats$n_qualifiees + stats$mte_non_qualifiees
-  # } else {
-  #   nFriches <- stats$avec_projet + stats$sans_projet + stats$reconverties + stats$potentielles
-  # }
-  
-  nFriches <- stats$avec_projet + stats$sans_projet + stats$reconverties + stats$potentielles
+  # nFriches <- stats$avec_projet + stats$sans_projet + stats$reconverties + stats$potentielles
   
   # Bloc final
   res <- fluidRow(
@@ -1301,8 +1314,7 @@ get_ui_legende <- function(stats, chk_all = FALSE, popup = FALSE) {
     get_elt_legende("sans projet", "Friches sans projet", stats$sans_projet, popup), # Observatoires
     get_elt_legende("avec projet", "Friches avec projet", stats$avec_projet, popup), # Sites industriels MTE et Ademe
     get_elt_legende("reconverties", "Friches reconverties", stats$reconverties, popup), # PV au sol
-    get_elt_legende("potentielles", "Friches potentielles", stats$potentielles, popup), # AAP
-    bloc_sites_non_expertises # Non expertisé
+    bloc_potentielles
     , style="padding-top:0px;padding-bottom:5px;color:black;font-size:0.9em;margin-bottom: -15px;")
   
   return(res)
