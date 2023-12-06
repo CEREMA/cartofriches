@@ -126,8 +126,11 @@ ui <-
                column(12,
                       # LEGENDE ----
                       div(uiOutput("ui_legende"),
-                          uiOutput("ui_filtres"),
-                          uiOutput("ui_txt_zoom"),
+                          tags$p(checkboxInput("chk_all", 
+                                               "Afficher les friches potentielles", 
+                                               value = FALSE)),
+                          uiOutput("filtres"),
+                          uiOutput("zoom"),
                           class="information"),
                       
                       )),

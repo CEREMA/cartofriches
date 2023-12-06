@@ -92,11 +92,9 @@ icone_friche$avec_projet       <- "fa-industry"
 icone_friche$reconverties                <- "fa-building"
 
 # FILTRES ----
-Filtres <- c("Données nationales" = "mte",
-             "Données locales" = "observatoire", 
-             "Appels à Projets" = "aap", 
-             "Potentiel solaire au sol" = "mte_pv", 
-             "Retours utilisateurs" = "user")
+Filtres <- c("Friches sans projet" = "friche sans projet",
+             "Friches avec projet" = "friche avec projet", 
+             "Friches reconverties" = "friche reconvertie")
 
 # LOGOS DES OBSERVATOIRES (IMAGE, TAILLE ET MESSAGE D'ACCUEIL) ----
 Logos <- list(

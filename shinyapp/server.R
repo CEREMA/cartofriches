@@ -75,7 +75,7 @@ server <- function(input, output, session) {
     
     # Choix de friches
     choices <- rv_filtres$value
-    if(!is.na(choices)) {
+    if(!all(is.na(choices))) {
       sf_points <- sf_points %>% filtrer_friches(choices = choices)
     }
     
@@ -177,8 +177,8 @@ server <- function(input, output, session) {
     }
   })
   
-  # lnk_filtre ----
-  observeEvent(input$lnk_filtre, {
+  # filtrer ----
+  observeEvent(input$filtrer, {
     
     showModal(modalDialog(title = NULL,
                           div(
@@ -462,41 +462,31 @@ server <- function(input, output, session) {
   
   # > OUTPUT ----
   
-  # ui_filtres ----
-  output$ui_filtres <- renderUI({
+  # filtres ----
+  output$filtres <- renderUI({
     
     req(input$mymap_zoom)
     
-    # OFF
-    # if(input$mymap_zoom <= ZOOM_LEVELS["Département"]) return()
+    if(input$mymap_zoom <= ZOOM_LEVELS["Département"]) return()
     
     # Afficher le nombre de filtres activés
-    if(is.na(rv_filtres$value)) {
+    if(all(is.na(rv_filtres$value))) {
       n_filtres <- 0
     } else {
       n_filtres <- rv_filtres$value %>% length
     }
     
     if(n_filtres == 0) {
-      label <- "Filtrer"
+      txt <- "Filtrer"
     } else {
-      label <- glue("Filtrer ({n_filtres})")
+      txt <- glue("Filtrer ({n_filtres})")
     }
     
     # Bloc final
-    fluidRow(
-      column(8,
-             offset = 2,
-             
-             tags$p(checkboxInput("chk_all", 
-                                  "Afficher les friches potentielles", 
-                                  value = FALSE)),
-             
-             tags$p(actionLink("lnk_filtre", 
-                               label,
-                               icon = icon("filter")),
+    tags$p(actionLink("filtrer", 
+                      txt,
+                      icon = icon("filter")),
                style="text-align:center;font-size:1em")
-        ))
   })
   
   # ui_pave ----
@@ -515,10 +505,10 @@ server <- function(input, output, session) {
     get_ui_apropos_cartofriches()
   })
   
-  # ui_txt_zoom ----
+  # zoom ----
   # Affichage du niveau de zoom de la carte
   # notamment, du nombre de zooms restant avant l'affichage des marqueurs
-  output$ui_txt_zoom <- renderUI({
+  output$zoom <- renderUI({
     req(input$mymap_zoom <= ZOOM_LEVELS[["Département"]])
     tagList(tags$hr(), 
             get_txt_zoom(input$mymap_zoom))

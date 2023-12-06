@@ -1108,9 +1108,14 @@ get_nom_site <- function(f) {
 # > LEGENDE ----
 
 # Filtre les friches selon la source choisie (observatoires locaux,...)
-filtrer_friches <- function(f.xy, choices) {
+old_filtrer_friches <- function(f.xy, choices) {
   choices_s <- glue("is_{choices}") %>% paste(collapse=" | ")
   f.xy %>% filter(!! rlang::parse_expr(choices_s))
+}
+
+filtrer_friches <- function(f.xy, choices) {
+  message(">> filtrer_friches")
+  f.xy %>% filter(site_statut %in% choices)
 }
 
 # Retourne le nombre de friches
