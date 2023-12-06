@@ -63,15 +63,15 @@ server <- function(input, output, session) {
     
     sf_points <- Data$points
     
-    # OFF
-    # Toutes les friches (y compris celles non vérifiées) ?
-    # if(is.null(input$chk_all)) {
-    #   sf_points <- sf_points %>% filter(checked)
-    # } else {
-    #   if(!input$chk_all) {
-    #     sf_points <- sf_points %>% filter(checked)
-    #   }
-    # }
+    # Toutes les friches (y compris celles potentielles) ?
+    if(is.null(input$chk_all)) {
+      sf_points <- sf_points %>% filter(site_statut != "friche potentielle")
+    } else {
+      # Si on ne prend pas les potentielles
+      if(!input$chk_all) {
+        sf_points <- sf_points %>% filter(site_statut != "friche potentielle")
+      }
+    }
     
     # Choix de friches
     choices <- rv_filtres$value
@@ -378,7 +378,10 @@ server <- function(input, output, session) {
     # FRICHES 
     } else if(any(names(r_data()) == "points")) {
       message(">> Affichage des points")
-      proxy %>% clearGroup("Basias et Basol") %>% clearGroup("Unités foncières")
+      proxy %>% 
+        clearGroup("Basias et Basol") %>% 
+        clearGroup("Unités foncières")
+      
       if(!is.null(r_data()$points)) {
         f <- r_data()$points
         
