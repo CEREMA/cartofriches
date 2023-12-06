@@ -133,31 +133,32 @@ server <- function(input, output, session) {
     }
   })
   
-  # r_closest_friche (Friche la plus proche) ----
-  r_closest_friche <- reactive({
-    message(">> r_closest_friche()")
-    req(input$mymap_bounds)
-    req(!is.null(input$chk_all))
-    req(r_friches())
-    
-    bb <- input$mymap_bounds
-    
-    # f <- Data$points %>% get_objects_bounds(bb)
-    f <- r_friches()
-    
-    f_in_bounds <- f %>% get_objects_bounds(bb)
-    
-    if(nrow(f_in_bounds) > 0) return()
-    
-    # Coordonnées du point central
-    coords <- c(mean(bb$west, bb$east), mean(bb$south, bb$north))
-    
-    # On cherche les friches les plus proches
-    res <- find_closest_friche(coords = coords, 
-                               f      = f)
-    
-    return(res)
-  })
+  # OFF
+  # # r_closest_friche (Friche la plus proche) ----
+  # r_closest_friche <- reactive({
+  #   message(">> r_closest_friche()")
+  #   req(input$mymap_bounds)
+  #   req(!is.null(input$chk_all))
+  #   req(r_friches())
+  #   
+  #   bb <- input$mymap_bounds
+  #   
+  #   # f <- Data$points %>% get_objects_bounds(bb)
+  #   f <- r_friches()
+  #   
+  #   f_in_bounds <- f %>% get_objects_bounds(bb)
+  #   
+  #   if(nrow(f_in_bounds) > 0) return()
+  #   
+  #   # Coordonnées du point central
+  #   coords <- c(mean(bb$west, bb$east), mean(bb$south, bb$north))
+  #   
+  #   # On cherche les friches les plus proches
+  #   res <- find_closest_friche(coords = coords, 
+  #                              f      = f)
+  #   
+  #   return(res)
+  # })
   
   
   # > OBSERVE ####
@@ -263,60 +264,62 @@ server <- function(input, output, session) {
     updateNavbarPage(session, "app_navbar", selected = "Mentions légales") 
   })
   
-  # Affichage du bouton "Aller vers la friche la plus proche" ----
-  observe({
-    res <- r_closest_friche()
-    if(is.null(res)) {
-      proxy %>% clearControls()
-      return()
-    }
-    
-    distance_txt <- res$distance_txt
-    
-    f <- Data$points %>% filter(site_numero == res$site_numero)
-    
-    type_friche <- case_when(f$is_mte ~ "mte", 
-                      f$is_observatoire ~ "observatoire",
-                      f$is_aap ~ "aap",
-                      f$is_user ~ "user",
-                      f$is_mte_non_expertise ~ "mte_non_expertise",
-                      f$is_ademe ~ "ademe",
-                      f$is_mte_pv ~  "mte_pv")
-    
-    type_friche <- case_when(
-      f$is_mte ~ "Donnée nationale",
-      f$is_observatoire ~ "Donnée locale",
-      f$is_aap ~ "Appel à projets",
-      f$is_mte_pv ~ "Potentiel solaire au sol",
-      f$is_user ~ "Retour utilisateur",
-      f$is_mte_non_expertise ~ "Site industriel non vérifié",
-    )
-    
-    type_friche <- strwrap(type_friche, width = 20) %>% paste(collapse=br_code)
-    
-    ui <- actionButton("btn_see_friche", 
-                       tagList(icon("paper-plane"),
-                               glue("Friche à {distance_txt}"),
-                               HTML(br_code),
-                               tags$span(HTML(glue(("{type_friche}"))), 
-                               style="font-size: 0.9em;
-                                      color: #ffcec1;
-                                      margin-left: 20px;
-                                      text-align: left;
-                                      display: block;
-                                      margin-top: 5px;"),
-                               ),
-                       class = "goto_map"
-                       )
-    proxy %>% clearControls() %>% addControl(ui)
-  })
+  # OFF
+  # # Affichage du bouton "Aller vers la friche la plus proche" ----
+  # observe({
+  #   res <- r_closest_friche()
+  #   if(is.null(res)) {
+  #     proxy %>% clearControls()
+  #     return()
+  #   }
+  #   
+  #   distance_txt <- res$distance_txt
+  #   
+  #   f <- Data$points %>% filter(site_numero == res$site_numero)
+  #   
+  #   type_friche <- case_when(f$is_mte ~ "mte", 
+  #                     f$is_observatoire ~ "observatoire",
+  #                     f$is_aap ~ "aap",
+  #                     f$is_user ~ "user",
+  #                     f$is_mte_non_expertise ~ "mte_non_expertise",
+  #                     f$is_ademe ~ "ademe",
+  #                     f$is_mte_pv ~  "mte_pv")
+  #   
+  #   type_friche <- case_when(
+  #     f$is_mte ~ "Donnée nationale",
+  #     f$is_observatoire ~ "Donnée locale",
+  #     f$is_aap ~ "Appel à projets",
+  #     f$is_mte_pv ~ "Potentiel solaire au sol",
+  #     f$is_user ~ "Retour utilisateur",
+  #     f$is_mte_non_expertise ~ "Site industriel non vérifié",
+  #   )
+  #   
+  #   type_friche <- strwrap(type_friche, width = 20) %>% paste(collapse=br_code)
+  #   
+  #   ui <- actionButton("btn_see_friche", 
+  #                      tagList(icon("paper-plane"),
+  #                              glue("Friche à {distance_txt}"),
+  #                              HTML(br_code),
+  #                              tags$span(HTML(glue(("{type_friche}"))), 
+  #                              style="font-size: 0.9em;
+  #                                     color: #ffcec1;
+  #                                     margin-left: 20px;
+  #                                     text-align: left;
+  #                                     display: block;
+  #                                     margin-top: 5px;"),
+  #                              ),
+  #                      class = "goto_map"
+  #                      )
+  #   proxy %>% clearControls() %>% addControl(ui)
+  # })
   
-  # btn_see_friche ----
-  observeEvent(input$btn_see_friche, {
-    res <- r_closest_friche()
-    coords <- res$coords
-    proxy %>% flyTo(coords[1], coords[2], 18)
-  })
+  # OFF
+  # # btn_see_friche ----
+  # observeEvent(input$btn_see_friche, {
+  #   res <- r_closest_friche()
+  #   coords <- res$coords
+  #   proxy %>% flyTo(coords[1], coords[2], 18)
+  # })
   
   # slc_secteurs (Choix de Métropole ou DOM TOM) ----
   observeEvent(input$slc_secteurs, {

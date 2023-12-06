@@ -250,16 +250,19 @@ zoom_to <- function(m, coords, type, value, label = NULL) {
 # Les marqueurs sont affichésà un niveau de zoom moyen
 add_points <- function(proxy, f, replaceMarkers = TRUE) {
   
-  # ICONS
-  icons <- get_icon_map(f)
+  message(">> add_points")
+  
+  # # ICONS
+  # icons <- get_icone_friche(f)
   
   # POPUP
-  nom_site <- sapply(1:nrow(f), function(x) get_nom_site(f[x, ]))
+  # nom_site <- sapply(1:nrow(f), function(x) get_nom_site(f[x, ]))
+  nom_site <- toupper(f$site_nom)
   
   width <- 40
   
   # SITE_NUMERO
-  sitesNumeros <- f$site_numero
+  sitesNumeros <- f$site_id
   
   # BR
   br_code <- "<br style='content: \"\"; margin: -5px;display: block;'>"
@@ -269,7 +272,7 @@ add_points <- function(proxy, f, replaceMarkers = TRUE) {
   activites <- sapply(activites, function(x) paste(strwrap(x, width), collapse=br_code))
   
   # SOURCES  
-  sources <- sapply(f$producteur, function(x) paste(strwrap(x, width), 
+  sources <- sapply(f$source_producteur, function(x) paste(strwrap(x, width), 
                                                     collapse=br_code))
   
   # LOGOS
@@ -288,7 +291,6 @@ add_points <- function(proxy, f, replaceMarkers = TRUE) {
   # Ademe et MTE sont de la même classe (MTE)
   # Pas de logo non plus pour les retours utilisateurs
   the_logos[which(f$source_r %in% c("MTE", "Ademe"))] <- ""
-  the_logos[which(f$is_user)] <- ""
   
   ##=##=##=##=##=##=##
   # Popup > Labels
@@ -321,17 +323,17 @@ add_points <- function(proxy, f, replaceMarkers = TRUE) {
   
   # Supprime les marqueurs
   if(replaceMarkers) {
-    layerIds <- f$layerId
-    proxy %>% removeMarker(layerIds)
+    proxy %>% removeMarker(f$site_id)
   }
   
-  icons <- get_icon_map(f)
+  icons <- get_icone_friche(f)
   
+  message(">> Affichage de ", nrow(f), " friches")
   proxy %>%
     addAwesomeMarkers(
       lng = f$long,
       lat = f$lat,
-      layerId = f$layerId,
+      layerId = f$site_id,
       label = labels,
       group = "Basias et Basol",
       icon = icons
@@ -406,19 +408,19 @@ get_polygons_from_id <- function(id) {
 # CARTE
 # Retourne la couleur de l'icône sur la carte
 # Selon si le site est d'un observatoire ou pas
-get_icon_map <- function(f) {
+get_icone_friche <- function(f) {
+  
+  # get_icone_friche(f)
   
   icon$markerColor <- get_color(f, map = TRUE)
   # icon$iconColor <- get_color(f, map = TRUE)
   
   # Icon
   icon$icon <- case_when(
-    f$is_observatoire ~ icone_friche$observatoire,
-    f$is_mte_pv       ~ icone_friche$mte_pv,
-    f$is_user         ~ icone_friche$user,
-    f$is_aap          ~ icone_friche$aap,
-    TRUE              ~ icone_friche$mte # données MTE et Ademe
-  )
+    f$site_statut == "friche avec projet" ~ icone_friche$avec_projet,
+    f$site_statut == "friche sans projet" ~ icone_friche$sans_projet,
+    f$site_statut == "friche potentielle" ~ icone_friche$potentielles,
+    f$site_statut == "friche reconvertie" ~ icone_friche$reconverties)
   
   return(icon)
 }
@@ -1065,17 +1067,7 @@ get_img_logo <- function(source_r) {
 
 # Récupère le nom d'un site friche
 get_nom_site <- function(f) {
-  if(is.na(f$site_nom)) {
-    if(f$source_r == "Ademe") {
-      "Friche identifiée étude Ademe"
-    } else if (f$source_r == "MTE PV") {
-      "Friche avec potentiel solaire au sol"
-    } else {
-      glue("Friche {toupper(f$source_r)}")
-    }
-  } else {
     toupper(f$site_nom)
-  }
 }
 
 
@@ -1284,10 +1276,10 @@ get_ui_legende <- function(stats, chk_all = FALSE, popup = FALSE) {
            tags$p(nFriches %>% get_texte_nFriches,
                   class = "nb_friches"
            )),
-    get_elt_legende("avec projet", "Friches avec projet", stats$avec_projet, popup), # Sites industriels MTE et Ademe
     get_elt_legende("sans projet", "Friches sans projet", stats$sans_projet, popup), # Observatoires
-    get_elt_legende("potentielles", "Friches potentielles", stats$potentielles, popup), # AAP
+    get_elt_legende("avec projet", "Friches avec projet", stats$avec_projet, popup), # Sites industriels MTE et Ademe
     get_elt_legende("reconverties", "Friches reconverties", stats$reconverties, popup), # PV au sol
+    get_elt_legende("potentielles", "Friches potentielles", stats$potentielles, popup), # AAP
     bloc_sites_non_expertises # Non expertisé
     , style="padding-top:0px;padding-bottom:5px;color:black;font-size:0.9em;margin-bottom: -15px;")
   
@@ -1653,6 +1645,8 @@ get_slc <- function(v, label = "Veuillez sélectionner un élément dans la list
 # Retourne la couleur des sites en fonction de leur type
 get_color <- function(f, map = FALSE) {
   
+  # get_color(f.xy)
+  
   if(map) {
     couleurs <- couleur_icone
   } else {
@@ -1660,16 +1654,13 @@ get_color <- function(f, map = FALSE) {
   }
   
   case_when(
-    f$is_observatoire ~ couleurs$observatoire,
-    f$is_user         ~ couleurs$user,
-    f$is_aap          ~ couleurs$aap,
-    f$is_ademe        ~ couleurs$ademe,
-    f$is_mte_pv       ~ couleurs$mte_pv,
-    f$checked         ~ couleurs$mte,
-    TRUE              ~ couleurs$mte_non_expertise
+    f$site_statut == "friche avec projet" ~ couleurs$avec_projet,
+    f$site_statut == "friche sans projet" ~ couleurs$sans_projet,
+    f$site_statut == "friche potentielle" ~ couleurs$potentielles,
+    f$site_statut == "friche reconvertie" ~ couleurs$reconverties,
+    TRUE              ~ couleurs$potentielles
   )
 }
-
 
 # > RECHERCHE ----
 
