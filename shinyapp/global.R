@@ -7,7 +7,7 @@ source("modules/mod_ban.R", encoding = "UTF-8")
 Sys.setlocale("LC_TIME", "French")
 
 # DATE DE MISE A JOUR ####
-LAST_UPDATE_DATE <- "5 Avril 2022"
+LAST_UPDATE_DATE <- "9 Octobre 2023"
 
 # PALETTE CEREMA ####
 couleurs_cerema <- readRDS("data/couleurs_cerema.rds")
@@ -22,8 +22,10 @@ orange <- palette$secondaire$orange
 gris <- "#e4e4e4"
 
 # LEAFLET ####
-baseGroups <- c("Ortho IGN", "Plan IGN", "OpenStreetMap", "OSM Stamen")
-overlayGroups <- c("Villes", "Parcelles IGN")
+baseGroups <- c("OpenStreetMap", "Ortho IGN", "Plan IGN")
+overlayGroups <- c("Parcelles IGN")
+# baseGroups <- c("Ortho IGN", "Plan IGN", "OpenStreetMap", "OSM Stamen")
+# overlayGroups <- c("Villes", "Parcelles IGN")
 
 # Icônes Leaflet
 icon <- awesomeIcons(
@@ -49,14 +51,17 @@ ZOOM_LEVELS <- c("Région"      = 6,
 
 # OBSERVATOIRES ####
 Observatoires <- c(
-  "Agence d'Urbanisme du Grand Amiénois (ADUGA)" = "ADUGA", 
-  "Commune de Fougères"                          = "Fougeres",
+  "Région Occitanie"                             = "Occitanie",
+  "Établissement Public Foncier de Grand Est"    = "Grand Est",
+  "Établissement Public Foncier de Normandie"    = "Normandie",  
   "DDT de l'Ain"                                 = "Ain",
   "DDT des Ardennes"                             = "Ardennes",
+  "DDT du Cantal"                                = "Cantal",
   "DDT de la Marne"                              = "Marne",
-  "Établissement Public Foncier de Grand Est"    = "GrandEst",
+  "DDTM de la Somme"                              = "Somme",
   "Grand Angoulême"                              = "Grand Angouleme",
-  "Région Occitanie"                             = "Occitanie"
+  "Agence d'Urbanisme du Grand Amiénois (ADUGA)" = "ADUGA", 
+  "Commune de Fougères"                          = "Fougeres"
 ) %>% get_slc(label = "Sélectionnez un observatoire")
 
 Secteurs <- c("Métropole", 
@@ -143,9 +148,25 @@ Logos <- list(
   Occitanie = list(img = "logos/logo-occitanie.png", 
                    height = 70, 
                    message = "Bienvenue en Région Occitanie"),
-  Lorraine = list(img = "logos/Logo_EPFGE.png", 
+  "Grand Est" = list(img = "logos/Logo_EPFGE.png", 
                   height = 70, 
-                  message = "Bienvenue en territoire Grand Est")
+                  message = "Bienvenue en territoire Grand Est"),
+  
+  Normandie = list(img = "logos/Logo_EPFNormandie.jpg", 
+                   height = 70, 
+                   message = "Bienvenue en territoire Normandie"),
+  
+  Somme = list(img = "logos/logo-DDTM-Somme.jpg", 
+                   height = 70, 
+                   message = "Bienvenue en territoire de la Somme"),
+  
+  Cantal = list(img = "logos/logo-DDT-Cantal.jpg", 
+               height = 70, 
+               message = "Bienvenue en territoire du Cantal")
+  
+  
+  
+  
 )
 
 # UI ----

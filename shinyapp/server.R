@@ -3,6 +3,19 @@ server <- function(input, output, session) {
   load_data()   # on charge les données
   
   
+  
+  
+  # Va directement sur l'onglet "Contribuer"
+  observe({
+    query <- parseQueryString(session$clientData$url_search)
+    if("contribuer" %in% names(query)){
+      updateNavbarPage(session, "app_navbar", selected = "Contribuer")
+    }
+  })
+  
+  
+  
+  
   # > MODULES ----
   
   # Modules pour rechercher des adresses
@@ -75,9 +88,19 @@ server <- function(input, output, session) {
     # Choix de friches
     choices <- rv_filtres$value
     if(!is.na(choices)) {
-      sf_points <- sf_points %>% filtrer_friches(choices = choices)
-    }
+      sf_points <- sf_points %>% 
+        filtrer_friches(choices = choices) 
+      # %>%
+      #   filter(unite_fonciere_surface > rv_filtres$surface_min)
+      }
     
+  #   print(rv_filtres$surface_min)
+  #   
+  #   if(!is.na(rv_filtres$surface_min)) {
+  #   sf_points <- sf_points %>%
+  #     filter(unite_fonciere_surface > rv_filtres$surface_min)
+  # }
+      
     return(sf_points)
   })
   
@@ -132,29 +155,29 @@ server <- function(input, output, session) {
     }
   })
   
-  # r_closest_friche (Friche la plus proche) ----
+  # r_closest_friche (Friche la plus proche) ----  PB NICOLAS FINDFRICHE
   r_closest_friche <- reactive({
     message(">> r_closest_friche()")
     req(input$mymap_bounds)
     req(!is.null(input$chk_all))
     req(r_friches())
-    
+
     bb <- input$mymap_bounds
-    
+
     # f <- Data$points %>% get_objects_bounds(bb)
     f <- r_friches()
-    
+
     f_in_bounds <- f %>% get_objects_bounds(bb)
-    
+
     if(nrow(f_in_bounds) > 0) return()
-    
+
     # Coordonnées du point central
     coords <- c(mean(bb$west, bb$east), mean(bb$south, bb$north))
-    
+
     # On cherche les friches les plus proches
-    res <- find_closest_friche(coords = coords, 
+    res <- find_closest_friche(coords = coords,
                                f      = f)
-    
+
     return(res)
   })
   
@@ -175,15 +198,29 @@ server <- function(input, output, session) {
     }
   })
   
+  # observe({
+  #     rv_filtres$surface_min <- input$INPUT_FILTRE_SURFACE[1]
+  #     rv_filtres$surface_max <- input$INPUT_FILTRE_SURFACE[2]
+  # })
+  
   # lnk_filtre ----
   observeEvent(input$lnk_filtre, {
     
     showModal(modalDialog(title = NULL,
                           div(
-                            tags$p(checkboxGroupInput("chk_filtres", 
+                            tags$p(
+                              checkboxGroupInput("chk_filtres", 
                                                       "Friches à afficher :",
                                                       choices = Filtres,
-                                                      selected = NULL))
+                                                      selected = NULL)
+                              )
+                            # ,
+                            # tags$p(
+                            #   sliderInput("INPUT_FILTRE_SURFACE",
+                            #               "Surface de la friche :",
+                            #               min = 0, max = Surface_max,
+                            #               value = c(0,Surface_max)),
+                            #   )
                           ),
                           footer = modalButton("Valider la sélection"),
                           easyClose = TRUE,
@@ -262,60 +299,60 @@ server <- function(input, output, session) {
     updateNavbarPage(session, "app_navbar", selected = "Mentions légales") 
   })
   
-  # Affichage du bouton "Aller vers la friche la plus proche" ----
-  observe({
-    res <- r_closest_friche()
-    if(is.null(res)) {
-      proxy %>% clearControls()
-      return()
-    }
-    
-    distance_txt <- res$distance_txt
-    
-    f <- Data$points %>% filter(site_numero == res$site_numero)
-    
-    type_friche <- case_when(f$is_mte ~ "mte", 
-                      f$is_observatoire ~ "observatoire",
-                      f$is_aap ~ "aap",
-                      f$is_user ~ "user",
-                      f$is_mte_non_expertise ~ "mte_non_expertise",
-                      f$is_ademe ~ "ademe",
-                      f$is_mte_pv ~  "mte_pv")
-    
-    type_friche <- case_when(
-      f$is_mte ~ "Donnée nationale",
-      f$is_observatoire ~ "Donnée locale",
-      f$is_aap ~ "Appel à projets",
-      f$is_mte_pv ~ "Potentiel solaire au sol",
-      f$is_user ~ "Retour utilisateur",
-      f$is_mte_non_expertise ~ "Site industriel non vérifié",
-    )
-    
-    type_friche <- strwrap(type_friche, width = 20) %>% paste(collapse=br_code)
-    
-    ui <- actionButton("btn_see_friche", 
-                       tagList(icon("paper-plane"),
-                               glue("Friche à {distance_txt}"),
-                               HTML(br_code),
-                               tags$span(HTML(glue(("{type_friche}"))), 
-                               style="font-size: 0.9em;
-                                      color: #ffcec1;
-                                      margin-left: 20px;
-                                      text-align: left;
-                                      display: block;
-                                      margin-top: 5px;"),
-                               ),
-                       class = "goto_map"
-                       )
-    proxy %>% clearControls() %>% addControl(ui)
-  })
+  # Affichage du bouton "Aller vers la friche la plus proche" ---- PB NICOLAS FINDFRICHE
+  # observe({
+  #   res <- r_closest_friche()
+  #   if(is.null(res)) {
+  #     proxy %>% clearControls()
+  #     return()
+  #   }
+  # 
+  #   distance_txt <- res$distance_txt
+  # 
+  #   f <- Data$points %>% filter(site_numero == res$site_numero)
+  # 
+  #   type_friche <- case_when(f$is_mte ~ "mte",
+  #                     f$is_observatoire ~ "observatoire",
+  #                     f$is_aap ~ "aap",
+  #                     f$is_user ~ "user",
+  #                     f$is_mte_non_expertise ~ "mte_non_expertise",
+  #                     f$is_ademe ~ "ademe",
+  #                     f$is_mte_pv ~  "mte_pv")
+  # 
+  #   type_friche <- case_when(
+  #     f$is_mte ~ "Donnée nationale",
+  #     f$is_observatoire ~ "Donnée locale",
+  #     f$is_aap ~ "Appel à projets",
+  #     f$is_mte_pv ~ "Potentiel solaire au sol",
+  #     f$is_user ~ "Retour utilisateur",
+  #     f$is_mte_non_expertise ~ "Site industriel non vérifié",
+  #   )
+  # 
+  #   type_friche <- strwrap(type_friche, width = 20) %>% paste(collapse=br_code)
+  # 
+  #   ui <- actionButton("btn_see_friche",
+  #                      tagList(icon("paper-plane"),
+  #                              glue("Friche à {distance_txt}"),
+  #                              HTML(br_code),
+  #                              tags$span(HTML(glue(("{type_friche}"))),
+  #                              style="font-size: 0.9em;
+  #                                     color: #ffcec1;
+  #                                     margin-left: 20px;
+  #                                     text-align: left;
+  #                                     display: block;
+  #                                     margin-top: 5px;"),
+  #                              ),
+  #                      class = "goto_map"
+  #                      )
+  #   proxy %>% clearControls() %>% addControl(ui)
+  # })
   
-  # btn_see_friche ----
-  observeEvent(input$btn_see_friche, {
-    res <- r_closest_friche()
-    coords <- res$coords
-    proxy %>% flyTo(coords[1], coords[2], 18)
-  })
+  # btn_see_friche ----  PB NICOLAS FINDFRICHE
+  # observeEvent(input$btn_see_friche, {
+  #   res <- r_closest_friche()
+  #   coords <- res$coords
+  #   proxy %>% flyTo(coords[1], coords[2], 18)
+  # })
   
   # slc_secteurs (Choix de Métropole ou DOM TOM) ----
   observeEvent(input$slc_secteurs, {
@@ -340,14 +377,11 @@ server <- function(input, output, session) {
     # REGIONS 
     if(names(r_data()) == "regs") {
       message(">> Affichage des cercles régionaux")
-      
-      f <- r_data()$regs
-      
       proxy %>%
         clearGroup("Basias et Basol") %>%
         clearGroup("Unités foncières") %>%
         clearGroup("stat_dep") %>%
-        add_circles(f, group = "stat_reg")
+        add_circles(r_data()$regs, group = "stat_reg")
       message(">> Fin - Affichage des cercles régionaux")
       
     # DEPARTEMENTS
@@ -358,6 +392,8 @@ server <- function(input, output, session) {
         clearGroup("Unités foncières") %>% 
         clearGroup("stat_reg") %>% 
         add_circles(r_data()$deps, group = "stat_dep")
+      message(">> Fin - Affichage des cercles départementaux")
+      
      
     # FRICHES 
     } else if(names(r_data()) == "points") {
@@ -489,6 +525,22 @@ server <- function(input, output, session) {
     get_ui_apropos_cartofriches()
   })
   
+  output$ui_publier_une_friche <- renderUI({
+    div(
+      h1("Cartofriches"),
+      
+      includeMarkdown("www/textes/publier_une_friche.md")
+      
+    )
+  })
+  
+  output$ui_publier_une_friche_2 <- renderUI({
+    div(
+      includeMarkdown("www/textes/publier_une_friche_2.md")
+    )
+  })
+  
+  
   # ui_txt_zoom ----
   # Affichage du niveau de zoom de la carte
   # notamment, du nombre de zooms restant avant l'affichage des marqueurs
@@ -505,15 +557,14 @@ server <- function(input, output, session) {
     req(input$mymap_zoom)
     req(input$mymap_bounds)
     
-    # if(input$mymap_zoom <= ZOOM_LEVELS[["Département"]]) return()
-    
     if(is.null(input$chk_all)) {
       chk_all <- FALSE
     } else {
       chk_all <- input$chk_all
     }
-    
+
     f <- f.xy %>% get_objects_bounds(input$mymap_bounds)
+    
     stats <- get_n_friches(f)
     get_ui_legende(stats, 
                    chk_all = chk_all, 
@@ -534,10 +585,11 @@ server <- function(input, output, session) {
     
     m <- leaflet(options = leafletOptions(zoomControl = TRUE, 
                                           minZoom = 0, 
-                                          maxZoom = 19)) %>%
+                                          maxZoom = 18)) %>%
       
       # Tiles
       add_tiles() %>%
+      
       
       # Boutons
       addEasyButton(
@@ -552,7 +604,7 @@ server <- function(input, output, session) {
                        options       = layersControlOptions(collapsed = TRUE)) %>%
       
       # Show or Hide
-      showGroup("Ortho IGN") %>%
+      # showGroup("Ortho IGN") %>%
       hideGroup("Parcelles IGN")
     
     # Zoom
@@ -578,6 +630,149 @@ server <- function(input, output, session) {
   # leafletProxy ----
   proxy <- leafletProxy('mymap', session)
   
+  
+  observeEvent(input$see_home, {
+    updateNavbarPage(session, "app_navbar", selected = "Accueil")
+  })
+  
+  
+  
+  
+  # Téléchargement des données 
+  output$downloadZIP <- downloadHandler(
+    filename <- "Donnees_Cartofriches.zip",
+    content <- function(file) {
+      file.copy("www/data_export/Donnees_Cartofriches.zip", file)
+    },
+    contentType = "application/zip"
+  )
+  
+  
+  # Téléchargement du kit Contribuez 
+  output$downloadZIP_kit <- downloadHandler(
+    filename <- "Kit_Cartofriches.zip",
+    content <- function(file) {
+      file.copy("www/Kit_Cartofriches.zip", file)
+    },
+    contentType = "application/zip"
+  )
+  
+  
+  
   # waiter ----
   waiter_hide() # on ferme la fenêtre d'attente
+  
+  
+  
+  
+  
+  
+  # > ONGLET STATS ----
+  
+  REACT_DataTableau <- reactive({
+
+    # print(as.numeric(input$INPUT_FILTRE_SURFACE_TABLEAU_slider[1]))
+    # print(as.numeric(input$INPUT_FILTRE_SURFACE_TABLEAU_slider[2]))
+    # print(as.numeric(input$INPUT_FILTRE_Site_type))
+
+  Dataframe <- f.xy %>%
+      mutate(urba_zone_type_regroup = ifelse(urba_zone_type %in% c("A","Ah"),"A",
+                                             ifelse(urba_zone_type %in% c("AUs","AUc"),"AU",
+                                                    ifelse(urba_zone_type %in% c("N","Nh"),"N",
+                                                           ifelse(urba_zone_type %in% c("U"),"U",
+                                                                  ifelse(is.na(urba_zone_type),"CC",urba_zone_type)))))) %>%
+      mutate(site_surface = round(as.numeric(site_surface)/10000,2)) %>%
+      mutate(site_surface_tri = ifelse(site_surface > 49, 50, site_surface)) %>%
+      filter(dep %in% input$INPUT_ChoixDep) %>%
+      filter(site_statut %in% input$INPUT_Site_statut) %>%
+      filter(site_surface_tri >= as.numeric(input$INPUT_FILTRE_SURFACE_TABLEAU_slider[1]),
+             site_surface_tri <= as.numeric(input$INPUT_FILTRE_SURFACE_TABLEAU_slider[2])) %>%
+      filter(nature %in% input$INPUT_FILTRE_Producteur) %>%
+      filter(site_type %in% input$INPUT_FILTRE_Site_type) %>%
+      filter(urba_zone_type_regroup %in% input$INPUT_FILTRE_ZONEURBA_TABLEAU)
+  
+  Dataframe <- Dataframe %>% st_set_geometry(NULL) %>%
+    select(site_id,site_nom,nom_prodcartofriches,site_statut,site_type,site_surface,
+           dep,comm_nom,comm_insee) %>%
+    mutate(Commune = paste0(comm_nom, " (",comm_insee,")")) %>%
+    mutate(LienCartofriches2 = sprintf('<a href="%s" target="_blank">Lien direct du site vers Cartofriches</a>',
+                                       paste0("https:cartofriches.cerema.fr/cartofriches/?site=",site_id)),
+           LienCartofriches3 = paste0(site_id, " - ",
+                                      sprintf(paste0('<a href="%s" target="_blank">Voir sur la carte</a>'), #, " ",icon("eye")
+                                              paste0("/?site=",site_id))
+                                      )) %>%
+    mutate(nom_court =  ifelse(nom_prodcartofriches ==  "Appel à projet Fonds Friches" , 
+                               paste0(str_split(site_nom," - ", simplify = TRUE)[,1], " - ",str_split(site_nom," - ", simplify = TRUE)[,6]), 
+                               site_nom)) %>%
+    select(LienCartofriches3,dep,Commune,nom_court,nom_prodcartofriches,site_statut,site_type,site_surface) %>%
+    rename(
+      "Nom du site" = nom_court,
+      # "Département" = dep,
+      "Producteur de la donnée"  = nom_prodcartofriches,
+      "Statut" = site_statut,
+      "Type" = site_type,
+      "Surface (en Ha)" = site_surface,
+      "Identifiant et lien Cartofriches" = LienCartofriches3)
+
+  Dataframe[is.na(Dataframe)] <- "Non renseigné"
+  
+  
+  Dataframe$dep <- fct_recode(Dataframe$dep,
+                             "01 - Ain"="01","02 - Aisne"="02","03 - Allier"="03","04 - Alpes de Haute-Provence"="04","05 - Hautes-Alpes"="05",
+                             "06 - Alpes-Maritimes"="06","07 - Ardêche"="07","08 - Ardennes"="08","09 - Ariège"="09","10 - Aube"="10",
+                             "11 - Aude"="11","12 - Aveyron"="12","13 - Bouches-du-Rhône"="13","14 - Calvados"="14","15 - Cantal"="15",
+                             "16 - Charente"="16","17 - Charente-Maritime"="17","18 - Cher"="18","19 - Corrèze"="19",
+                             "2A - Corse-du-Sud"="2A","2B - Haute-Corse"="2B",
+                             "21 - Côte-d'Or"="21","22 - Côtes d'Armor"="22","23 - Creuse"="23","24 - Dordogne"="24","25 - Doubs"="25",
+                             "26 - Drôme"="26","27 - Eure"="27","28 - Eure-et-Loir"="28","29 - Finistère"="29","30 - Gard"="30",
+                             "31 - Haute-Garonne"="31","32 - Gers"="32","33 - Gironde"="33","34 - Hérault"="34","35 - Île-et-Vilaine"="35",
+                             "36 - Indre"="36","37 - Indre-et-Loire"="37","38 - Isère"="38","39 - Jura"="39","40 - Landes"="40",
+                             "41 - Loir-et-Cher"="41","42 - Loire"="42","43 - Haute-Loire"="43","44 - Loire-Atlantique"="44","45 - Loiret"="45",
+                             "46 - Lot"="46","47 - Lot-et-Garonne"="47","48 - Lozère"="48","49 - Maine-et-Loire"="49","50 - Manche"="50",
+                             "51 - Marne"="51","52 - Haute-Marne"="52","53 - Mayenne"="53","54 - Meurthe-et-Moselle"="54","55 - Meuse"="55",
+                             "56 - Morbihan"="56","57 - Moselle"="57","58 - Nièvre"="58","59 - Nord"="59","60 - Oise"="60",
+                             "61 - Orne"="61","62 - Pas-de-Calais"="62","63 - Puy-de-Dôme"="63","64 - Pyrénées-Atlantique"="64","65 - Haute-Pyrénées"="65",
+                             "66 - Pyrénées-Orientales"="66","67 - Bas-Rhin"="67","68 - Haut-Rhin"="68","69 - Rhône"="69","70 - Haute-Saône"="70",
+                             "71 - Saône-et-Loire"="71","72 - Sarthe"="72","73 - Savoie"="73","74 - Haute-Savoie"="74","75 - Paris"="75",
+                             "76 - Seine-Maritime"="76","77 - Seine-et-Marne"="77","78 - Yvelines"="78","79 - Deux-Sèvres"="79","80 - Somme"="80",
+                             "81 - Tarn"="81","82 - Tarn-et-Garone"="82","83 - Var"="83","84 - Vaucluse"="84","85 - Vendée"="85",
+                             "86 - Vienne"="86","87 - Haute-Vienne"="87","88 - Vosges"="88","89 - Yonne"="89","90 - Territoire-de-Belfort"="90",
+                             "91 - Essonne"="91","92 - Hauts-de-Seine"="92","93 - Seine-Saint-Denis"="93","94 - Val-de-Marne"="94","95 - Val-dOise"="95",
+                             "971 - Guadeloupe"="971","972 - Martinique"="972","973 - Guyane"="973","974 - La Réunion"="974","976 - Mayotte"="976"
+  )
+  
+  
+    
+  Dataframe %>% arrange(dep) %>% rename("Département" = dep)
+  
+  })
+
+
+  output$tableau <- DT::renderDataTable({
+    REACT_DataTableau()
+  },
+  escape = FALSE,
+  rownames = FALSE,
+  options = list(pageLength = 20,
+                 language = list(url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/French.json'))
+  )
+
+  
+  output$downloadData_Tableau <- downloadHandler(
+    filename = function() {
+      paste("Cartofriches_export_filtres", ".csv", sep="")
+    },
+    content = function(file) {
+      write.csv(REACT_DataTableau(), file)
+    }
+  )
+  
+  
+  
+  
+  
+  
+  
+  
+  
 }
