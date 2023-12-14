@@ -1315,9 +1315,9 @@ get_ui_legende <- function(stats, chk_all = FALSE, popup = FALSE) {
            tags$p(nFriches %>% get_texte_nFriches,
                   class = "nb_friches"
            )),
-    get_elt_legende("sans projet", "Friches sans projet", stats$sans_projet, popup), # Observatoires
-    get_elt_legende("avec projet", "Friches avec projet", stats$avec_projet, popup), # Sites industriels MTE et Ademe
     get_elt_legende("reconverties", "Friches reconverties", stats$reconverties, popup), # PV au sol
+    get_elt_legende("avec projet", "Friches avec projet", stats$avec_projet, popup), # Sites industriels MTE et Ademe
+    get_elt_legende("sans projet", "Friches sans projet", stats$sans_projet, popup), # Observatoires
     bloc_potentielles
     , style="padding-top:0px;padding-bottom:5px;color:black;font-size:0.9em;margin-bottom: -15px;")
   

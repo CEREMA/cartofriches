@@ -73,7 +73,7 @@ couleur_friche <- list()
 couleur_friche$potentielles <- "#a2a2a2"
 couleur_friche$sans_projet  <- "#ffc98f"
 couleur_friche$avec_projet  <- "#eb912e"
-couleur_friche$reconverties <- "lightblue"
+couleur_friche$reconverties <- "#6eaa25"
 
 # COULEUR DES ICONES SUR LA CARTE ----
 # Le couleur des choix est plus limité pour les icônes de la carte
@@ -82,7 +82,7 @@ couleur_icone <- list()
 couleur_icone$potentielles               <- "lightgray" # #a2a2a2
 couleur_icone$sans_projet              <- "beige" # #ffc98f
 couleur_icone$avec_projet         <- "orange" # #eb912e
-couleur_icone$reconverties                <- "lightblue"
+couleur_icone$reconverties                <- "green" # #6eaa25
 
 # ICONE DES FRICHES SELON LE TYPE ----
 icone_friche <- list()
