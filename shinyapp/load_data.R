@@ -5,8 +5,8 @@ load_data <- function() {
   # > FRICHES ----
   f.xy <<- readRDS("data/friches/f.xy.rds")
   f.tup <<- readRDS("data/friches/f.tup.rds")
-  f.xy$layerId      <- paste0("industrielle_xy_", f.xy$site_numero)
-  f.tup$layerId     <- paste0("industrielle_tup_", f.tup$site_numero)
+  f.xy$layerId      <- paste0("industrielle_xy_", f.xy$site_id)
+  f.tup$layerId     <- paste0("industrielle_tup_", f.tup$site_id)
   
   # > STATS ---
   # Affichage des stats régionales

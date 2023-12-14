@@ -46,7 +46,12 @@ add_tiles <- function(m) {
 
 # Ajoute les cercles statistiques à la carte
 # Lors du lancement de Cartofriches, ce sont les stats qui sont affichées
-add_circles <- function(proxy, f, group = "group") {
+add_circles <- function(proxy, 
+                        f, 
+                        group = "group", 
+                        chk_all = FALSE) {
+  
+  message(">> add_circles")
   
   scale_linear <- function(value) {
     scaled <- (value - min(value)) / diff(range(value))
@@ -58,14 +63,18 @@ add_circles <- function(proxy, f, group = "group") {
   ##=##=##=##=##=##=##=##=##
   # On calcule le nb de friches total
   # ce dernier sera affiché dans le cercle et conditionnera sa taille
-  f$n_friches <- f$n_friches_industrielles_observatoires + 
-    f$n_friches_industrielles_mte_qualifiees + 
-    f$n_friches_industrielles_user + 
-    f$n_friches_industrielles_aap  + 
-    f$n_friches_industrielles_ademe + 
-    f$n_friches_industrielles_mte_pv
-  if(group %in% c("stat_comm", "stat_iris")) f <- f %>% filter(n_friches > 0)
+  if(chk_all) {
+    f$n_friches <- f$n_friches_avec_projet + 
+      f$n_friches_sans_projet + 
+      f$n_friches_reconverties + 
+      f$n_friches_potentielles
+  } else {
+    f$n_friches <- f$n_friches_avec_projet + 
+    f$n_friches_sans_projet + 
+    f$n_friches_reconverties
+  }
   
+  if(group %in% c("stat_comm", "stat_iris")) f <- f %>% filter(n_friches > 0)
   
   ##=##=##=##=##=##=##=##=##
   #  Tailles de cercles  ##
@@ -125,26 +134,19 @@ add_circles <- function(proxy, f, group = "group") {
   # n_friches_qualifiees    <- f$n_friches_industrielles_mte_qualifiees
   
   popup_stats <- lapply(1:nrow(f), function(x) {
-    f <- f[x, ]
+    # print(x)
+    f_sel <- f[x, ]
     
     stats <- list()
     
-    stats$observatoire       <- f$n_friches_industrielles_observatoires
-    stats$aap                <- f$n_friches_industrielles_aap
-    stats$mte_pv             <- f$n_friches_industrielles_mte_pv
-    stats$user               <- f$n_friches_industrielles_user
+    stats$avec_projet       <- f_sel$n_friches_avec_projet
+    stats$sans_projet                <- f_sel$n_friches_sans_projet
+    stats$reconverties             <- f_sel$n_friches_reconverties
+    stats$potentielles               <- f_sel$n_friches_potentielles
     
-    stats$ademe              <- f$n_friches_industrielles_ademe
-    stats$mte_qualifiees     <- (f$n_friches_industrielles_mte_qualifiees + stats$ademe) # Nb de friches qualifiées selon le MTE + Ademe
-    
-    stats$n_qualifiees       <- stats$mte_qualifiees + 
-      stats$observatoire + 
-      stats$aap + 
-      stats$user + 
-      stats$mte_pv
     div(
       get_ui_legende(stats, 
-                     chk_all = FALSE, 
+                     chk_all = chk_all, 
                      popup = TRUE)
     )
   })
@@ -260,16 +262,19 @@ zoom_to <- function(m, coords, type, value, label = NULL) {
 # Les marqueurs sont affichésà un niveau de zoom moyen
 add_points <- function(proxy, f, replaceMarkers = TRUE) {
   
-  # ICONS
-  icons <- get_icon_map(f)
+  message(">> add_points")
+  
+  # # ICONS
+  # icons <- get_icone_friche(f)
   
   # POPUP
-  nom_site <- sapply(1:nrow(f), function(x) get_nom_site(f[x, ]))
+  # nom_site <- sapply(1:nrow(f), function(x) get_nom_site(f[x, ]))
+  nom_site <- toupper(f$site_nom)
   
   width <- 40
   
-  # SITE_NUMERO
-  sitesNumeros <- f$site_numero
+  # SITE_ID
+  sitesNumeros <- f$site_id
   
   # BR
   br_code <- "<br style='content: \"\"; margin: -5px;display: block;'>"
@@ -279,7 +284,7 @@ add_points <- function(proxy, f, replaceMarkers = TRUE) {
   activites <- sapply(activites, function(x) paste(strwrap(x, width), collapse=br_code))
   
   # SOURCES  
-  sources <- sapply(f$producteur, function(x) paste(strwrap(x, width), 
+  sources <- sapply(f$source_producteur, function(x) paste(strwrap(x, width), 
                                                     collapse=br_code))
   
   # LOGOS
@@ -298,7 +303,6 @@ add_points <- function(proxy, f, replaceMarkers = TRUE) {
   # Ademe et MTE sont de la même classe (MTE)
   # Pas de logo non plus pour les retours utilisateurs
   the_logos[which(f$source_r %in% c("MTE", "Ademe"))] <- ""
-  the_logos[which(f$is_user)] <- ""
   
   ##=##=##=##=##=##=##
   # Popup > Labels
@@ -331,17 +335,17 @@ add_points <- function(proxy, f, replaceMarkers = TRUE) {
   
   # Supprime les marqueurs
   if(replaceMarkers) {
-    layerIds <- f$layerId
-    proxy %>% removeMarker(layerIds)
+    proxy %>% removeMarker(f$site_id)
   }
   
-  icons <- get_icon_map(f)
+  icons <- get_icone_friche(f)
   
+  message(">> Affichage de ", nrow(f), " friches")
   proxy %>%
     addAwesomeMarkers(
       lng = f$long,
       lat = f$lat,
-      layerId = f$layerId,
+      layerId = f$site_id,
       label = labels,
       group = "Basias et Basol",
       icon = icons
@@ -352,6 +356,8 @@ add_points <- function(proxy, f, replaceMarkers = TRUE) {
 # Les UFs sont affichées au niveau de zoom le plus fort
 add_polygons <- function(proxy, f, group = "Locaux vacants") {
   
+  message(">> add_polygons")
+  
   labels <- glue("<div class='map_popup'>Unit&eacute fonci&egravere de <b>{round(f$site_surface) %>% format_number}m<sup>2</sup></b><br><i><small>Regroupement de parcelles contig&uuml;es<br>appartenant au m&ecirc;me propri&eacutetaire</small></i></div>") %>% 
     as.list(labels) %>% 
     lapply(HTML)  
@@ -359,18 +365,19 @@ add_polygons <- function(proxy, f, group = "Locaux vacants") {
   # Add Polygons
   proxy %>% addPolygons(data = f,
                         label = labels,
-                        layerId=~layerId,
-                        color = "#e632ef", 
-                        weight = 1, 
+                        layerId = f$site_id,
+                        color = "#e632ef",
+                        weight = 1,
                         smoothFactor = 0.5,
-                        opacity = 1.0, 
+                        opacity = 1.0,
                         fillOpacity = 0.3,
                         fillColor = "#ad24ad",
-                        highlightOptions = highlightOptions(color = "#ad24ad", 
+                        highlightOptions = highlightOptions(color = "#ad24ad",
                                                             fillOpacity = 0,
                                                             weight = 2,
                                                             bringToFront = FALSE),
-                        group = group)
+                        group = group
+                        )
 }
 
 # CARTE
@@ -416,19 +423,19 @@ get_polygons_from_id <- function(id) {
 # CARTE
 # Retourne la couleur de l'icône sur la carte
 # Selon si le site est d'un observatoire ou pas
-get_icon_map <- function(f) {
+get_icone_friche <- function(f) {
+  
+  # get_icone_friche(f)
   
   icon$markerColor <- get_color(f, map = TRUE)
   # icon$iconColor <- get_color(f, map = TRUE)
   
   # Icon
   icon$icon <- case_when(
-    f$is_observatoire ~ icone_friche$observatoire,
-    f$is_mte_pv       ~ icone_friche$mte_pv,
-    f$is_user         ~ icone_friche$user,
-    f$is_aap          ~ icone_friche$aap,
-    TRUE              ~ icone_friche$mte # données MTE et Ademe
-  )
+    f$site_statut == "friche avec projet" ~ icone_friche$avec_projet,
+    f$site_statut == "friche sans projet" ~ icone_friche$sans_projet,
+    f$site_statut == "friche potentielle" ~ icone_friche$potentielles,
+    f$site_statut == "friche reconvertie" ~ icone_friche$reconverties)
   
   return(icon)
 }
@@ -450,8 +457,11 @@ get_objects_bounds <- function(f, map_bb) {
 # FUNC
 # Récupère un site friche depuis son identifiant
 get_friche_from_id <- function(id) {
-  num_site <- gsub("^industrielle_[a-z]*_(.*)$", "\\1", id)
-  f <- Data$points %>% filter(site_numero == num_site)
+  message(">> get_friche_from_id ", id)
+  # num_site <- gsub("^industrielle_[a-z]*_(.*)$", "\\1", id)
+  num_site <- id
+  f <- Data$points %>% filter(site_id == num_site)
+  
   return(f)
 }
 
@@ -524,9 +534,9 @@ find_closest_friche <- function(coords, f) {
                          glue("{round((minDistance/1000), 1)} km"))
   f_sel <- f[which.min(distances), ]
   coords <- f_sel %>% st_coordinates
-  sie_numero <- f_sel$site_numero
+  sie_numero <- f_sel$site_id
   
-  return(list(site_numero  = f_sel$site_numero,
+  return(list(site_id  = f_sel$site_id,
               coords       = f_sel %>% st_coordinates, 
               distance     = minDistance, 
               distance_txt = distance_txt))
@@ -572,7 +582,10 @@ add_contour <- function(proxy, f, label, group) {
 # - soit showInfoFricheIndustrielle : affiche la popup du site
 # - soit gotoRegComm : zoome vers une commune, un département, ou une région
 show_info <- function(proxy = NULL, id) {
-  if (grepl("industrielle", id)) {
+  
+  message(">> show_info")
+  
+  if (grepl("[0-9]+_[0-9]+", id)) {
     message(">> On affiche la popup pour la friche ", id)
     # on affiche la popup des friches
     show_info_friche_industrielle(id) 
@@ -595,6 +608,8 @@ show_info <- function(proxy = NULL, id) {
 # Affiche la popup d'une friche industrielle
 show_info_friche_industrielle <- function(id) {
   
+  message(">> show_info_friche_industrielle ", id)
+  
   mymap_modalDialog <- leaflet(width = 50, height = 50, 
                                options = leafletOptions(minZoom = 0, maxZoom = 20)) %>%
     add_tiles() %>%
@@ -604,19 +619,16 @@ show_info_friche_industrielle <- function(id) {
     showGroup("Ortho IGN") %>% 
     hideGroup("Parcelles IGN")
   
-  
-  message(">> show_info_friche_industrielle ", id)
-  
   ##=##=##=##
   # Filtre ##
   ##=##=##=##
   
   sf_points <- get_friche_from_id(id)
-  num_site <- sf_points$site_numero
+  num_site <- sf_points$site_id
   if(nrow(sf_points) == 0) {
-    sf_points <- Data$polygons %>% filter(site_numero == num_site) %>% st_centroid
+    sf_points <- Data$polygons %>% filter(site_id == num_site) %>% st_centroid
   }
-  sf_polygons <- Data$polygons %>% filter(site_numero == num_site)
+  sf_polygons <- Data$polygons %>% filter(site_id == num_site)
   
   ##=##=##=##=##
   # Content  ##
@@ -630,8 +642,10 @@ show_info_friche_industrielle <- function(id) {
   
   # BLOC FICHE
   # Les fiches ne sont pas affichées pour les AAP
-  if(!is.na(sf_points$url_fiche) & sf_points$source_r != "AAP") {
-    bloc_fiche <- tags$a(href = sf_points$url_fiche, 
+  if(!is.na(sf_points$site_numero_basias) & sf_points$source_r != "AAP") {
+    site_numero_basias <- sf_points$site_numero_basias
+    url <- glue("https://fiches-risques.brgm.fr/georisques/casias/{site_numero_basias}")
+    bloc_fiche <- tags$a(href = url, 
                          tagList(icon("info-circle"), "fiche"), 
                          target="_blank", style="font-size: 1em; margin-left: 10px;")
   } else {
@@ -643,15 +657,7 @@ show_info_friche_industrielle <- function(id) {
                       glue("Friche {toupper(sf_points$source_r)}"), 
                       toupper(sf_points$site_nom))
   
-  tag_color <- case_when(
-    sf_points$is_observatoire ~ couleur_friche$observatoire,
-    sf_points$is_user         ~ couleur_friche$user,
-    sf_points$is_mte_pv       ~ couleur_friche$mte_pv,
-    sf_points$is_aap          ~ couleur_friche$aap,
-    sf_points$is_ademe        ~ couleur_friche$ademe,
-    sf_points$checked         ~ couleur_friche$mte,
-    TRUE                      ~ couleur_friche$mte_non_expertise
-  )
+  tag_color <- get_color(sf_points)
   
   ##=##=##=##=##
   # The map  ##
@@ -670,14 +676,21 @@ show_info_friche_industrielle <- function(id) {
       fitBounds(bb[1], bb[2], bb[3], bb[4])
   } else {
     coords <- sf_points %>% st_coordinates
-    mymap_modalDialog <- mymap_modalDialog %>% setView(coords[1], coords[2], zoom = 18)
+    mymap_modalDialog <- mymap_modalDialog %>% 
+      setView(coords[1], 
+              coords[2], 
+              zoom = 18)
   }
   
-  # Ajout de Marqueur
-  mymap_modalDialog <- mymap_modalDialog %>% add_points(sf_points, replaceMarkers = TRUE)
+  # 1. Ajout de Marqueur
+  mymap_modalDialog <- mymap_modalDialog %>% 
+    add_points(sf_points, 
+               replaceMarkers = TRUE)
   
-  # Ajout de Surface
+  # 2. Ajout de Surface
   if(!is.null(sf_polygons)) {
+    # print(sf_polygons$site_id)
+    # sf_polygons <- sf_points %>% st_buffer(1)
     mymap_modalDialog <- mymap_modalDialog %>% 
       add_polygons(sf_polygons,
                    group = "Unités foncières")
@@ -695,25 +708,36 @@ show_info_friche_industrielle <- function(id) {
                        style="margin-top: -20px;
                text-align: right;")
   
+  message(">> bloc_title")
   if(sf_points$source_r == "MTE") {
-    if(sf_points$checked) {
-      bloc_title <- fluidRow(
-        fluidRow(
-          column(10, 
-                 bloc_site, 
-                 bloc_fiche),
-          bloc_close))
-    } else {
-      # On n'affiche pas de logo pour les Sources MTE
-      bloc_title <- fluidRow(
-        fluidRow(
-          column(8, 
-                 bloc_site, 
-                 bloc_fiche),
-          column(2,
-                 tags$span("Non qualifiée", style=glue("color:{tag_color};"))),
-          bloc_close))
-    }
+    
+    bloc_title <- fluidRow(
+      fluidRow(
+        column(10, 
+               bloc_site, 
+               bloc_fiche),
+        bloc_close))
+    
+    # OFF
+    # if(sf_points$checked) {
+    #   bloc_title <- fluidRow(
+    #     fluidRow(
+    #       column(10, 
+    #              bloc_site, 
+    #              bloc_fiche),
+    #       bloc_close))
+    # } else {
+    #   # On n'affiche pas de logo pour les Sources MTE
+    #   bloc_title <- fluidRow(
+    #     fluidRow(
+    #       column(8, 
+    #              bloc_site, 
+    #              bloc_fiche),
+    #       column(2,
+    #              tags$span("Non qualifiée", 
+    #                        style = glue("color:{tag_color};"))),
+    #       bloc_close))
+    # }
     
   } else {
     
@@ -730,19 +754,20 @@ show_info_friche_industrielle <- function(id) {
     bloc_title <- fluidRow(
       fluidRow(
         column(10, 
-               bloc_site, 
+               toupper(sf_points$site_nom), 
                bloc_fiche),
         bloc_close),
       fluidRow(column(12, 
                       bloc_logo,
-                      style="margin-top: 10px;")))
+                      style = "margin-top: 10px;")))
   }
   
   ##=##=##=##=##=##=##=##=##=##
   # Affiche la boîte modale ##
   ##=##=##=##=##=##=##=##=##=##
-  
-  showModal(modalDialog(
+  message(">> showModal")
+  showModal(
+    modalDialog(
     
     # Titre
     title = bloc_title,
@@ -764,8 +789,9 @@ show_info_friche_industrielle <- function(id) {
       tags$hr(style="margin-top:10px;margin-bottom:10px;"),
       
       # Partage du site
-      div(tagList(tags$a(href=get_url_site(sf_points$site_numero), 
-                         tagList(icon("share"), get_url_site(sf_points$site_numero)),
+      div(tagList(tags$a(href = get_url_site(sf_points$site_id), 
+                         tagList(icon("share"), 
+                                 get_url_site(sf_points$site_id)),
                          target="_blank"),
       ), 
       style="
@@ -776,7 +802,7 @@ show_info_friche_industrielle <- function(id) {
                           padding-bottom: 2px;"),
       
       # Ce site n'est pas une friche ?
-      div(tags$a(href=get_mailto(sf_points$site_numero), 
+      div(tags$a(href = get_mailto(sf_points$site_id), 
                  tagList("Ce site n'est pas une friche ?",
                          tags$br(), 
                          "Contactez-nous à l'adresse cartofriches@cerema.fr ! ", 
@@ -825,6 +851,8 @@ get_docs_depollution <- function(value){
 # Soit une mise en forme des attributs du site en HTML
 # Fait appel à d'autres fonctions présentes dans helpers.R comme get_docs_depollution, etc...
 get_popup_content <- function(f) {
+  
+  message(">> get_popup_content")
   
   coords <- f %>% st_coordinates
   
@@ -901,14 +929,13 @@ get_popup_content <- function(f) {
   source <- f$source_r
   
   ## Source des données
-  if(!is.na(f$url_source) & f$url_source != "") {
+  if(!is.na(f$source_url) & f$source_url != "") {
     bloc_source_data <- tagList(
       h4("Source des données"),
       tagList(icon("database"),
-              tags$a(href=f$url_source, target="_blank", "Source des données")))
+              tags$a(href=f$source_url, target="_blank", "Source des données")))
   } else {
     bloc_source_data <- ""
-    
   }
   
   #--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#
@@ -920,7 +947,7 @@ get_popup_content <- function(f) {
     # Infos générales
     ##=##=##=##=##=##
     h4("Informations générales"),
-    tags$b("Code du site : "), f$site_numero, tags$br(),
+    tags$b("Code du site : "), f$site_id, tags$br(),
     tags$b("Surface (de l'unité de propriété) : "), coalesce(format_number(f$site_surface), "Non calculée"), " m²", tags$br(),
     tags$b("Activité : "), ifelse(is.na(f$activite_libelle),
                                   "Non renseigné",
@@ -1074,51 +1101,41 @@ get_img_logo <- function(source_r) {
 
 # Récupère le nom d'un site friche
 get_nom_site <- function(f) {
-  if(is.na(f$site_nom)) {
-    if(f$source_r == "Ademe") {
-      "Friche identifiée étude Ademe"
-    } else if (f$source_r == "MTE PV") {
-      "Friche avec potentiel solaire au sol"
-    } else {
-      glue("Friche {toupper(f$source_r)}")
-    }
-  } else {
     toupper(f$site_nom)
-  }
 }
 
 
 # > LEGENDE ----
 
 # Filtre les friches selon la source choisie (observatoires locaux,...)
-filtrer_friches <- function(f.xy, choices) {
+old_filtrer_friches <- function(f.xy, choices) {
   choices_s <- glue("is_{choices}") %>% paste(collapse=" | ")
   f.xy %>% filter(!! rlang::parse_expr(choices_s))
+}
+
+filtrer_friches <- function(f.xy, choices) {
+  message(">> filtrer_friches")
+  f.xy %>% filter(site_statut %in% choices)
 }
 
 # Retourne le nombre de friches
 get_n_friches <- function(f) {
   res <- list()
   
-  res$observatoire       <- f %>% filter(is_observatoire) %>% nrow
-  res$aap                <- f %>% filter(is_aap) %>% nrow
-  res$mte_pv             <- f %>% filter(is_mte_pv) %>% nrow
-  res$user               <- f %>% filter(is_user) %>% nrow
+  res$avec_projet       <- f %>% 
+    filter(site_statut == "friche avec projet") %>% nrow
   
-  res$ademe              <- f %>% filter(is_ademe) %>% nrow
+  res$sans_projet                <- f %>% 
+    filter(site_statut == "friche sans projet") %>% nrow
   
-  res$mte_qualifiees     <- nrow(f %>% filter((source_r == "MTE" & checked))) + res$ademe # Friches MTE et ADEME
-  res$mte_non_qualifiees <- nrow(f %>% filter(source_r == "MTE" & !checked))
+  res$reconverties             <- f %>% 
+    filter(site_statut == "friche reconvertie") %>% nrow
   
-  # TOTAUX
-  res$n_qualifiees <- res$mte_qualifiees + 
-    res$observatoire + 
-    res$aap + 
-    res$user + 
-    res$mte_pv
+  res$potentielles               <- f %>% 
+    filter(site_statut == "friche potentielle") %>% nrow
   
-  message("Bon comptage des friches qualifiees : ", 
-          res$n_qualifiees == nrow(f %>% filter(checked))) # Doit être à TRUE
+  # TOTAL
+  res$totales <- sum(unlist(res))
   
   return(res)
 }
@@ -1127,8 +1144,10 @@ get_n_friches <- function(f) {
 get_icon_legende <- function(type_friche, 
                              type = "legende") {
   
-  # get_icon_legende("mte", type="bouton")
-  # get_icon_legende("mte")
+  # get_icon_legende("avec projet")
+  # get_icon_legende("sans projet")
+  # get_icon_legende("potentielle")
+  # get_icon_legende("reconvertie")
   
   # Valeurs par défaut
   
@@ -1170,7 +1189,8 @@ get_icon_legende <- function(type_friche,
     padding_bottom  <- "6px"
   }
   
-  get_icon_element <- function(fa, color, 
+  get_icon_element <- function(fa, 
+                               color, 
                                margin_right, 
                                padding_right, padding_left, padding_top, padding_bottom) {
     tags$span(
@@ -1187,49 +1207,34 @@ get_icon_legende <- function(type_friche,
     )
   }
   
-  if(type_friche == "mte") {
+  if(type_friche == "potentielles") {
     
-    get_icon_element(icone_friche$mte, 
-                     couleur_friche$mte, 
+    get_icon_element(icone_friche$potentielles, 
+                     couleur_friche$potentielles, 
                      margin_right,
                      padding_right, padding_left, padding_top, padding_bottom)
     
-  } else if (type_friche == "observatoire") {
+  } else if (type_friche == "sans projet") {
     
-    get_icon_element(icone_friche$observatoire, 
-                     couleur_friche$observatoire, 
+    get_icon_element(icone_friche$sans_projet, 
+                     couleur_friche$sans_projet, 
                      margin_right,
                      padding_right, padding_left, padding_top, padding_bottom)
     
-  } else if (type_friche == "aap") {
+  } else if (type_friche == "avec projet") {
     
-    get_icon_element(icone_friche$aap, 
-                     couleur_friche$aap, 
+    get_icon_element(icone_friche$avec_projet, 
+                     couleur_friche$avec_projet, 
                      margin_right,
                      padding_right, padding_left, padding_top, padding_bottom)
     
-  } else if (type_friche == "user") {
+  } else if (type_friche == "reconverties") {
     
-    get_icon_element(icone_friche$user, 
-                     couleur_friche$user, 
+    get_icon_element(icone_friche$reconverties, 
+                     couleur_friche$reconverties, 
                      margin_right,
                      padding_right, padding_left, padding_top, padding_bottom)
-    
-  } else if (type_friche == "mte_pv") {
-    
-    get_icon_element(icone_friche$mte_pv, 
-                     couleur_friche$mte_pv, 
-                     margin_right,
-                     padding_right, padding_left, padding_top, padding_bottom)
-    
-  } else if (type_friche == "mte_non_expertise") {
-    
-    get_icon_element(icone_friche$mte_non_expertise, 
-                     couleur_friche$mte_non_expertise, 
-                     margin_right,
-                     padding_right, padding_left, padding_top, padding_bottom)
-    
-  }
+  } 
 }
 
 # Retourne un élément de légende
@@ -1279,38 +1284,44 @@ get_elt_legende <- function(type, label, n = 10, popup) {
 }
 
 # Crée la légende de la carte
-get_ui_legende <- function(stats, chk_all = FALSE, popup) {
+get_ui_legende <- function(stats, chk_all = FALSE, popup = FALSE) {
   
-  # Bloc sites non expertisés
+  # get_ui_legende(stats)
+  
+  # # Bloc sites non expertisés
   if(!chk_all) {
-    bloc_sites_non_expertises <- ""
+    bloc_potentielles <- ""
   } else {
-    bloc_sites_non_expertises <- get_elt_legende("mte_non_expertise", 
-                                                 "Site industriel non vérifié", 
-                                                 stats$mte_non_qualifiees,
+    bloc_potentielles <- get_elt_legende("potentielles",
+                                                 "Friches potentielles",
+                                                 stats$potentielles,
                                                  popup)
   }
+  # 
+  # bloc_sites_non_expertises <- ""
   
   if(chk_all) {
-    nFriches <- stats$n_qualifiees + stats$mte_non_qualifiees
+    nFriches <- stats$avec_projet + stats$sans_projet + stats$reconverties + stats$potentielles
   } else {
-    nFriches <- stats$n_qualifiees
+    nFriches <- stats$avec_projet + stats$sans_projet + stats$reconverties
   }
   
+  # nFriches <- stats$avec_projet + stats$sans_projet + stats$reconverties + stats$potentielles
+  
   # Bloc final
-  fluidRow(
+  res <- fluidRow(
     column(10, 
            offset = 1, 
            tags$p(nFriches %>% get_texte_nFriches,
                   class = "nb_friches"
            )),
-    get_elt_legende("mte", "Données nationales", stats$mte_qualifiees, popup), # Sites industriels MTE et Ademe
-    get_elt_legende("observatoire", "Données locales", stats$observatoire, popup), # Observatoires
-    get_elt_legende("aap", "Appels à Projets", stats$aap, popup), # AAP
-    get_elt_legende("mte_pv", "Potentiel solaire au sol", stats$mte_pv, popup), # PV au sol
-    get_elt_legende("user", "Retours utilisateurs", stats$user, popup), # LimeSurvey + Retours utilisateurs
-    bloc_sites_non_expertises # Non expertisé
+    get_elt_legende("reconverties", "Friches reconverties", stats$reconverties, popup), # PV au sol
+    get_elt_legende("avec projet", "Friches avec projet", stats$avec_projet, popup), # Sites industriels MTE et Ademe
+    get_elt_legende("sans projet", "Friches sans projet", stats$sans_projet, popup), # Observatoires
+    bloc_potentielles
     , style="padding-top:0px;padding-bottom:5px;color:black;font-size:0.9em;margin-bottom: -15px;")
+  
+  return(res)
 }
 
 
@@ -1318,7 +1329,9 @@ get_ui_legende <- function(stats, chk_all = FALSE, popup) {
 
 # Retourne le nombre de friches sur la page d'accueil
 get_ui_nb_friches_accueil <- function() {
-  n <- f.xy %>% filter(checked) %>% nrow
+  
+  n <- f.xy %>% filter(site_statut != "friche potentielle") %>% nrow
+  
   res <- div(tags$p(n, " friches", style="
                               font-weight: 700;
                               font-size: 1.4em;
@@ -1552,17 +1565,17 @@ get_ui_encart <- function(titre, titreSuite, body, image, isMobile) {
 }
 
 # Crée l'URL du site friche
-get_url_site <- function(site_numero) {
-  glue("https://cartofriches.cerema.fr/?site={site_numero}")
+get_url_site <- function(site_id) {
+  glue("https://cartofriches.cerema.fr/?site={site_id}")
 }
 
 # Formate le mailto pour retourner un courriel pré-construit
-get_mailto <- function(site_numero) {
+get_mailto <- function(site_id) {
   paste0("mailto:cartofriches@cerema.fr",
          "?subject=[Cartofriches] Informations sur le site n°", 
-         site_numero,
+         site_id,
          "&body=Je vous contacte au sujet du site ", 
-         get_url_site(site_numero))
+         get_url_site(site_id))
 }
 
 # Second bandeau
@@ -1672,6 +1685,8 @@ get_slc <- function(v, label = "Veuillez sélectionner un élément dans la list
 # Retourne la couleur des sites en fonction de leur type
 get_color <- function(f, map = FALSE) {
   
+  # get_color(f.xy)
+  
   if(map) {
     couleurs <- couleur_icone
   } else {
@@ -1679,16 +1694,13 @@ get_color <- function(f, map = FALSE) {
   }
   
   case_when(
-    f$is_observatoire ~ couleurs$observatoire,
-    f$is_user         ~ couleurs$user,
-    f$is_aap          ~ couleurs$aap,
-    f$is_ademe        ~ couleurs$ademe,
-    f$is_mte_pv       ~ couleurs$mte_pv,
-    f$checked         ~ couleurs$mte,
-    TRUE              ~ couleurs$mte_non_expertise
+    f$site_statut == "friche avec projet" ~ couleurs$avec_projet,
+    f$site_statut == "friche sans projet" ~ couleurs$sans_projet,
+    f$site_statut == "friche potentielle" ~ couleurs$potentielles,
+    f$site_statut == "friche reconvertie" ~ couleurs$reconverties,
+    TRUE              ~ couleurs$potentielles
   )
 }
-
 
 # > RECHERCHE ----
 
