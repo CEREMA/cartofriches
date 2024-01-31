@@ -11,10 +11,9 @@ ui <-
   
   # NAVBARPAGE ####
   navbarPage(
-    id="app_navbar",
+    id = "app_navbar",
     windowTitle = "Cartofriches",
     collapsible = TRUE,
-    responsive = TRUE,
     title = tagList(
       
       # WAITER ----
@@ -128,21 +127,16 @@ ui <-
                column(12,
                       # LEGENDE ----
                       div(uiOutput("ui_legende"),
-                          uiOutput("ui_filtres"),
-                          uiOutput("ui_txt_zoom"),
-                          
-                          class="information")
-                      # ,
-                      # 
-                      # div(
-                      #   uiOutput("ui_filtre_surface")
-                      #   )
+                          tags$p(checkboxInput("chk_all", 
+                                               "Afficher les friches potentielles", 
+                                               value = FALSE)),
+                          uiOutput("filtres"),
+                          uiOutput("zoom"),
+                          class="information"),
                       
-                      )),
+               )),
              
-             
-             
-             class="carte"),
+             class = "carte"),
       
       # Carte ----
       column(8, 

@@ -92,6 +92,13 @@ saveRDS(regs.pts, "../shinyapp/data/stats/regs.pts.rds")
 saveRDS(deps.pts, "../shinyapp/data/stats/deps.pts.rds")
 ```
 
+## Test
+```{r}
+regs.pts <- readRDS("../shinyapp/data/stats/regs.pts.rds")
+names(regs.pts)
+```
+
+
 # Test Leaflet
 ```{r}
 library(leaflet)

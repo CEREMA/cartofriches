@@ -52,7 +52,7 @@ server <- function(input, output, session) {
       
     } else if("site" %in% names(query)) {
       # On récupère la BBOX du site
-      f <- Data$polygons %>% filter(site_numero == query$site)
+      f <- Data$polygons %>% filter(site_id == query$site)
       bbox <- st_bbox(f)
       
       xmin <- bbox$xmin  %>% as.numeric
@@ -76,23 +76,21 @@ server <- function(input, output, session) {
     
     sf_points <- Data$points
     
-    # Toutes les friches (y compris celles non vérifiées) ?
+    # Toutes les friches (y compris celles potentielles) ?
     if(is.null(input$chk_all)) {
-      sf_points <- sf_points %>% filter(checked)
+      sf_points <- sf_points %>% filter(site_statut != "friche potentielle")
     } else {
+      # Si on ne prend pas les potentielles
       if(!input$chk_all) {
-        sf_points <- sf_points %>% filter(checked)
+        sf_points <- sf_points %>% filter(site_statut != "friche potentielle")
       }
     }
     
     # Choix de friches
     choices <- rv_filtres$value
-    if(!is.na(choices)) {
-      sf_points <- sf_points %>% 
-        filtrer_friches(choices = choices) 
-      # %>%
-      #   filter(unite_fonciere_surface > rv_filtres$surface_min)
-      }
+    if(!all(is.na(choices))) {
+      sf_points <- sf_points %>% filtrer_friches(choices = choices)
+    }
     
   #   print(rv_filtres$surface_min)
   #   
@@ -143,7 +141,7 @@ server <- function(input, output, session) {
         message(">> r_data : Points1")
         return(list(points = sf_points))
       } else {
-        sf_polygons <- Data$polygons %>% filter(site_numero %in% sf_points$site_numero)
+        sf_polygons <- Data$polygons %>% filter(site_id %in% sf_points$site_id)
         if(nrow(sf_polygons) == 0) {
           message(">> r_data : Points2")
           return(list(points = sf_points))
@@ -155,31 +153,31 @@ server <- function(input, output, session) {
     }
   })
   
-  # r_closest_friche (Friche la plus proche) ----  PB NICOLAS FINDFRICHE
-  r_closest_friche <- reactive({
-    message(">> r_closest_friche()")
-    req(input$mymap_bounds)
-    req(!is.null(input$chk_all))
-    req(r_friches())
-
-    bb <- input$mymap_bounds
-
-    # f <- Data$points %>% get_objects_bounds(bb)
-    f <- r_friches()
-
-    f_in_bounds <- f %>% get_objects_bounds(bb)
-
-    if(nrow(f_in_bounds) > 0) return()
-
-    # Coordonnées du point central
-    coords <- c(mean(bb$west, bb$east), mean(bb$south, bb$north))
-
-    # On cherche les friches les plus proches
-    res <- find_closest_friche(coords = coords,
-                               f      = f)
-
-    return(res)
-  })
+  # # r_closest_friche (Friche la plus proche) ----  PB NICOLAS FINDFRICHE
+  # r_closest_friche <- reactive({
+  #   message(">> r_closest_friche()")
+  #   req(input$mymap_bounds)
+  #   req(!is.null(input$chk_all))
+  #   req(r_friches())
+  # 
+  #   bb <- input$mymap_bounds
+  # 
+  #   # f <- Data$points %>% get_objects_bounds(bb)
+  #   f <- r_friches()
+  # 
+  #   f_in_bounds <- f %>% get_objects_bounds(bb)
+  # 
+  #   if(nrow(f_in_bounds) > 0) return()
+  # 
+  #   # Coordonnées du point central
+  #   coords <- c(mean(bb$west, bb$east), mean(bb$south, bb$north))
+  # 
+  #   # On cherche les friches les plus proches
+  #   res <- find_closest_friche(coords = coords,
+  #                              f      = f)
+  # 
+  #   return(res)
+  # })
   
   
   # > OBSERVE ####
@@ -203,24 +201,15 @@ server <- function(input, output, session) {
   #     rv_filtres$surface_max <- input$INPUT_FILTRE_SURFACE[2]
   # })
   
-  # lnk_filtre ----
-  observeEvent(input$lnk_filtre, {
+  # input$filtrer ----
+  observeEvent(input$filtrer, {
     
     showModal(modalDialog(title = NULL,
                           div(
-                            tags$p(
-                              checkboxGroupInput("chk_filtres", 
+                            tags$p(checkboxGroupInput("chk_filtres", 
                                                       "Friches à afficher :",
                                                       choices = Filtres,
-                                                      selected = NULL)
-                              )
-                            # ,
-                            # tags$p(
-                            #   sliderInput("INPUT_FILTRE_SURFACE",
-                            #               "Surface de la friche :",
-                            #               min = 0, max = Surface_max,
-                            #               value = c(0,Surface_max)),
-                            #   )
+                                                      selected = NULL))
                           ),
                           footer = modalButton("Valider la sélection"),
                           easyClose = TRUE,
@@ -369,36 +358,52 @@ server <- function(input, output, session) {
   observe({
     
     req(r_data())
+    req(!is.null(input$chk_all))
+    
     message(">> Observe : affichage des objets")
+    message(">> names(r_data()) ", paste(names(r_data()), collapse = ", "))
     
     # Si pas de résultat, alors pas de friche à l'endroit souhaité
     # on enlève alors les marqueurs de sites et les unités foncières affichées précédemment
     
     # REGIONS 
-    if(names(r_data()) == "regs") {
+    if(any(names(r_data()) == "regs")) {
       message(">> Affichage des cercles régionaux")
+      
+      f <- r_data()$regs
+      
+      chk_all <- input$chk_all
+      
       proxy %>%
         clearGroup("Basias et Basol") %>%
         clearGroup("Unités foncières") %>%
         clearGroup("stat_dep") %>%
-        add_circles(r_data()$regs, group = "stat_reg")
+        add_circles(f, 
+                    group = "stat_reg", 
+                    chk_all = input$chk_all)
       message(">> Fin - Affichage des cercles régionaux")
       
-    # DEPARTEMENTS
-    } else if(names(r_data()) == "deps") {
+      # DEPARTEMENTS
+    } else if(any(names(r_data()) == "deps")) {
       message(">> Affichage des cercles stats départementaux")
+      
+      chk_all <- input$chk_all
+      
       proxy %>%
         clearGroup("Basias et Basol") %>% 
         clearGroup("Unités foncières") %>% 
         clearGroup("stat_reg") %>% 
-        add_circles(r_data()$deps, group = "stat_dep")
-      message(">> Fin - Affichage des cercles départementaux")
+        add_circles(r_data()$deps, 
+                    group = "stat_dep",
+                    chk_all = chk_all)
       
-     
     # FRICHES 
-    } else if(names(r_data()) == "points") {
+    } else if(any(names(r_data()) == "points")) {
       message(">> Affichage des points")
-      proxy %>% clearGroup("Basias et Basol") %>% clearGroup("Unités foncières")
+      proxy %>% 
+        clearGroup("Basias et Basol") %>% 
+        clearGroup("Unités foncières")
+      
       if(!is.null(r_data()$points)) {
         f <- r_data()$points
         
@@ -429,9 +434,9 @@ server <- function(input, output, session) {
     
     # On met à jour l'URL avec le numéro du site
     f <- get_friche_from_id(id)
-    site_numero <- f$site_numero
+    site_id <- f$site_id
     updateQueryString(
-      glue("?site={site_numero}"),
+      glue("?site={site_id}"),
       mode = c("replace")
     )
     
@@ -479,34 +484,31 @@ server <- function(input, output, session) {
   
   # > OUTPUT ----
   
-  # ui_filtres ----
-  output$ui_filtres <- renderUI({
+  # filtres ----
+  output$filtres <- renderUI({
     
     req(input$mymap_zoom)
     
     if(input$mymap_zoom <= ZOOM_LEVELS["Département"]) return()
     
     # Afficher le nombre de filtres activés
-    if(is.na(rv_filtres$value)) {
+    if(all(is.na(rv_filtres$value))) {
       n_filtres <- 0
     } else {
       n_filtres <- rv_filtres$value %>% length
     }
     
     if(n_filtres == 0) {
-      label <- "Filtrer"
+      txt <- "Filtrer"
     } else {
-      label <- glue("Filtrer ({n_filtres})")
+      txt <- glue("Filtrer ({n_filtres})")
     }
     
     # Bloc final
-    fluidRow(
-      column(8, offset=2,
-        tags$p(actionLink("lnk_filtre", label, icon=icon("filter")),
-               style="text-align:center;font-size:1em"),
-        tags$p(checkboxInput("chk_all", 
-                             "Afficher les sites non vérifiés", 
-                             value = FALSE))))
+    tags$p(actionLink("filtrer", 
+                      txt,
+                      icon = icon("filter")),
+           style="text-align:center;font-size:1em")
   })
   
   # ui_pave ----
@@ -541,10 +543,10 @@ server <- function(input, output, session) {
   })
   
   
-  # ui_txt_zoom ----
+  # zoom ----
   # Affichage du niveau de zoom de la carte
   # notamment, du nombre de zooms restant avant l'affichage des marqueurs
-  output$ui_txt_zoom <- renderUI({
+  output$zoom <- renderUI({
     req(input$mymap_zoom <= ZOOM_LEVELS[["Département"]])
     tagList(tags$hr(), 
             get_txt_zoom(input$mymap_zoom))

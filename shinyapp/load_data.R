@@ -17,8 +17,10 @@ load_data <- function() {
   
   f.tup <<- readRDS("data/friches/f.tup.rds") %>% # st_set_crs(2154) %>% st_transform(4326) %>%
     mutate(site_numero = site_id) #%>% filter(id_from_file == '8227138')
-  f.xy$layerId      <- paste0("friche_xy_", f.xy$site_numero)
-  f.tup$layerId     <- paste0("friche_tup_", f.tup$site_numero)
+  
+  # LAYER IDS
+  f.xy$layerId      <- paste0("friche_xy_", f.xy$site_id)
+  f.tup$layerId     <- paste0("friche_tup_", f.tup$site_id)
   
   Surface_max <<- max(f.xy$unite_fonciere_surface, na.rm = TRUE)
   
@@ -28,8 +30,8 @@ load_data <- function() {
   # au lancement de l'application
   # regs.pts  <<- readRDS("data/stats/regs.pts.rds")
   # deps.pts  <<- readRDS("data/stats/deps.pts.rds")
-  regs.pts  <<- readRDS("data/stats/regs.pts_MAJNico.rds")
-  deps.pts  <<- readRDS("data/stats/deps.pts_MAJNico.rds")
+  regs.pts  <<- readRDS("data/stats/regs.pts.rds")
+  deps.pts  <<- readRDS("data/stats/deps.pts.rds")
   regs.pts$layerId  <- glue("stat_reg_{regs.pts$code}")
   deps.pts$layerId  <- glue("stat_dep_{deps.pts$code}")
   

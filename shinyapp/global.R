@@ -7,7 +7,7 @@ source("modules/mod_ban.R", encoding = "UTF-8")
 Sys.setlocale("LC_TIME", "French")
 
 # DATE DE MISE A JOUR ####
-LAST_UPDATE_DATE <- "9 Octobre 2023"
+LAST_UPDATE_DATE <- "31 Janvier 2024"
 
 # PALETTE CEREMA ####
 couleurs_cerema <- readRDS("data/couleurs_cerema.rds")
@@ -76,42 +76,31 @@ SEARCH_DISTANCE <- 2000
 # COULEURS DES FRICHES SELON LE TYPE ----
 # Dans la légende
 couleur_friche <- list()
-couleur_friche$mte               <- "#5ab1ce"
-couleur_friche$ademe              <- "#5ab1ce"
-couleur_friche$observatoire       <- "#ff90e9"
-couleur_friche$aap                <- "#39a855"
-couleur_friche$mte_pv             <- "#f69730"
-couleur_friche$user               <- "#d152b8"
-couleur_friche$mte_non_expertise  <- "#c5c5c5"
+couleur_friche$potentielles <- "#a2a2a2"
+couleur_friche$sans_projet  <- "#ffc98f"
+couleur_friche$avec_projet  <- "#eb912e"
+couleur_friche$reconverties <- "#6eaa25"
 
 # COULEUR DES ICONES SUR LA CARTE ----
 # Le couleur des choix est plus limité pour les icônes de la carte
 # Liste des couleurs dispos : https://github.com/lennardv2/Leaflet.awesome-markers/blob/2.0/develop/dist/leaflet.awesome-markers.css
 couleur_icone <- list()
-couleur_icone$mte               <- "blue"
-couleur_icone$ademe              <- "blue"
-couleur_icone$observatoire       <- "pink"
-couleur_icone$aap                <- "green"
-couleur_icone$mte_pv             <- "orange"
-couleur_icone$user               <- "purple"
-couleur_icone$mte_non_expertise <- "lightgray"
+couleur_icone$potentielles <- "lightgray" # #a2a2a2
+couleur_icone$sans_projet  <- "beige" # #ffc98f
+couleur_icone$avec_projet  <- "orange" # #eb912e
+couleur_icone$reconverties <- "green" # #6eaa25
 
 # ICONE DES FRICHES SELON LE TYPE ----
 icone_friche <- list()
-icone_friche$mte                <- "fa-industry"
-icone_friche$ademe              <- "fa-industry"
-icone_friche$observatoire       <- "fa-tag"
-icone_friche$aap                <- "fa-building"
-icone_friche$mte_pv             <- "fa-sun"
-icone_friche$user               <- "fa-user"
-icone_friche$mte_non_expertise  <- "fa-industry"
+icone_friche$potentielles <- "fa-industry"
+icone_friche$sans_projet  <- "fa-industry"
+icone_friche$avec_projet  <- "fa-industry"
+icone_friche$reconverties <- "fa-building"
 
 # FILTRES ----
-Filtres <- c("Données nationales" = "mte",
-             "Données locales" = "observatoire", 
-             "Appels à Projets" = "aap", 
-             "Potentiel solaire au sol" = "mte_pv", 
-             "Retours utilisateurs" = "user")
+Filtres <- c("Friches sans projet"  = "friche sans projet",
+             "Friches avec projet"  = "friche avec projet", 
+             "Friches reconverties" = "friche reconvertie")
 
 # LOGOS DES OBSERVATOIRES (IMAGE, TAILLE ET MESSAGE D'ACCUEIL) ----
 Logos <- list(
