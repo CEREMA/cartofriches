@@ -78,7 +78,7 @@ SEARCH_DISTANCE <- 2000
 couleur_friche <- list()
 couleur_friche$potentielles <- "#a2a2a2"
 couleur_friche$sans_projet  <- "orange"
-couleur_friche$avec_projet  <- "darkgreen"
+couleur_friche$avec_projet  <- "green"
 couleur_friche$reconverties <- "lightgreen"
 
 # COULEUR DES ICONES SUR LA CARTE ----
