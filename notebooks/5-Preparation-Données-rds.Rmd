@@ -1,0 +1,108 @@
+---
+title: "Préparation des données Cartofriches"
+output: html_notebook
+---
+
+```{r}
+download.file("https://www.data.gouv.fr/fr/datasets/r/a9084493-e742-4a2f-890b-0ebc803098df", "outputs/cartofriches.gpkg", mode = "wb")
+```
+
+```{r}
+library(sf)
+library(tidyverse)
+```
+
+```{r}
+f.xy <- readRDS("../shinyapp/data/friches/f.xy.rds")
+f.tup <- readRDS("../shinyapp/data/friches/f.tup.rds")
+```
+
+
+# Corrections
+```{r}
+nrow(f.xy)
+f.xy$site_statut %>% table
+```
+
+"friche potentielle" (en gris ?)
+"friche sans projet" (orange ?)
+"friche avec projet" (bleu ?)
+"friche reconvertie" (en vert ?)
+
+# Cercles statistiques
+```{r}
+source("helpers.R", encoding = "UTF-8")
+```
+
+Lecture des contours départementaux et régionaux
+```{r}
+regs <- readRDS("../shinyapp/data/contours/regs.rds")
+deps <- readRDS("../shinyapp/data/contours/deps.rds")
+```
+
+## Transformation des couches
+```{r}
+regs2 <- regs %>% transmute(code = INSEE_REG,
+                        libelle = NOM_REG,
+                        type="Région",
+                        libelle_parent = NA,
+                        parent = NA)
+
+deps2 <- deps %>% transmute(code = INSEE_DEP, 
+                           libelle = NOM_DEP,
+                           type="Département",
+                           libelle_parent = regs$NOM_REG[match(deps$INSEE_REG, regs$INSEE_REG)],
+                           parent="Région")
+```
+
+## get_stats
+Il faut mettre à jour la couche `get_stats` pour intégrer les nouvelles catégories
+
+Calcul des statistiques
+```{r}
+source("helpers.R", encoding = "UTF-8")
+
+regs3 <- regs2 %>% get_stats(f.xy)
+deps3 <- deps2 %>% get_stats(f.xy)
+```
+
+Affichage des données :
+```{r}
+glimpse(regs3)
+glimpse(deps3)
+```
+Les stats ont l'air bien remplies.
+
+## Calcul des centroïdes
+```{r}
+## !! choisir plutôt point on surface
+regs.pts  <- regs3 %>% st_centroid %>% mutate(Long = st_coordinates(.)[, 1], Lat = st_coordinates(.)[, 2])
+deps.pts <- deps3 %>% st_centroid %>% mutate(Long = st_coordinates(.)[, 1], Lat = st_coordinates(.)[, 2])
+```
+
+Petit contrôle des données avant :
+```{r}
+glimpse(regs.pts)
+glimpse(deps.pts)
+```
+
+## Export
+```{r}
+saveRDS(regs.pts, "../shinyapp/data/stats/regs.pts.rds")
+saveRDS(deps.pts, "../shinyapp/data/stats/deps.pts.rds")
+```
+
+## Test
+```{r}
+regs.pts <- readRDS("../shinyapp/data/stats/regs.pts.rds")
+names(regs.pts)
+```
+
+
+# Test Leaflet
+```{r}
+library(leaflet)
+m <- leaflet()
+m %>% addPolygons(data = f.tup[1, ]) %>% addTiles()
+```
+
