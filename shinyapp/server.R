@@ -695,7 +695,7 @@ server <- function(input, output, session) {
   
   Dataframe <- Dataframe %>% st_set_geometry(NULL) %>%
     select(site_id,site_nom,nom_prodcartofriches,site_statut,site_type,site_surface,
-           dep,comm_nom,comm_insee) %>%
+           dep,comm_nom,comm_insee, Long, Lat) %>%
     mutate(Commune = paste0(comm_nom, " (",comm_insee,")")) %>%
     mutate(LienCartofriches2 = sprintf('<a href="%s" target="_blank">Lien direct du site vers Cartofriches</a>',
                                        paste0("https:cartofriches.cerema.fr/cartofriches/?site=",site_id)),
@@ -706,7 +706,7 @@ server <- function(input, output, session) {
     mutate(nom_court =  ifelse(nom_prodcartofriches ==  "Appel à projet Fonds Friches" , 
                                paste0(str_split(site_nom," - ", simplify = TRUE)[,1], " - ",str_split(site_nom," - ", simplify = TRUE)[,6]), 
                                site_nom)) %>%
-    select(LienCartofriches3,dep,Commune,nom_court,nom_prodcartofriches,site_statut,site_type,site_surface) %>%
+    select(LienCartofriches3,dep,Commune,nom_court,nom_prodcartofriches,site_statut,site_type,site_surface, Long, Lat) %>%
     rename(
       "Nom du site" = nom_court,
       # "Département" = dep,
@@ -743,9 +743,15 @@ server <- function(input, output, session) {
                              "971 - Guadeloupe"="971","972 - Martinique"="972","973 - Guyane"="973","974 - La Réunion"="974","976 - Mayotte"="976"
   )
   
+  res <- Dataframe %>% arrange(dep) %>% rename("Département" = dep)
   
-    
-  Dataframe %>% arrange(dep) %>% rename("Département" = dep)
+  # Longitude, Latitude
+  Long <- round(res$Long, 5)
+  Lat <- round(res$Lat, 5)
+  res[["Coordonnées GPS (Longitude,Latitude)"]] <- paste(Long, Lat, sep = ",")
+  res <- res %>% select(-Long, -Lat)
+  
+  return(res)
   
   })
 

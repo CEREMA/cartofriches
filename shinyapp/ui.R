@@ -319,7 +319,7 @@ ui <-
   
            tags$br(),
 
-           fluidRow(column(8, offset=2,
+           fluidRow(column(8, offset=1,
                            
                            div('', style=glue("
                             width: 100;
