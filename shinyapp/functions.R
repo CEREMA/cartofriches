@@ -1579,7 +1579,7 @@ get_bandeau2 <- function(titre, sous_titre) {
 get_bouton <- function(input_id, input_lib, url = NULL) {
   actionButton(input_id, 
                input_lib, 
-               icon  = icon("plus-circle", style="margin-right:0.5rem;"), 
+               icon  = icon("plus-circle"), 
                onclick = glue("window.open('{url}', '_blank')"),
                class = "home_button")
 }
