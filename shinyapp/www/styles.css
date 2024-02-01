@@ -30,13 +30,15 @@
 }
 
 
-.fa-plus-circle:before, .fa-search:before, .fa-paper-plane:before {
-    color: #EF7757;
-}
-
 .fa-plus-circle:before, .fa-search:before, .fa-table:before {
     color: #EF7757;
 }
+
+/*
+.fa-paper-plane:before {
+    color: white;
+}
+*/
 
 #button1>.fa-plus-circle:before,
 #button2>.fa-plus-circle:before,

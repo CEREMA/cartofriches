@@ -345,7 +345,7 @@ ui <-
 
   # __ONGLET CONTRIBUER ----
   tabPanel("Contribuer",
-           icon = icon("paper-plane"),
+           icon = icon("paper-plane", style="color:#EF7757;"),
            
            fluidRow(column(8, offset=2, 
                            uiOutput("ui_publier_une_friche")
