@@ -540,12 +540,14 @@ ui <-
     
     # Un clic amène vers la page observatoires du portail artificialisation.biodiversitetousvivants
     tabPanel(tags$a(href = "https://artificialisation.biodiversitetousvivants.fr/cartofriches/observatoires-locaux",
-    "Observatoires locaux", 
+    div("Observatoires locaux",icon("external-link")), 
+    #"Observatoires locaux",
     target="_blank")),
     
     # Un clic amène vers la page données du portail artificialisation.biodiversitetousvivants
     tabPanel(tags$a(href = "https://artificialisation.biodiversitetousvivants.fr/cartofriches/donnees-utilisees",
-    "Données utilisées",
+    div("Données utilisées",icon("external-link")),
+    #"Données utilisées",
     target = "_blank")),
     
     tabPanel("Mentions légales",

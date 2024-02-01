@@ -77,18 +77,18 @@ SEARCH_DISTANCE <- 2000
 # Dans la légende
 couleur_friche <- list()
 couleur_friche$potentielles <- "#a2a2a2"
-couleur_friche$sans_projet  <- "darkred"
-couleur_friche$avec_projet  <- "orange"
-couleur_friche$reconverties <- "green"
+couleur_friche$sans_projet  <- "orange"
+couleur_friche$avec_projet  <- "lightgreen"
+couleur_friche$reconverties <- "darkgreen"
 
 # COULEUR DES ICONES SUR LA CARTE ----
 # Le couleur des choix est plus limité pour les icônes de la carte
 # Liste des couleurs dispos : https://github.com/lennardv2/Leaflet.awesome-markers/blob/2.0/develop/dist/leaflet.awesome-markers.css
 couleur_icone <- list()
 couleur_icone$potentielles <- "lightgray" # #a2a2a2
-couleur_icone$sans_projet  <- "darkred" # #ffc98f
-couleur_icone$avec_projet  <- "orange" # #eb912e
-couleur_icone$reconverties <- "green" # #6eaa25
+couleur_icone$sans_projet  <- "orange" # #ffc98f
+couleur_icone$avec_projet  <- "lightgreen" # #eb912e
+couleur_icone$reconverties <- "darkgreen" # #6eaa25
 
 # ICONE DES FRICHES SELON LE TYPE ----
 icone_friche <- list()
