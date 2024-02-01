@@ -78,8 +78,8 @@ SEARCH_DISTANCE <- 2000
 couleur_friche <- list()
 couleur_friche$potentielles <- "#a2a2a2"
 couleur_friche$sans_projet  <- "orange"
-couleur_friche$avec_projet  <- "lightgreen"
-couleur_friche$reconverties <- "darkgreen"
+couleur_friche$avec_projet  <- "darkgreen"
+couleur_friche$reconverties <- "lightgreen"
 
 # COULEUR DES ICONES SUR LA CARTE ----
 # Le couleur des choix est plus limité pour les icônes de la carte
@@ -87,8 +87,8 @@ couleur_friche$reconverties <- "darkgreen"
 couleur_icone <- list()
 couleur_icone$potentielles <- "lightgray" # #a2a2a2
 couleur_icone$sans_projet  <- "orange" # #ffc98f
-couleur_icone$avec_projet  <- "lightgreen" # #eb912e
-couleur_icone$reconverties <- "darkgreen" # #6eaa25
+couleur_icone$avec_projet  <- "green" # #eb912e
+couleur_icone$reconverties <- "lightgreen" # #6eaa25
 
 # ICONE DES FRICHES SELON LE TYPE ----
 icone_friche <- list()
