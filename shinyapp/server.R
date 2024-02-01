@@ -307,7 +307,7 @@ server <- function(input, output, session) {
 
     # Output à ajouter à la carte
     ui <- actionButton("btn_see_friche",
-                       tagList(icon("paper-plane", style = "color:white"),
+                       tagList(tags$i(class="far fa-paper-plane", role="presentation", `aria-label`="paper-plane icon", style="color:white"),
                                glue("Friche à {distance_txt}")
                                ),
                        class = "goto_map"
