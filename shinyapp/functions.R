@@ -421,7 +421,8 @@ add_points <- function(proxy, f, replaceMarkers = TRUE) {
   
   # POPUP
   # nom_site <- sapply(1:nrow(f), function(x) get_nom_site(f[x, ]))
-  nom_site <- toupper(f$site_nom)
+  # nom_site <- toupper(f$site_nom)
+  nom_site <- sapply(1:nrow(f), function(x) get_nom_site(f[x, ]))
   
   width <- 40
   
@@ -436,7 +437,7 @@ add_points <- function(proxy, f, replaceMarkers = TRUE) {
   activites <- sapply(activites, function(x) paste(strwrap(x, width), collapse=br_code))
   
   # SOURCES  
-  sources <- sapply(f$source_producteur, function(x) paste(strwrap(x, width), 
+  sources <- sapply(f$nom_prodcartofriches, function(x) paste(strwrap(x, width), 
                                                            collapse=br_code))
   
   # LOGOS
@@ -455,6 +456,7 @@ add_points <- function(proxy, f, replaceMarkers = TRUE) {
   # Ademe et MTE sont de la même classe (MTE)
   # Pas de logo non plus pour les retours utilisateurs
   the_logos[which(f$source_r %in% c("MTE", "Ademe"))] <- ""
+  the_logos[which(f$is_user)] <- ""
   
   ##=##=##=##=##=##=##
   # Popup > Labels
@@ -938,8 +940,9 @@ show_info_friche <- function(id) {
     # Titre complet avec le logo
     bloc_title <- fluidRow(
       fluidRow(
-        column(10, 
-               toupper(sf_points$site_nom), 
+        column(10,
+               bloc_site, #NICO
+               #NICO toupper(sf_points$site_nom), 
                bloc_fiche),
         bloc_close),
       fluidRow(column(12, 
@@ -1605,8 +1608,19 @@ get_img_logo <- function(source_r) {
 }
 
 # Récupère le nom d'un site friche
+# get_nom_site <- function(f) {
+#   toupper(f$site_nom)
+# }
 get_nom_site <- function(f) {
-  toupper(f$site_nom)
+  if(is.na(f$site_nom)) {
+    if (f$nature == "Ademe") {
+      "Friche avec potentiel solaire au sol"
+    } else {
+      glue("Friche {toupper(f$source_r)}")
+    }
+  } else {
+    toupper(f$site_nom)
+  }
 }
 
 get_nom_site_AVANTSTANDARD <- function(f) {
