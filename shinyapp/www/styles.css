@@ -541,15 +541,14 @@ h5 {
 
 .navbar-default .navbar-brand {
     color: #464749;
-    font-size:1.3em;
+    font-size: 1.3em;
     font-weight: normal;
-    margin-left:100px;
-    margin-right: 200px;
+    margin-right: 140px;
+    margin-left: 0px;
     padding-left: 50px;
-    height:100px;
-    width:100px;
-    background-color:white;
-    /*background-image:url(logo_appli.png);*/
+    height: 100px;
+    width: 100px;
+    background-color: white;
 }
 
 /*
@@ -558,18 +557,6 @@ h5 {
     width:400px;
 }
 */
-
-.navbar-default .navbar-brand {
-    color: #464749;
-    font-size: 1.3em;
-    font-weight: normal;
-    margin-right: 200px;
-    margin-left:0px;
-    padding-left: 50px;
-    height: 100px;
-    width: 100px;
-    background-color: white;
-}
 
 /* -- VISUEL DU HAUT ---- */
 
@@ -969,13 +956,9 @@ a.activated:hover, a.deactivated:hover{
 /* Espace pour la barre de navigation en haut */
 ul#app_navbar {
   background-color:white;
-  background-color: white;
-  padding-top: 2.2%;
+  padding-top: 35px;
   margin-left: 0%;
-}
-
-ul#app_navbar {
-
+  font-size: 1.1em;
 }
 
 /* Boîte modale */
