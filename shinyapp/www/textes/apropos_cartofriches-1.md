@@ -3,8 +3,7 @@
 En proposant une base nationale de sites potentiellement en friches, mais surtout **en s’appuyant sur les connaissances locales** (observatoires locaux, expertises terrain…), l’objectif est de promouvoir et faciliter la réutilisation des friches par les collectivités locales et les porteurs de projets.
 
 Cette version présente les données de plusieurs 
-<a href=https://artificialisation.biodiversitetousvivants.fr/cartofriches/observatoires-locaux/ target=_blank>observatoires locaux</a>, et l'expertise du Cerema est mise à profit afin de tirer le meilleur parti de bases de données institutionnelles telles que les **données BASIAS et BASOL** (
-<a href=https://artificialisation.biodiversitetousvivants.fr/cartofriches/donnees-utilisees/ target=_blank>en savoir plus sur les données </a> ).
+<a href=https://artificialisation.biodiversitetousvivants.fr/cartofriches/observatoires-locaux/ target=_blank>observatoires locaux <i class="fa fa-external-link"></i></a>, et l'expertise du Cerema est mise à profit afin de tirer le meilleur parti de bases de données institutionnelles telles que les **données BASIAS et BASOL** (<a href=https://artificialisation.biodiversitetousvivants.fr/cartofriches/donnees-utilisees/ target=_blank>en savoir plus sur les données <i class="fa fa-external-link"></i></a>).
 
 ## Précautions d'usage
 L'actualité et la qualité des données présentées dans l'application dépendent de celles des bases originelles.

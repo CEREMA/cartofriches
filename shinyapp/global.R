@@ -7,7 +7,7 @@ source("modules/mod_ban.R", encoding = "UTF-8")
 Sys.setlocale("LC_TIME", "French")
 
 # DATE DE MISE A JOUR ####
-LAST_UPDATE_DATE <- "31 Janvier 2024"
+LAST_UPDATE_DATE <- "7 Mars 2024"
 
 # PALETTE CEREMA ####
 couleurs_cerema <- readRDS("data/couleurs_cerema.rds")
@@ -57,8 +57,9 @@ Observatoires <- c(
   "DDT de l'Ain"                                 = "Ain",
   "DDT des Ardennes"                             = "Ardennes",
   "DDT du Cantal"                                = "Cantal",
+  "DDT de la Loire"                              = "Loire",
   "DDT de la Marne"                              = "Marne",
-  "DDTM de la Somme"                              = "Somme",
+  "DDTM de la Somme"                             = "Somme",
   "Grand Angoulême"                              = "Grand Angouleme",
   "Agence d'Urbanisme du Grand Amiénois (ADUGA)" = "ADUGA", 
   "Commune de Fougères"                          = "Fougeres"
@@ -78,8 +79,8 @@ SEARCH_DISTANCE <- 2000
 couleur_friche <- list()
 couleur_friche$potentielles <- "#a2a2a2"
 couleur_friche$sans_projet  <- "orange"
-couleur_friche$avec_projet  <- "green"
-couleur_friche$reconverties <- "lightgreen"
+couleur_friche$avec_projet  <- "#70AD25"
+couleur_friche$reconverties <- "#BBF870"
 
 # COULEUR DES ICONES SUR LA CARTE ----
 # Le couleur des choix est plus limité pour les icônes de la carte
@@ -92,10 +93,10 @@ couleur_icone$reconverties <- "lightgreen" # #6eaa25
 
 # ICONE DES FRICHES SELON LE TYPE ----
 icone_friche <- list()
-icone_friche$potentielles <- "fa-industry"
+icone_friche$potentielles <- "fa-question-circle"
 icone_friche$sans_projet  <- "fa-industry"
 icone_friche$avec_projet  <- "fa-industry"
-icone_friche$reconverties <- "fa-building"
+icone_friche$reconverties <- "fa-check-circle" #building
 
 # FILTRES ----
 Filtres <- c("Friches sans projet"  = "friche sans projet",
@@ -151,9 +152,11 @@ Logos <- list(
   
   Cantal = list(img = "logos/logo-DDT-Cantal.jpg", 
                height = 70, 
-               message = "Bienvenue en territoire du Cantal")
+               message = "Bienvenue en territoire du Cantal"),
   
-  
+  Loire = list(img = "logos/logo-DDT-Loire.png", 
+                height = 70, 
+                message = "Bienvenue en territoire de la Loire")
   
   
 )

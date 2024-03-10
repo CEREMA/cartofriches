@@ -7,6 +7,7 @@ suppressMessages(library(magrittr))
 suppressMessages(library(rjson)) # utilisé pour récupérer la palette de couleurs en JSON
 suppressMessages(library(sf))
 suppressMessages(library(shinyWidgets))
+suppressMessages(library(markdown))
 suppressMessages(library(stringr))
 suppressMessages(library(banR))
 suppressMessages(library(glue))

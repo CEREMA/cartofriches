@@ -1117,18 +1117,24 @@ get_popup_content <- function(f) {
   }  
 
   # Libellé de la zone du PLU
-  if(f$urba_doc_type == "CC") {
+  print("7")
+  if (is.na(f$urba_doc_type)) {
+      bloc_zonePLU <- ""
+    } else if(f$urba_doc_type == "CC") {
     bloc_zonePLU <- tagList(tags$b("Type de document d'urbanisme : "), "Carte communale", tags$br())
-  } else {
+  }  else {
     bloc_zonePLU <- tagList(
 
       tags$b("Type de document d'urbanisme : "), f$urba_doc_type, tags$br(),
       tags$b("Libellé de la zone : "), f$urba_zone_lib, tags$br()
-    )
+    ) }
+  
+  
 
-  }
+  # }
 
   # POLLUTION
+  print("8")
   if(all(is.na(c(f$sol_pollution_annee,
                  f$sol_pollution_commentaire,
                  f$sol_depollution_fiche))) & f$sol_pollution_existe == "inconnu" & f$sol_pollution_origine == "inconnu") {
@@ -1152,6 +1158,7 @@ get_popup_content <- function(f) {
   }
 
   # ## Source des données
+  print("9")
   if(!is.na(f$source_url)) {
     bloc_source_data <- tagList(
       h4("Source des données"),
@@ -2004,24 +2011,25 @@ get_txt_zoom <- function(zoom) {
 
 # Récupère le footer de l'application
 get_ui_footer <- function() {
-  div(tags$img(src="logo2.png", width=200),
-      HTML("&nbsp"),HTML("&nbsp"),HTML("&nbsp"),HTML("&nbsp"),
-      
-      "Copyright 2021 © - Cerema",
-      HTML("&nbsp"),HTML("&nbsp"),HTML("&nbsp"),HTML("&nbsp"),
-      
-      actionLink("open_mentions", "Mentions légales"),
-      HTML("&nbsp"),HTML("&nbsp"),HTML("&nbsp"),HTML("&nbsp"),
-      
-      actionLink("accessibilite", 
-                 "Accessibilité", 
-                 onclick = glue("window.open('https://artificialisation.developpement-durable.gouv.fr/accessibilite', '_blank')")),
-      HTML("&nbsp"),HTML("&nbsp"),HTML("&nbsp"),HTML("&nbsp"),
-      
-      actionLink("contact", 
-                 "Contact",
-                 onclick = glue("window.open('https://artificialisation.developpement-durable.gouv.fr/contact', '_blank')")),
-      style="text-align: center;
+  div(
+    tags$img(src="logo2.png", width=200),
+    HTML("&nbsp"),HTML("&nbsp"),HTML("&nbsp"),HTML("&nbsp"),
+    
+    "Copyright 2021 © - Cerema",
+    HTML("&nbsp"),HTML("&nbsp"),HTML("&nbsp"),HTML("&nbsp"),
+    
+    actionLink("open_mentions", "Mentions légales"),
+    HTML("&nbsp"),HTML("&nbsp"),HTML("&nbsp"),HTML("&nbsp"),
+    
+    actionLink("accessibilite", 
+               "Accessibilité", icon("external-link"),
+               onclick = glue("window.open('https://artificialisation.developpement-durable.gouv.fr/accessibilite', '_blank')")),
+    HTML("&nbsp"),HTML("&nbsp"),HTML("&nbsp"),HTML("&nbsp"),
+    
+    actionLink("contact", 
+               "Contact",icon("external-link"),
+               onclick = glue("window.open('https://artificialisation.developpement-durable.gouv.fr/contact', '_blank')")),
+    style="text-align: center;
                         padding-top: 20px;
                         /*box-shadow: 0px -5px 10px #d2d2d2;*/
                         height: 80px;")

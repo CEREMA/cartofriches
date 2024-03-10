@@ -30,8 +30,8 @@ load_data <- function() {
   # au lancement de l'application
   # regs.pts  <<- readRDS("data/stats/regs.pts.rds")
   # deps.pts  <<- readRDS("data/stats/deps.pts.rds")
-  regs.pts  <<- readRDS("data/stats/regs.pts.rds")
-  deps.pts  <<- readRDS("data/stats/deps.pts.rds")
+  regs.pts  <<- readRDS("data/stats/regs.pts_MAJNico.rds")
+  deps.pts  <<- readRDS("data/stats/deps.pts_MAJNico.rds")
   regs.pts$layerId  <- glue("stat_reg_{regs.pts$code}")
   deps.pts$layerId  <- glue("stat_dep_{deps.pts$code}")
   

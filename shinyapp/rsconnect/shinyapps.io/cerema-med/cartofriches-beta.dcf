@@ -1,0 +1,12 @@
+name: cartofriches-beta
+title: cartofriches-beta
+username: cerema-med
+account: cerema-med
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 2544142
+bundleId:
+url: https://cerema-med.shinyapps.io/cartofriches-beta/
+version: 1
+asMultiple: FALSE
+asStatic: FALSE

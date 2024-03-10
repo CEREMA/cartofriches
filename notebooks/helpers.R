@@ -109,7 +109,7 @@ get_stats <- function(f.pols, f.xy){
     get_n(f.xy %>% filter(site_statut == "friche potentielle"))
   
   f.pols$n_friches_reconverties <- f.pols %>% 
-    get_n(f.xy %>% filter(site_statut == "friche reconvertie "))
+    get_n(f.xy %>% filter(site_statut == "friche reconvertie"))
   
   return(f.pols)
 }
