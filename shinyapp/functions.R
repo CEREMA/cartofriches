@@ -2386,13 +2386,15 @@ get_coords_adresse <- function(adresse) {
 get_labels_depReg <- function(s) {
   
   message(">> get_labels_depReg : ", s)
-  
+  # s = "paris"
+
   w.reg <- which(transform_string(regs$NOM_REG) == transform_string(s))
   w.dep <- which(transform_string(deps$NOM_DEP) == transform_string(s))
   
   domtom <- FALSE
   regs.sel <- regs[w.reg, ]
   deps.sel <- deps[w.dep, ]
+  
   # Si l'objet est un DOM TOM, alors on retient seulement la région
   # w.dep est initialisé à NULL
   if(nrow(deps.sel) > 0) {
@@ -2567,23 +2569,31 @@ find_friches <- function(s, mode = "commune", distance = SEARCH_DISTANCE) {
   # Cas de région
   if(mode == "région") {
     f <- regs.pts %>% filter(libelle == s)
-    n_friches <- f$n_friches_observatoires + 
-      f$n_friches_mte_qualifiees + 
-      f$n_friches_ademe + 
-      f$n_friches_user + 
-      f$n_friches_mte_pv + 
-      f$n_friches_aap
+    # n_friches <- f$n_friches_observatoires + 
+    #   f$n_friches_mte_qualifiees + 
+    #   f$n_friches_ademe + 
+    #   f$n_friches_user + 
+    #   f$n_friches_mte_pv + 
+    #   f$n_friches_aap
+    n_friches <- f$n_friches_avec_projet  + 
+      f$n_friches_sans_projet + 
+      f$n_friches_reconverties      +
+      f$n_friches_potentielles
   }
   
   # Cas de département
   if(mode == "département") {
     f <- deps.pts %>% filter(libelle == s) %>% slice(1) # !!! enlever après résolution du doublon Guyane
-    n_friches <- f$n_friches_observatoires + 
-      f$n_friches_mte_qualifiees + 
-      f$n_friches_ademe +
-      f$n_friches_user + 
-      f$n_friches_mte_pv +
-      f$n_friches_aap
+    # n_friches <- f$n_friches_observatoires + 
+    #   f$n_friches_mte_qualifiees + 
+    #   f$n_friches_ademe +
+    #   f$n_friches_user + 
+    #   f$n_friches_mte_pv +
+    #   f$n_friches_aap
+    n_friches <- f$n_friches_avec_projet  + 
+      f$n_friches_sans_projet + 
+      f$n_friches_reconverties      +
+      f$n_friches_potentielles
   }
   
   # Cas de commune

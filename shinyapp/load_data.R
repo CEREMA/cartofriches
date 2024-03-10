@@ -9,11 +9,12 @@ load_data <- function() {
     mutate(Long = st_coordinates(.)[, 1], Lat = st_coordinates(.)[, 2]) %>%
     mutate(long = Long,
            lat = Lat,
-           site_numero = site_id)  #%>% filter(id_from_file == '8227138')
+           site_numero = site_id)  
   
   f.xy <- f.xy %>%
     mutate(site_type = ifelse(site_type == "agro-industrielle", "friche agro-industrielle",
-                              ifelse(site_type == "friche hospitaliere", "friche hospitalière",site_type)))
+                              ifelse(site_type == "friche hospitaliere", "friche hospitalière",site_type))) %>% 
+    filter(pk != '28015')
   
   f.tup <<- readRDS("data/friches/f.tup.rds") %>% # st_set_crs(2154) %>% st_transform(4326) %>%
     mutate(site_numero = site_id) #%>% filter(id_from_file == '8227138')
