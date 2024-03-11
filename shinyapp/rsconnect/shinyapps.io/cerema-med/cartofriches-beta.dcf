@@ -5,7 +5,7 @@ account: cerema-med
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 2544142
-bundleId:
+bundleId: 8358725
 url: https://cerema-med.shinyapps.io/cartofriches-beta/
 version: 1
 asMultiple: FALSE

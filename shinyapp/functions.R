@@ -1044,6 +1044,8 @@ get_popup_content <- function(f) {
   
   message(">> get_popup_content")
   
+  print(f)
+
   coords <- f %>% st_coordinates
   
   # Bloc du nom du projet
@@ -1251,8 +1253,8 @@ get_popup_content <- function(f) {
     tags$b("Vacance de bâtis : "), coalesce(f$bati_vacance %>% as.character, "Non renseigné"), tags$br(),
     tags$b("Présence de bâtiment de valeur patrimoniale : "), coalesce(f$bati_patrimoine %>% as.character, "Non renseigné"), tags$br(),
     tags$b("Etat de dégration des bâtiments : "), coalesce(f$bati_etat %>% as.character, "Non renseigné"), tags$br(),
-    tags$b("Année de construction du local le plus ancien : "), coalesce(format(f$local_ancienne_annee, "%m/Y"), "Non renseignée"), tags$br(),
-    tags$b("Année de construction du local le plus récent : "), coalesce(format(f$local_recent_annee, "%m/Y"), "Non renseignée"), tags$br(),
+    tags$b("Année de construction du local le plus ancien : "), coalesce(format(f$local_ancienne_annee, "%Y"), "Non renseignée"), tags$br(),
+    tags$b("Année de construction du local le plus récent : "), coalesce(format(f$local_recent_annee, "%Y"), "Non renseignée"), tags$br(),
  
     ##=##=##=##=##
     # Propriété =##
