@@ -1095,7 +1095,7 @@ get_popup_content <- function(f) {
    
   # bloc_reconversion
   print("5")
-  if(f$site_statut == "site avec projet" & !is.na(f$site_reconv_type)) {
+  if(f$site_statut == "friche avec projet" & !is.na(f$site_reconv_type)) {
     bloc_reconversion <- tagList(
       tags$b("Projet en cours : "), coalesce(f$site_reconv_type, "Non renseignée"), tags$br()
     )
@@ -1131,9 +1131,6 @@ get_popup_content <- function(f) {
       tags$b("Libellé de la zone : "), f$urba_zone_lib, tags$br()
     ) }
   
-  
-
-  # }
 
   # POLLUTION
   print("8")
@@ -1172,6 +1169,24 @@ get_popup_content <- function(f) {
     bloc_source_data <- ""
   }
   
+  
+  
+  # ## Surface friches 
+  print("10")
+  if(!is.na(f$site_surface)) {
+    bloc_surface <- tagList(
+      tags$b("Surface de la friche : "), format_surface(f$site_surface),tags$br(),
+      tags$b("Surface (de l'unité(s) de propriété) : "), format_surface(f$unite_fonciere_surface)
+    )
+  } else {
+    bloc_surface <- 
+      tagList(
+        tags$b("Surface de la friche : "),"Non calculée",tags$br(),
+        tags$b("Surface (de l'unité(s) de propriété) : "),"Non calculée"
+      )
+  }
+  
+  
   # print(f)
   
   # ## Surface
@@ -1207,8 +1222,9 @@ get_popup_content <- function(f) {
     bloc_occupation,
     bloc_typefriche, tags$br(),
     
-    tags$b("Surface de la friche : "), coalesce(format_surface(f$site_surface), "Non calculée"), tags$br(),
-    tags$b("Surface (de l'unité(s) de propriété) : "), coalesce(format_surface(f$unite_fonciere_surface), "Non calculée"), tags$br(),
+    # tags$b("Surface de la friche : "), coalesce(format_surface(f$site_surface), "Non calculée"), tags$br(),
+    # tags$b("Surface (de l'unité(s) de propriété) : "), coalesce(format_surface(f$unite_fonciere_surface), "Non calculée"), tags$br(),
+    bloc_surface,tags$br(),
     tags$b("Date d'identification de la friche : "), coalesce(format(f$site_identif_date, "%d/%m/%Y"), "Non renseignée"), tags$br(),
     
     bloc_actualisationdate,
