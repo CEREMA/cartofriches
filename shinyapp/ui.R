@@ -203,7 +203,7 @@ ui <-
                     
                     pickerInput("INPUT_Site_statut",
                                 "Statut :",
-                                choices = c("friche reconvertie","friche avec projet","friche sans projet","inconnu","friche potentielle"),
+                                choices = c("friche reconvertie","friche avec projet","friche sans projet","friche potentielle"),
                                 options = list(
                                   # `live-search` = TRUE,
                                   `actions-box` = TRUE,

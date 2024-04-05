@@ -1044,7 +1044,7 @@ get_popup_content <- function(f) {
   
   message(">> get_popup_content")
   
-  print(f)
+  # print(f)
 
   coords <- f %>% st_coordinates
   
@@ -1158,16 +1158,32 @@ get_popup_content <- function(f) {
 
   # ## Source des données
   print("9")
+  # if(!is.na(f$source_url)) {
+  #   bloc_source_data <- tagList(
+  #     h4("Source des données"),
+  #     tagList(icon("database"),
+  #             tags$a(href=f$source_url, target="_blank", "Source des données")),tags$br(),
+  #     tagList(tags$b("Adresse mail de contact : "), coalesce(f$source_contact, "Non renseignée"))
+  #     )
+  # } else {
+  #   bloc_source_data <- ""
+  # }
   if(!is.na(f$source_url)) {
     bloc_source_data <- tagList(
       h4("Source des données"),
-      tagList(icon("database"),
+      tagList(tags$b("Source de la donnée : "), ifelse(is.na(f$source_r),"Non renseigné",f$nom_prodcartofriches),tags$br(),
+              icon("database"),
               tags$a(href=f$source_url, target="_blank", "Source des données")),tags$br(),
       tagList(tags$b("Adresse mail de contact : "), coalesce(f$source_contact, "Non renseignée"))
       )
   } else {
-    bloc_source_data <- ""
+    bloc_source_data <- tagList(
+      h4("Source des données"),
+      tagList(tags$b("Source de la donnée : "), ifelse(is.na(f$source_r),"Non renseigné",f$nom_prodcartofriches)
+    )
+    )
   }
+
   
   
   
@@ -1201,7 +1217,7 @@ get_popup_content <- function(f) {
   
   #--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#
   
-  # f <- Data$points %>% filter(pk == 12787)
+  # f <- Data$points %>% filter(pk == 29085)
   
   # CONTENT
   content <- tagList(
@@ -1262,10 +1278,13 @@ get_popup_content <- function(f) {
     tags$b("Nombre de bâtiments : "), coalesce(f$bati_nombre %>% as.character, "Non renseigné"), tags$br(),
     tags$b("Type de bâtiments : "), coalesce(f$bati_type, "Non renseignée"), tags$br(),
     # bloc_surface,
+    # tags$b("Surface de plancher totale des bâtiments : "), ifelse(is.na(f$bati_surface),
+    #                                                               "Non renseignée",
+    #                                                               coalesce(f$bati_surface,
+    #                                                                        "Non renseignée")), tags$br(),
     tags$b("Surface de plancher totale des bâtiments : "), ifelse(is.na(f$bati_surface),
                                                                   "Non renseignée",
-                                                                  coalesce(f$bati_surface,
-                                                                           "Non renseignée")), tags$br(),
+                                                                  format_surface(f$bati_surface)), tags$br(),
     tags$b("Vacance de bâtis : "), coalesce(f$bati_vacance %>% as.character, "Non renseigné"), tags$br(),
     tags$b("Présence de bâtiment de valeur patrimoniale : "), coalesce(f$bati_patrimoine %>% as.character, "Non renseigné"), tags$br(),
     tags$b("Etat de dégration des bâtiments : "), coalesce(f$bati_etat %>% as.character, "Non renseigné"), tags$br(),
@@ -1367,168 +1386,173 @@ get_popup_content <- function(f) {
   
   return(content)
 }
-get_popup_content_AVANTSTANDARD <- function(f) {
-  
-  coords <- f %>% st_coordinates
-  
-  # URBANISME
-  if(all(is.na(c(f$libzone, f$zone, f$destdomi, f$datappro)))) {
-    bloc_urba <- "Non renseigné"
-  } else {
-    destdomi_lib <- switch(f$destdomi,
-                           "00" = "sans objet ou non encore définie dans le règlement",
-                           "01" = "habitat",
-                           "02" = "activité",
-                           "03" = "destination mixte habitat / activité",
-                           "04" = "Loisirs et tourisme",
-                           "05" = "Équipement public",
-                           "07" = "activité agricole",
-                           "01" = "espace naturel",
-                           "09" = "espace remarquable (dispositions littoral / montagne)",
-                           "10" = "secteur de carrière",
-                           "99" = "autre")
-    
-    bloc_urba <- tagList(
-      
-      tags$b("Type de document d'urbanisme : "), f$docurba, tags$br(),
-      
-      tags$b("Zone : "), coalesce(glue("{f$libelle} - "), ""), 
-      unique(f$libzone), 
-      tags$br(), # f$zone enlevé
-      
-      tags$b("Destination dominante : "), ifelse(is.na(f$destdomi), 
-                                                 "Non renseigné", 
-                                                 paste0(destdomi_lib, "(", f$destdomi, ")")), 
-      tags$br(),
-      
-      tags$b("Document approuvé le : "), ifelse(is.na(f$datappro), 
-                                                "Date non renseignée", 
-                                                format(as.Date(f$datappro, "%Y%m%d"), format="%d/%m/%Y")))
-  }
-  
-  # POLLUTION
-  if(all(is.na(c(f$annee_pollution, 
-                 f$risque_pollution, 
-                 f$pollution, 
-                 f$site_en_securite, 
-                 f$comment_depollution)))) {
-    bloc_pollution_1 <- tags$i("Informations sur la pollution des sols non renseignées")
-  } else {
-    
-    annee_pollution <- f$annee_pollution %>% get_texte
-    origine_pollution <- f$origine_pollution %>% get_texte(json = TRUE)
-    pollution <- f$pollution %>% get_texte(json = grepl("\"", f$pollution)) # si on trouve des guillemets, alors on a du JSON, donc on met json = TRUE
-    
-    if(class(f$risque_pollution) == "character") {
-      risque_pollution <- f$risque_pollution %>% get_texte(json = FALSE)
-    } else {
-      risque_pollution <- f$risque_pollution %>% get_texte(json = TRUE)
-    }
-    
-    site_en_securite <- f$site_en_securite %>% get_texte(json = TRUE)
-    docs_depollution <- f$comment_depollution %>% get_docs_depollution
-    
-    bloc_pollution_1 <- tagList(tags$b("Année de constatation de la pollution : "), annee_pollution %>% get_texte, tags$br(),
-                                tags$b("Origine de la pollution : "), origine_pollution, tags$br(),
-                                tags$b("Pollution : "), pollution,tags$br(),
-                                tags$b("Risques de pollution : "), risque_pollution, tags$br(),
-                                tags$b("Site en sécurité : "), site_en_securite, tags$br(),
-                                tags$b("Fiches de dépollution : "), docs_depollution
-    )
-    
-  }
-  bloc_pollution <- tagList(tags$b("Type de sol : "), coalesce(f$type_sol, "Non renseigné"), tags$br(), 
-                            bloc_pollution_1)
-  
-  # SOURCES
-  source <- f$source_r
-  
-  ## Source des données
-  if(!is.na(f$url_source) & f$url_source != "") {
-    bloc_source_data <- tagList(
-      h4("Source des données"),
-      tagList(icon("database"),
-              tags$a(href=f$url_source, target="_blank", "Source des données")))
-  } else {
-    bloc_source_data <- ""
-    
-  }
-  
-  #--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#
-  
-  # CONTENT
-  content <- tagList(
-    
-    ##=##=##=##=##=##
-    # Infos générales
-    ##=##=##=##=##=##
-    h4("Informations générales"),
-    tags$b("Code du site : "), f$site_id, tags$br(),
-    tags$b("Surface (de l'unité de propriété) : "), coalesce(format_number(f$site_surface), "Non calculée"), " m²", tags$br(),
-    tags$b("Activité : "), ifelse(is.na(f$activite_libelle),
-                                  "Non renseigné",
-                                  f$activite_libelle %>% sapply(function(x) paste(x, collapse=","))), tags$br(),
-    
-    ##=##=##=##=##=##
-    # Localisation
-    ##=##=##=##=##=##
-    h4("Localisation"),
-    tags$b("Adresse : "), coalesce(f$loc_adresse, "Non renseignée"), tags$br(),
-    tags$b("Commune : "), coalesce(f$nom_commune, "Non renseignée"), tags$br(),
-    
-    ##=##=##=##=##=##
-    # Bâti
-    ##=##=##=##=##=##
-    h4("Bâti"),
-    tags$b("Date de l'acte de mutation : "), coalesce(format(as.Date(f$jdatat, "%d%m%y"), format="%d/%m/%Y"), "Non renseignée"), tags$br(),
-    tags$b("Nombre de bâtiments : "), coalesce(f$bati_nb %>% as.character, "Non renseigné"), tags$br(),
-    tags$b("Année du local le plus ancien : "), coalesce(ifelse(f$jannatmin %in% c(-1, 0), "Non renseigné", f$jannatmin) %>% as.character, "Non renseignée"), tags$br(),
-    tags$b("Année du local le plus récent : "), coalesce(ifelse(f$jannatmax %in% c(-1, 0), "Non renseigné", f$jannatmax) %>% as.character, "Non renseignée"), tags$br(),
-    
-    ##=##=##=##=##=##
-    # Existence d'un projet
-    ##=##=##=##=##=##
-    h4("Existence d'un projet"),
-    ifelse(is.na(f$projet), "Non renseigné", ifelse(f$projet, "Oui", "Non")),
-    
-    ##=##=##=##=##=##
-    # Propriété
-    ##=##=##=##=##=##
-    h4("Propriété"),
-    tags$b("Ancien propriétaire : "), ifelse(all(is.na(c(f$proprietaire_nom))),
-                                             "Non renseigné",
-                                             coalesce(f$proprietaire_nom, "Nom du propriétaire non renseigné")
-    ), 
-    tags$br(),
-    tags$b("Propriétaire actuel : "), ifelse(is.na(f$ddenom),
-                                             "Non renseigné",
-                                             coalesce(f$ddenom, 
-                                                      "Nom du propriétaire non renseigné")), 
-    tags$br(),
-    tagList(tags$b("Références cadastrales :"), 
-            ifelse(is.null(f$ref_cad),
-                   "Non renseignées",
-                   get_texte(f$ref_cad)),
-            tags$br()),
-    
-    ##=##=##=##=##=##
-    # Urbanisme
-    ##=##=##=##=##=##
-    h4("Urbanisme"),
-    bloc_urba,
-    
-    ##=##=##=##=##=##
-    # Pollution des sols
-    ##=##=##=##=##=##
-    h4("Caractéristiques du sol"),
-    bloc_pollution,
-    
-    # Source des données
-    bloc_source_data
-  )
-  
-  return(content)
-}
+# get_popup_content_AVANTSTANDARD <- function(f) {
+#   
+#   coords <- f %>% st_coordinates
+#   
+#   # URBANISME
+#   if(all(is.na(c(f$libzone, f$zone, f$destdomi, f$datappro)))) {
+#     bloc_urba <- "Non renseigné"
+#   } else {
+#     destdomi_lib <- switch(f$destdomi,
+#                            "00" = "sans objet ou non encore définie dans le règlement",
+#                            "01" = "habitat",
+#                            "02" = "activité",
+#                            "03" = "destination mixte habitat / activité",
+#                            "04" = "Loisirs et tourisme",
+#                            "05" = "Équipement public",
+#                            "07" = "activité agricole",
+#                            "01" = "espace naturel",
+#                            "09" = "espace remarquable (dispositions littoral / montagne)",
+#                            "10" = "secteur de carrière",
+#                            "99" = "autre")
+#     
+#     bloc_urba <- tagList(
+#       
+#       tags$b("Type de document d'urbanisme : "), f$docurba, tags$br(),
+#       
+#       tags$b("Zone : "), coalesce(glue("{f$libelle} - "), ""), 
+#       unique(f$libzone), 
+#       tags$br(), # f$zone enlevé
+#       
+#       tags$b("Destination dominante : "), ifelse(is.na(f$destdomi), 
+#                                                  "Non renseigné", 
+#                                                  paste0(destdomi_lib, "(", f$destdomi, ")")), 
+#       tags$br(),
+#       
+#       tags$b("Document approuvé le : "), ifelse(is.na(f$datappro), 
+#                                                 "Date non renseignée", 
+#                                                 format(as.Date(f$datappro, "%Y%m%d"), format="%d/%m/%Y")))
+#   }
+#   
+#   # POLLUTION
+#   if(all(is.na(c(f$annee_pollution, 
+#                  f$risque_pollution, 
+#                  f$pollution, 
+#                  f$site_en_securite, 
+#                  f$comment_depollution)))) {
+#     bloc_pollution_1 <- tags$i("Informations sur la pollution des sols non renseignées")
+#   } else {
+#     
+#     annee_pollution <- f$annee_pollution %>% get_texte
+#     origine_pollution <- f$origine_pollution %>% get_texte(json = TRUE)
+#     pollution <- f$pollution %>% get_texte(json = grepl("\"", f$pollution)) # si on trouve des guillemets, alors on a du JSON, donc on met json = TRUE
+#     
+#     if(class(f$risque_pollution) == "character") {
+#       risque_pollution <- f$risque_pollution %>% get_texte(json = FALSE)
+#     } else {
+#       risque_pollution <- f$risque_pollution %>% get_texte(json = TRUE)
+#     }
+#     
+#     site_en_securite <- f$site_en_securite %>% get_texte(json = TRUE)
+#     docs_depollution <- f$comment_depollution %>% get_docs_depollution
+#     
+#     bloc_pollution_1 <- tagList(tags$b("Année de constatation de la pollution : "), annee_pollution %>% get_texte, tags$br(),
+#                                 tags$b("Origine de la pollution : "), origine_pollution, tags$br(),
+#                                 tags$b("Pollution : "), pollution,tags$br(),
+#                                 tags$b("Risques de pollution : "), risque_pollution, tags$br(),
+#                                 tags$b("Site en sécurité : "), site_en_securite, tags$br(),
+#                                 tags$b("Fiches de dépollution : "), docs_depollution
+#     )
+#     
+#   }
+#   bloc_pollution <- tagList(tags$b("Type de sol : "), coalesce(f$type_sol, "Non renseigné"), tags$br(), 
+#                             bloc_pollution_1)
+#   
+#   # SOURCES
+#   source <- f$source_r
+#   
+#   ## Source des données
+#   if(!is.na(f$url_source) & f$url_source != "") {
+#     bloc_source_data <- tagList(
+#       h4("Source des données"),
+#       tagList(
+#         tags$b("Source de la donnée : "), ifelse(is.na(f$nom_prodcartofriches),"Non renseigné",nom_prodcartofriches),
+#         icon("database"),
+#               tags$a(href=f$url_source, target="_blank", "Source des données")))
+#   } else {
+#     bloc_source_data <- tagList(
+#       
+#       tags$b("Source de la donnée : "), ifelse(is.na(f$nom_prodcartofriches),"Non renseigné",nom_prodcartofriches)
+#     )
+#     
+#   }
+#   
+#   #--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#
+#   
+#   # CONTENT
+#   content <- tagList(
+#     
+#     ##=##=##=##=##=##
+#     # Infos générales
+#     ##=##=##=##=##=##
+#     h4("Informations générales"),
+#     tags$b("Code du site : "), f$site_id, tags$br(),
+#     tags$b("Surface (de l'unité de propriété) : "), coalesce(format_number(f$site_surface), "Non calculée"), " m²", tags$br(),
+#     tags$b("Activité : "), ifelse(is.na(f$activite_libelle),
+#                                   "Non renseigné",
+#                                   f$activite_libelle %>% sapply(function(x) paste(x, collapse=","))), tags$br(),
+#     
+#     ##=##=##=##=##=##
+#     # Localisation
+#     ##=##=##=##=##=##
+#     h4("Localisation"),
+#     tags$b("Adresse : "), coalesce(f$loc_adresse, "Non renseignée"), tags$br(),
+#     tags$b("Commune : "), coalesce(f$nom_commune, "Non renseignée"), tags$br(),
+#     
+#     ##=##=##=##=##=##
+#     # Bâti
+#     ##=##=##=##=##=##
+#     h4("Bâti"),
+#     tags$b("Date de l'acte de mutation : "), coalesce(format(as.Date(f$jdatat, "%d%m%y"), format="%d/%m/%Y"), "Non renseignée"), tags$br(),
+#     tags$b("Nombre de bâtiments : "), coalesce(f$bati_nb %>% as.character, "Non renseigné"), tags$br(),
+#     tags$b("Année du local le plus ancien : "), coalesce(ifelse(f$jannatmin %in% c(-1, 0), "Non renseigné", f$jannatmin) %>% as.character, "Non renseignée"), tags$br(),
+#     tags$b("Année du local le plus récent : "), coalesce(ifelse(f$jannatmax %in% c(-1, 0), "Non renseigné", f$jannatmax) %>% as.character, "Non renseignée"), tags$br(),
+#     
+#     ##=##=##=##=##=##
+#     # Existence d'un projet
+#     ##=##=##=##=##=##
+#     h4("Existence d'un projet"),
+#     ifelse(is.na(f$projet), "Non renseigné", ifelse(f$projet, "Oui", "Non")),
+#     
+#     ##=##=##=##=##=##
+#     # Propriété
+#     ##=##=##=##=##=##
+#     h4("Propriété"),
+#     tags$b("Ancien propriétaire : "), ifelse(all(is.na(c(f$proprietaire_nom))),
+#                                              "Non renseigné",
+#                                              coalesce(f$proprietaire_nom, "Nom du propriétaire non renseigné")
+#     ), 
+#     tags$br(),
+#     tags$b("Propriétaire actuel : "), ifelse(is.na(f$ddenom),
+#                                              "Non renseigné",
+#                                              coalesce(f$ddenom, 
+#                                                       "Nom du propriétaire non renseigné")), 
+#     tags$br(),
+#     tagList(tags$b("Références cadastrales :"), 
+#             ifelse(is.null(f$ref_cad),
+#                    "Non renseignées",
+#                    get_texte(f$ref_cad)),
+#             tags$br()),
+#     
+#     ##=##=##=##=##=##
+#     # Urbanisme
+#     ##=##=##=##=##=##
+#     h4("Urbanisme"),
+#     bloc_urba,
+#     
+#     ##=##=##=##=##=##
+#     # Pollution des sols
+#     ##=##=##=##=##=##
+#     h4("Caractéristiques du sol"),
+#     bloc_pollution,
+#     
+#     # Source des données
+#     bloc_source_data
+#   )
+#   
+#   return(content)
+# }
 
 # FORM
 # Retourne le lien Mapillary associé aux coordonnées long lat du site
@@ -1916,23 +1940,31 @@ get_ui_nb_friches_accueil <- function() {
   
   n <- f.xy %>% filter(site_statut != "friche potentielle") %>% nrow
   
-  res <- div(tags$p(n, " friches", style="
+  res <- div(
+    tags$p(format_numericFR(n), " friches", style="
                               font-weight: 700;
                               font-size: 1.4em;
                     margin-bottom: -15px;"), 
-             tags$p("Dernière mise à jour le ", LAST_UPDATE_DATE, 
-                    style="color: #99999e;
+    
+    tags$p(13, " observatoires locaux", style="
+                              font-weight: 500;
+                              font-size: 1.2em;
+                    margin-bottom: -15px;"), 
+    
+    tags$p("Dernière mise à jour le ", LAST_UPDATE_DATE, 
+           style="color: #99999e;
                     font-size: 1em;"),
-             tags$p(actionButton("btn_voir", 
-                                 "VOIR LES FRICHES", 
-                                 class="goto", 
-                                 style="
+    
+    tags$p(actionButton("btn_voir", 
+                        "VOIR LES FRICHES", 
+                        class="goto", 
+                        style="
                                            padding-top:20px;
                                            padding-bottom:20px;
                                            padding-left:30px;
                                            padding-right:30px;
                                            ")),
-             style="margin-top: 18%;margin-left:50px;
+    style="margin-top: 18%;margin-left:50px;
 ")
   return(res)
 }
