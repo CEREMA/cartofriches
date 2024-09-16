@@ -319,7 +319,7 @@ ui <-
   
            tags$br(),
 
-           fluidRow(column(8, offset=2,
+           fluidRow(column(8, offset=1,
                            
                            div('', style=glue("
                             width: 100;
@@ -345,7 +345,7 @@ ui <-
 
   # __ONGLET CONTRIBUER ----
   tabPanel("Contribuer",
-           icon = icon("paper-plane"),
+           icon = tags$i(class="far fa-paper-plane", role="presentation", `aria-label`="paper-plane icon", style="color:#EF7757"),
            
            fluidRow(column(8, offset=2, 
                            uiOutput("ui_publier_une_friche")
@@ -540,12 +540,14 @@ ui <-
     
     # Un clic amène vers la page observatoires du portail artificialisation.biodiversitetousvivants
     tabPanel(tags$a(href = "https://artificialisation.biodiversitetousvivants.fr/cartofriches/observatoires-locaux",
-    "Observatoires locaux", 
+    div("Observatoires locaux",icon("external-link")), 
+    #"Observatoires locaux",
     target="_blank")),
     
     # Un clic amène vers la page données du portail artificialisation.biodiversitetousvivants
     tabPanel(tags$a(href = "https://artificialisation.biodiversitetousvivants.fr/cartofriches/donnees-utilisees",
-    "Données utilisées",
+    div("Données utilisées",icon("external-link")),
+    #"Données utilisées",
     target = "_blank")),
     
     tabPanel("Mentions légales",
