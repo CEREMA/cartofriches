@@ -30,9 +30,10 @@
 }
 
 
-.fa-plus-circle:before, .fa-search:before, .fa-table:before {
+.fa-plus-circle:before, .fa-search:before, .fa-table:before, .fa-bar-chart:before, .fa-book:before {
     color: #EF7757;
 }
+
 
 /*
 .fa-paper-plane:before {

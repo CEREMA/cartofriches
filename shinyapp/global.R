@@ -4,10 +4,12 @@ source("load_data.R", encoding = "UTF-8")
 
 source("modules/mod_ban.R", encoding = "UTF-8")
 
+source("modules/module_fonds_friches.R", encoding = "UTF-8")
+
 Sys.setlocale("LC_TIME", "French")
 
 # DATE DE MISE A JOUR ####
-LAST_UPDATE_DATE <- "5 Avril 2024"
+LAST_UPDATE_DATE <- "30 Septembre 2024"
 
 # PALETTE CEREMA ####
 couleurs_cerema <- readRDS("data/couleurs_cerema.rds")
@@ -51,6 +53,7 @@ ZOOM_LEVELS <- c("Région"      = 6,
 
 # OBSERVATOIRES ####
 Observatoires <- c(
+  "Sud Foncier Eco"                              = "Sud Foncier Eco",
   "Région Occitanie"                             = "Occitanie",
   "Établissement Public Foncier de Grand Est"    = "Grand Est",
   "Établissement Public Foncier de Normandie"    = "Normandie",  
@@ -161,7 +164,14 @@ Logos <- list(
   
   Loiret = list(img = "logos/logo-DDT-Loiret.jpg", 
                height = 70, 
-               message = "Bienvenue en territoire du Loiret")
+               message = "Bienvenue en territoire du Loiret"),
+  
+  "Sud Foncier Eco" = list(img = "logos/logo_SFE.png", 
+                height = 70, 
+                message = "Bienvenue en Région Sud")
+  
+  
+  
   
   
 )

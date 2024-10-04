@@ -1,0 +1,8 @@
+Le **Réseau des Inventaires Territoriaux de Friches (RITF)** a été lancé à l’initiative du <a href=https://lifti.org/economie-circulaire-du-foncier// target=_blank>**LIFTI** <i class="fa fa-external-link"></i></a> afin de disposer d’une connaissance aussi large que possible des inventaires de friches existants sur le territoire national.
+
+Dans le contexte de sobriété foncière qui s’impose à l’ensemble des acteurs du foncier, de l’aménagement et de la construction, la démarche  vise à **mieux connaître les structures et interlocuteurs locaux mobilisés** sur le sujet des friches, des inventaires qui ont pu être mis en place, leurs attentes. 
+Cette démarche doit également permettre de **favoriser les échanges**, **diffuser les bonnes pratiques** et **répondre aux interrogations** que se posent les maîtres d'ouvrage d'inventaire en matière de socle de friches à inventorier, des méthodes de diffusion, d’actualisation ou d’outils à déployer.
+
+Les travaux du RITF, réalisés avec l'appui de Modaal, doivent aboutir en premier lieu à la production d'un annuaire des inventaires et acteurs intéressés, à la diffusion d'informations  et de notes d'enseignement à destination des maîtres d'ouvrage d'inventaires de friches. 
+
+Un <a href=https://framaforms.org/lifti-recensement-des-inventaires-de-friches-1700213918/ target=_blank>**questionnaire** <i class="fa fa-external-link"></i></a> a été élaboré afin de mieux connaitre les pratiques d'inventaires des friches, à destination des acteurs publics et para-publics concernés par les démarches d'inventaires de friches.

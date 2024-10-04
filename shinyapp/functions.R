@@ -9,13 +9,21 @@ format_numericFR <- function(x) { paste0(format(round(x,0), big.mark = " ", deci
 # Ajout des tiles les plus utiles
 add_tiles <- function(m) {
   
+  
+  # leaflet() %>% 
+  #   addTiles(
+  #     "http://data.geopf.fr/wmts?REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0&style=PCI%20vecteur&TILEMATRIXSET=PM&FORMAT=image/png&LAYER=CADASTRALPARCELS.PARCELLAIRE_EXPRESS&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}",
+  #   )
+  
   m %>% 
     
     # OSM
     addTiles(group = "OpenStreetMap") %>% 
     
     # Ortho
-    addTiles("http://wxs.ign.fr/choisirgeoportail/wmts?REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0&STYLE=normal&TILEMATRIXSET=PM&FORMAT=image/jpeg&LAYER=ORTHOIMAGERY.ORTHOPHOTOS&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}",
+    addTiles(
+      # "http://wxs.ign.fr/choisirgeoportail/wmts?REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0&STYLE=normal&TILEMATRIXSET=PM&FORMAT=image/jpeg&LAYER=ORTHOIMAGERY.ORTHOPHOTOS&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}",
+      "https://data.geopf.fr/wmts?REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0&STYLE=normal&TILEMATRIXSET=PM&FORMAT=image/jpeg&LAYER=ORTHOIMAGERY.ORTHOPHOTOS&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}",
              options = c(WMSTileOptions(tileSize = 256), 
                          providerTileOptions(minZoom = 1, maxZoom = 22)),
              attribution='<a target="_blank" href="https://www.geoportail.gouv.fr/">Geoportail France</a>',
@@ -23,13 +31,17 @@ add_tiles <- function(m) {
     ) %>%
     
     # Plan
-    addTiles("http://wxs.ign.fr/choisirgeoportail/wmts?REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0&STYLE=normal&TILEMATRIXSET=PM&FORMAT=image/png&LAYER=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}",
-             options = WMSTileOptions(tileSize = 256, minZoom = 1, maxZoom = 20),
+    addTiles(
+      # "http://wxs.ign.fr/choisirgeoportail/wmts?REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0&STYLE=normal&TILEMATRIXSET=PM&FORMAT=image/png&LAYER=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}",
+      "https://data.geopf.fr/wmts?REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0&STYLE=normal&TILEMATRIXSET=PM&FORMAT=image/png&LAYER=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}",
+      options = WMSTileOptions(tileSize = 256, minZoom = 1, maxZoom = 20),
              group = "Plan IGN"
     ) %>%
     
     # Parcelles
-    addTiles("http://wxs.ign.fr/choisirgeoportail/wmts?REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0&style=PCI%20vecteur&TILEMATRIXSET=PM&FORMAT=image/png&LAYER=CADASTRALPARCELS.PARCELLAIRE_EXPRESS&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}",
+    addTiles(
+      # "http://wxs.ign.fr/choisirgeoportail/wmts?REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0&style=PCI%20vecteur&TILEMATRIXSET=PM&FORMAT=image/png&LAYER=CADASTRALPARCELS.PARCELLAIRE_EXPRESS&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}",
+      "https://data.geopf.fr/wmts?REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0&STYLE=PCI%20vecteur&TILEMATRIXSET=PM&FORMAT=image/png&LAYER=CADASTRALPARCELS.PARCELLAIRE_EXPRESS&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}",
              options = WMSTileOptions(tileSize = 256),
              attribution='<a target="_blank" href="https://www.geoportail.gouv.fr/">Geoportail France</a>',
              group = "Parcelles IGN"
@@ -414,6 +426,8 @@ zoom_to <- function(m, coords, type, value, label = NULL) {
 # Les marqueurs sont affichésà un niveau de zoom moyen
 add_points <- function(proxy, f, replaceMarkers = TRUE) {
   
+  # f <- f.xy %>% filter(site_id == '65295_15083')
+  
   message(">> add_points")
   
   # # ICONS
@@ -795,6 +809,8 @@ show_info <- function(proxy = NULL, id) {
 # Affiche la popup d'une friche
 show_info_friche <- function(id) {
   
+  # id = '13071_13167'
+  
   message(">> show_info_friche_industrielle ", id)
   
   mymap_modalDialog <- leaflet(width = 50, height = 50, 
@@ -809,7 +825,6 @@ show_info_friche <- function(id) {
   ##=##=##=##
   # Filtre ##
   ##=##=##=##
-  
   sf_points <- get_friche_from_id(id)
   num_site <- sf_points$site_id
   if(nrow(sf_points) == 0) {
@@ -1093,6 +1108,21 @@ get_popup_content <- function(f) {
                                                                                   f$site_type %>% sapply(function(x) paste(x, collapse=","))))
   }
    
+  
+  # bloc_urbanvitaliz
+  if(f$site_statut != "friche reconvertie") {
+    bloc_urbanvitaliz <- tagList(
+      # tags$b("Besoin d'un coup de pouce UrbanVitaliz ? : "), 
+      tags$a(href = glue("https://urbanvitaliz.fr/"), 
+             tagList(icon("envelope"), "Besoin d'un coup de pouce dans votre projet de reconversion ? Contactez UrbanVitaliz !"), 
+             target="_blank", style="font-size: 1em; margin-left: 10px;"),
+      tags$br()
+    )
+  } else {
+    bloc_urbanvitaliz <- ""
+  }
+  
+
   # bloc_reconversion
   print("5")
   if(f$site_statut == "friche avec projet" & !is.na(f$site_reconv_type)) {
@@ -1109,7 +1139,7 @@ get_popup_content <- function(f) {
 
   # Actualisation de la date
   print("6")
-  if(is.na(f$site_actu_date)) {
+  if(is.na(f$site_actu_date) | f$site_actu_date == f$site_identif_date) {
     bloc_actualisationdate <- ""
   } else {
     bloc_actualisationdate <- tagList(
@@ -1154,27 +1184,30 @@ get_popup_content <- function(f) {
                                 tags$b("Fiches de dépollution : "), sol_depollution_fiche
     )
 
-  }
+    }
+  
+  
+  
+  
+  
 
   # ## Source des données
   print("9")
-  # if(!is.na(f$source_url)) {
-  #   bloc_source_data <- tagList(
-  #     h4("Source des données"),
-  #     tagList(icon("database"),
-  #             tags$a(href=f$source_url, target="_blank", "Source des données")),tags$br(),
-  #     tagList(tags$b("Adresse mail de contact : "), coalesce(f$source_contact, "Non renseignée"))
-  #     )
-  # } else {
-  #   bloc_source_data <- ""
-  # }
+  if(!is.na(f$source_contact)) {
+    bloc_source_contact <- tagList(
+      tagList(tags$b("Adresse mail de contact : "), coalesce(f$source_contact, "Non renseignée"))
+      )
+  } else {
+    bloc_source_contact <- ""
+  }
+
   if(!is.na(f$source_url)) {
     bloc_source_data <- tagList(
       h4("Source des données"),
       tagList(tags$b("Source de la donnée : "), ifelse(is.na(f$source_r),"Non renseigné",f$nom_prodcartofriches),tags$br(),
               icon("database"),
-              tags$a(href=f$source_url, target="_blank", "Source des données")),tags$br(),
-      tagList(tags$b("Adresse mail de contact : "), coalesce(f$source_contact, "Non renseignée"))
+              tags$a(href=f$source_url, target="_blank", "Accéder à la source des données")),tags$br(),
+      bloc_source_contact
       )
   } else {
     bloc_source_data <- tagList(
@@ -1231,8 +1264,9 @@ get_popup_content <- function(f) {
     # tags$b("Nom du site : "), f$site_nom, tags$br(),
     bloc_nom_site,
     
-    tags$b("Statut du site (projet en cours) : "), coalesce(f$site_statut, "Non renseignée"), tags$br(),
+    tags$b("Statut du site (projet en cours) : "),coalesce(f$site_statut, "Non renseignée"), tags$br(),
     bloc_projet,
+    bloc_urbanvitaliz,
     bloc_reconversion,
     
     bloc_occupation,
@@ -1241,6 +1275,13 @@ get_popup_content <- function(f) {
     # tags$b("Surface de la friche : "), coalesce(format_surface(f$site_surface), "Non calculée"), tags$br(),
     # tags$b("Surface (de l'unité(s) de propriété) : "), coalesce(format_surface(f$unite_fonciere_surface), "Non calculée"), tags$br(),
     bloc_surface,tags$br(),
+    
+    
+    
+    tags$b("Taux d'espace urbanisé (de l'unité(s) de propriété) : "), 
+    ifelse(is.na(f$Taux_artif_ff),"Non renseigné",glue(f$Taux_artif_ff, " %")),
+    tags$br(),
+    
     tags$b("Date d'identification de la friche : "), coalesce(format(f$site_identif_date, "%d/%m/%Y"), "Non renseignée"), tags$br(),
     
     bloc_actualisationdate,
@@ -1286,6 +1327,9 @@ get_popup_content <- function(f) {
                                                                   "Non renseignée",
                                                                   format_surface(f$bati_surface)), tags$br(),
     tags$b("Vacance de bâtis : "), coalesce(f$bati_vacance %>% as.character, "Non renseigné"), tags$br(),
+    
+    tags$b("Présence de logements vacants : "), coalesce(f$Friche_avec_vacance %>% as.character, "Non renseigné"), tags$br(),
+    
     tags$b("Présence de bâtiment de valeur patrimoniale : "), coalesce(f$bati_patrimoine %>% as.character, "Non renseigné"), tags$br(),
     tags$b("Etat de dégration des bâtiments : "), coalesce(f$bati_etat %>% as.character, "Non renseigné"), tags$br(),
     tags$b("Année de construction du local le plus ancien : "), coalesce(format(f$local_ancienne_annee, "%Y"), "Non renseignée"), tags$br(),
@@ -1352,11 +1396,24 @@ get_popup_content <- function(f) {
 
       tags$b("Forme dominante de la zone d'urbanisme : "), ifelse(is.na(f$urba_zone_formdomi_txt),
                                                  "Non renseigné",
-                                                 paste0(f$urba_zone_formdomi," - ",f$urba_zone_formdomi_txt)),
+                                                 paste0(f$urba_zone_formdomi," - ",f$urba_zone_formdomi_txt))
+      
       ),
+    
+      tags$br(),
       # tags$b("Document approuvé le : "), ifelse(is.na(f$datappro),
       #                                           "Date non renseignée",
       #                                           format(as.Date(f$datappro, "%Y%m%d"), format="%d/%m/%Y"))),
+    
+    tags$b("Friche dans un périmètre de site économique "), 
+    tags$a(href = glue("https://datafoncier.cerema.fr/base-empcom-des-principales-emprises-dactivites-commerciales/"), 
+           tagList("(base EmpCom) :"), #icon("external-link"), 
+           target="_blank", style="font-size: 1em;"),
+    ifelse(is.na(f$zone_activites),
+                                              "Non","Oui"
+                                              ),
+    
+    tags$br(),
 
     ##=##=##=##=##
     # Pollution =##
@@ -1946,7 +2003,7 @@ get_ui_nb_friches_accueil <- function() {
                               font-size: 1.4em;
                     margin-bottom: -15px;"), 
     
-    tags$p(13, " observatoires locaux", style="
+    tags$p(14, " observatoires locaux", style="
                               font-weight: 500;
                               font-size: 1.2em;
                     margin-bottom: -15px;"), 

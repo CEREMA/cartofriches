@@ -1,0 +1,347 @@
+---
+title: "Cartofriches - rapport de mise à jour"
+author: "Cerema"
+date: "Date de mise à jour : `r Sys.Date()`"
+output:
+  html_document:
+    df_print: paged
+  pdf_document: default
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = F)
+```
+
+```{r, results='hide',warning=FALSE,message=FALSE}
+source("libraries.R", encoding = "UTF-8")
+source("functions.R", encoding = "UTF-8")
+library(gt)
+```
+
+## Informations générales
+
+Ce rapport contient les principales informations concernant la dernière mise à jour du site <https://cartofriches.cerema.fr>.
+
+```{r}
+f.xy <- readRDS("data/friches/f.xy.rds") %>%
+    mutate(Long = st_coordinates(.)[, 1], Lat = st_coordinates(.)[, 2]) %>%
+    mutate(long = Long,
+           lat = Lat,
+           site_numero = pk)
+# stats <- get_n_friches(f.xy)
+# get_ui_legende(stats, 
+#               chk_all = TRUE, 
+#               popup = FALSE)
+glue("Il y a ",format_numericFR(nrow(f.xy %>% filter(nom_prodcartofriches != "Site Basias ou Basol non vérifié par le Cerema")))," friches qualifiées et ",format_numericFR(nrow(f.xy %>% filter(nom_prodcartofriches == "Site Basias ou Basol non vérifié par le Cerema"))) ," friches non vérifiées recensées dans Cartofriches.")
+```
+
+## Typologie des friches recensées (hors friches non vérifiées)
+
+### Statut des friches
+
+Les friches sont classées selon leur statut : friche reconvertie, friche avec ou sans projet, friche potentielle ou statut inconnu
+
+```{r}
+TABLE_statut <- f.xy %>% 
+  as.data.frame() %>%
+  filter(nom_prodcartofriches != "Site Basias ou Basol non vérifié par le Cerema") %>%
+  group_by(site_statut) %>%
+  summarise('Nombre de friches' = n(),
+            Surface_UF = sum(unite_fonciere_surface, na.rm = T),
+            Surface = sum(site_surface, na.rm = T)) %>%
+  rename('Statut de la friche' = site_statut) %>%
+  slice(3,1,4,5,2) %>%
+  mutate(Surface = round(Surface/10000,0),
+         Surface_UF = round(Surface_UF/10000,0)) %>%
+  rename('Surface des unités foncières (en Ha)' = Surface_UF,
+         'Surface des friches (en Ha)' = Surface) %>%
+  bind_rows(summarise(., across(where(is.numeric), sum),
+                         across(where(is.character), ~'Total')))
+
+
+TABLE_statut %>% gt() %>% 
+  fmt_number(
+        columns = c('Nombre de friches','Surface des unités foncières (en Ha)','Surface des friches (en Ha)'),
+        decimals = 0, sep_mark = " "
+      ) %>%
+        tab_source_note(
+          source_note = html("<b> Source : </b> Cartofriches - Septembre 2024")
+        )
+
+```
+
+### Type de friches (hors friches reconverties)
+
+Les friches sont également classées selon leur type : industrielle, commerciale, d'habitat, etc...
+
+```{r}
+
+TABLE_type <- f.xy %>% 
+  as.data.frame() %>%
+  filter(nom_prodcartofriches != "Site Basias ou Basol non vérifié par le Cerema",
+         site_statut != "friche reconvertie") %>%
+  group_by(site_type) %>%
+  summarise(nombre = n(),
+            Surface_UF = sum(unite_fonciere_surface, na.rm = T),
+            Surface = sum(site_surface, na.rm = T)) %>%
+  arrange(-nombre) %>%
+  rename('Type de friche' = site_type,
+         'Nombre de friches' = nombre) %>%
+  mutate(Surface = round(Surface/10000,0),
+         Surface_UF = round(Surface_UF/10000,0)) %>%
+  rename('Surface des unités foncières (en Ha)' = Surface_UF,
+         'Surface des friches (en Ha)' = Surface)  %>%
+  bind_rows(summarise(., across(where(is.numeric), sum),
+                         across(where(is.character), ~'Total')))
+
+TABLE_type %>% gt() %>% 
+  fmt_number(
+        columns = c('Nombre de friches','Surface des unités foncières (en Ha)','Surface des friches (en Ha)'),
+        decimals = 0, sep_mark = " "
+      ) %>%
+        tab_source_note(
+          source_note = html("<b> Source : </b> Cartofriches - Septembre 2024")
+        )
+
+```
+
+### Zonage d'urbanisme (hors friches reconverties)
+
+L'information sur le zonage d'urbanisme sur lequel est situé la friche est également présente :
+
+```{r}
+
+TABLE_urba <- f.xy %>% 
+  as.data.frame() %>%
+  filter(nom_prodcartofriches != "Site Basias ou Basol non vérifié par le Cerema",
+         site_statut != "friche reconvertie") %>%
+  group_by(urba_zone_type) %>%
+  summarise(nombre = n(),
+            Surface_UF = sum(unite_fonciere_surface, na.rm = T),
+            Surface = sum(site_surface, na.rm = T)) %>%
+  arrange(-nombre) %>%
+  rename('Nombre de friches' = nombre) %>%
+  mutate("Zonage d'urbanisme" = ifelse(is.na(urba_zone_type), "Hors zonage (Carte Communale)",urba_zone_type)) %>%
+  dplyr::select("Zonage d'urbanisme",'Nombre de friches',Surface_UF,Surface) %>%
+  slice(1,3:10,2) %>%
+  mutate(Surface = round(Surface/10000,0),
+         Surface_UF = round(Surface_UF/10000,0)) %>%
+  rename('Surface des unités foncières (en Ha)' = Surface_UF,
+         'Surface des friches (en Ha)' = Surface)  %>%
+  bind_rows(summarise(., across(where(is.numeric), sum),
+                         across(where(is.character), ~'Total')))
+
+TABLE_urba %>% gt() %>% 
+  fmt_number(
+        columns = c('Nombre de friches','Surface des unités foncières (en Ha)','Surface des friches (en Ha)'),
+        decimals = 0, sep_mark = " "
+      ) %>%
+        tab_source_note(
+          source_note = html("<b> Source : </b> Cartofriches - Septembre 2024")
+        )
+
+```
+
+## Focus sur les observatoires locaux
+
+```{r}
+
+
+a <- f.xy %>% 
+  as.data.frame() %>%
+  filter(nature == "observatoire local") %>%
+  group_by(nom_prodcartofriches) %>%
+  summarise('Nombre de friches' = n(),
+            Surface_UF = sum(unite_fonciere_surface, na.rm = T),
+            Surface = sum(site_surface, na.rm = T)) %>%
+  rename('Observatoire local' = nom_prodcartofriches) %>%
+  arrange('Nombre de friches') %>%
+  mutate(Surface = round(Surface/10000,0),
+         Surface_UF = round(Surface_UF/10000,0)) %>%
+  rename('Surface des unités foncières (en Ha)' = Surface_UF,
+         'Surface des friches (en Ha)' = Surface)  %>%
+  bind_rows(summarise(., across(where(is.numeric), sum),
+                         across(where(is.character), ~'Total')))
+
+glue(nrow(a)-1," observatoires locaux ont actuellement fourni leurs données : ")
+
+a %>% gt() %>% 
+  fmt_number(
+        columns = c('Nombre de friches','Surface des unités foncières (en Ha)','Surface des friches (en Ha)'),
+        decimals = 0, sep_mark = " "
+      )
+
+```
+
+## Localisation des friches recensées
+
+### Répartition selon les régions - hors friches potentielles
+
+Point de vigilance : le nombre de friches par région est fortement dépendant de la présence d'observatoires locaux et ne traduit pas nécessairement un nombre de friches plus important sur le terrain.
+
+```{r, results='hide',warning=FALSE,message=FALSE}
+regs.pts  <<- as.data.frame(readRDS("data/stats/regs.pts_MAJNico.rds")) %>%
+  rename(reg = code) %>%
+  mutate(nb_friches = n_friches_avec_projet +  n_friches_sans_projet + n_friches_reconverties )
+
+# library(rgdal)
+regions_rappro <- st_read('data/contours/regions_rapprochees.shp') %>%
+  left_join(regs.pts , by = "reg")
+regions_rappro_centroide <- st_read('data/contours/regions_rapprochees_centroide.shp') %>%
+  left_join(regs.pts , by = "reg")
+
+regions_rappro_centroide$Long[14]=-4.01
+regions_rappro_centroide$Lat[14]=41.76818
+
+regions_rappro_centroide$Long[15]=-2.439187
+regions_rappro_centroide$Lat[15]=41.89234
+
+regions_rappro_centroide$Long[16]=-1.165385
+regions_rappro_centroide$Lat[16]=41.89574
+
+regions_rappro_centroide$Long[17]=0.2303484
+regions_rappro_centroide$Lat[17]= 41.94279
+
+regions_rappro_centroide$Long[18]=1.253103
+regions_rappro_centroide$Lat[18]=41.97768
+
+library(BAMMtools)
+    # bins <- getJenksBreaks(regions_rappro$nb_friches, 5, subset = NULL)
+
+    quantileNum = 5
+    probs <- seq(0, 1, length.out = quantileNum + 1)
+    bins_brute <- quantile(regions_rappro$nb_friches, probs, na.rm = TRUE, names = FALSE)
+    bins <- round(bins_brute/10,0)*10
+    bins[1] <- 0
+    bins[6] <- bins[6]+10
+    
+    # bins <- c(0,500,1000,2000,3000,4000)
+    
+    pal <- colorBin("Greens", bins = bins)
+   
+   
+f.xy %>%
+  as.data.frame() %>%
+  # filter(nature == "observatoire local") %>%
+  group_by(dep) %>%
+  summarise('Nombre de friches' = n()) %>%
+  rename(Département = dep) %>%
+  arrange('Nombre de friches')
+   
+```
+
+```{r}
+leaflet() %>%
+  # addTiles(group = "OSM", options = c(opacity = 0.5)) %>%
+  addPolygons(data = regions_rappro,
+              popup = ~paste0(libelle," : ", round(nb_friches), " friches"),
+              fillColor = ~pal(nb_friches),
+              fillOpacity = 0.9,
+               color = "grey",
+                    dashArray = "3", weight = 1,
+                    highlightOptions = highlightOptions(weight = 5,color = "#666",dashArray = "",fillOpacity = 0.7,bringToFront = TRUE)) %>%
+   addLegend(data = regions_rappro,
+             pal = pal, 
+             values = ~pal(nb_friches), 
+             opacity = 0.7, 
+             title = "Nombre de friches par région",
+             labFormat = labelFormat(prefix = "",
+                                     suffix = " friches",
+                                     digits = 0,
+                                     big.mark = " ",
+                                     transform = identity),
+             position = "topright") %>%
+  addLabelOnlyMarkers(data = regions_rappro_centroide,
+                      lng = ~Long, lat = ~Lat, 
+                      label = ~nb_friches,
+                      labelOptions = labelOptions(noHide = TRUE, 
+                                                  direction = 'center', 
+                                                  textOnly = TRUE))
+
+
+```
+
+### Répartition selon les départements - hors friches potentielles
+
+Point de vigilance : le nombre de friches par région est fortement dépendant de la présence d'observatoires locaux et ne traduit pas nécessairement un nombre de friches plus important sur le terrain.
+
+```{r, results='hide',warning=FALSE,message=FALSE}
+# library(raster)
+# library(rgeos)
+
+deps.pts  <<- readRDS("data/stats/deps.pts_MAJNico.rds") %>% as.data.frame %>%
+  rename(dep = code) %>%
+  mutate(nb_friches = n_friches_avec_projet +  n_friches_sans_projet + n_friches_reconverties)
+
+# write.csv2(deps.pts, "friches_dep_20230324.csv")
+
+departements_rappro <- st_read('data/contours/dep_rapprochees.shp') %>%
+  left_join(deps.pts , by = "dep")
+departements_rappro_centroide <- st_read('data/contours/dep_rapprochees_centroide.shp') %>%
+  left_join(deps.pts , by = "dep")
+
+departements_rappro_centroide$Long[97]=-4.01
+departements_rappro_centroide$Lat[97]=41.76818
+departements_rappro_centroide$Long[98]=-4.01
+departements_rappro_centroide$Lat[98]=41.76818
+
+departements_rappro_centroide$Long[99]=-2.439187
+departements_rappro_centroide$Lat[99]=41.89234
+departements_rappro_centroide$Long[100]=-2.439187
+departements_rappro_centroide$Lat[100]=41.89234
+
+departements_rappro_centroide$Long[101]=-1.165385
+departements_rappro_centroide$Lat[101]=41.89574
+departements_rappro_centroide$Long[102]=-1.165385
+departements_rappro_centroide$Lat[102]=41.89574
+
+departements_rappro_centroide$Long[103]=0.2303484
+departements_rappro_centroide$Lat[103]= 41.94279
+departements_rappro_centroide$Long[104]=0.2303484
+departements_rappro_centroide$Lat[104]= 41.94279
+
+departements_rappro_centroide$Long[105]=1.253103
+departements_rappro_centroide$Lat[105]=41.97768
+departements_rappro_centroide$Long[106]=1.253103
+departements_rappro_centroide$Lat[106]=41.97768
+
+    # bins <- getJenksBreaks(departements_rappro$nb_friches, 5, subset = NULL)
+
+    quantileNum = 5
+    probs <- seq(0, 1, length.out = quantileNum + 1)
+    bins_brute <- quantile(departements_rappro$nb_friches, probs, na.rm = TRUE, names = FALSE)
+    bins <- round(bins_brute/10,0)*10
+    bins[1] <- 0
+    bins[6] <- bins[6]+10
+
+    
+    # bins <- c(0,40,100,200,1000)
+    
+    pal <- colorBin("Greens", bins = bins)
+
+```
+
+```{r}
+leaflet() %>%
+  # addTiles(group = "OSM", options = c(opacity = 0.01)) %>%
+  addPolygons(data = departements_rappro,
+              popup = ~paste0(libelle," : ", round(nb_friches), " friches"),
+              fillColor = ~pal(nb_friches),
+              fillOpacity = 0.9,
+               color = "grey",
+                    dashArray = "1", weight = 1,
+                    highlightOptions = highlightOptions(weight = 5,color = "#666",dashArray = "",fillOpacity = 0.7,bringToFront = TRUE)) %>%
+            addLegend(data = departements_rappro
+                      ,pal = pal, values = ~pal(nb_friches), opacity = 0.7, title = "Nombre de friches par département",
+                      labFormat = labelFormat(
+               prefix = "",
+               suffix = " friches",
+               digits = 0,
+               big.mark = " ",
+               transform = identity),
+                      position = "topright") %>%
+addLabelOnlyMarkers(data = departements_rappro_centroide,
+                    lng = ~Long, lat = ~Lat, label = ~nb_friches,
+                    labelOptions = labelOptions(noHide = TRUE, direction = 'center', textOnly = TRUE))
+```

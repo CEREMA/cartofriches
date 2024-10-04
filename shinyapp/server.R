@@ -2,19 +2,13 @@ server <- function(input, output, session) {
   
   load_data()   # on charge les données
   
-  
-  
-  
-  # Va directement sur l'onglet "Contribuer"
+  # Va directement sur l'onglet "Contribuer" lorsqu'il y a 'contribuer' dans l'url
   observe({
     query <- parseQueryString(session$clientData$url_search)
-    if("contribuer" %in% names(query)){
-      updateNavbarPage(session, "app_navbar", selected = "Contribuer")
+    if("contribuer" %in% names(query) | "local" %in% names(query) | "observatoire" %in% names(query)){
+      updateNavbarPage(session, "app_navbar", selected = "Monter son observatoire local")
     }
   })
-  
-  
-  
   
   # > MODULES ----
   
@@ -23,7 +17,6 @@ server <- function(input, output, session) {
   # ou la BBOX xmin, ymin, xmax, ymax de là où aller
   r_coords1 <- mod_ban("search1", session)
   r_coords2 <- mod_ban("search2", session)
-  
   
   # > VARIABLES ----
   
@@ -92,13 +85,6 @@ server <- function(input, output, session) {
       sf_points <- sf_points %>% filtrer_friches(choices = choices)
     }
     
-  #   print(rv_filtres$surface_min)
-  #   
-  #   if(!is.na(rv_filtres$surface_min)) {
-  #   sf_points <- sf_points %>%
-  #     filter(unite_fonciere_surface > rv_filtres$surface_min)
-  # }
-      
     return(sf_points)
   })
   
@@ -196,11 +182,7 @@ server <- function(input, output, session) {
     }
   })
   
-  # observe({
-  #     rv_filtres$surface_min <- input$INPUT_FILTRE_SURFACE[1]
-  #     rv_filtres$surface_max <- input$INPUT_FILTRE_SURFACE[2]
-  # })
-  
+
   # input$filtrer ----
   observeEvent(input$filtrer, {
     
@@ -508,7 +490,7 @@ server <- function(input, output, session) {
   
   output$ui_publier_une_friche <- renderUI({
     div(
-      h1("Cartofriches"),
+      h1("Monter son observatoire local"),
       
       includeMarkdown("www/textes/publier_une_friche.md")
       
@@ -760,9 +742,17 @@ server <- function(input, output, session) {
   )
   
   
+  # > ONGLET FONDS VERT ----
   
   
+  # output$ui_fondsvert <- renderUI({
+  #   
+  #   h4("en cours")
+  # 
+  #   
+  # })
   
+  modFondsfriches_server("fonds_friches")
   
   
   

@@ -1,0 +1,11 @@
+L’intérêt pour un observatoire local de friches de verser ses données dans l’inventaire national est multiple :
+- **Enrichir les données de son observatoire :** le Cerema réalise en effet certains enrichissements de données, en rajoutant systématiquement des informations concernant :
+    -	la propriété *(via les fichiers fonciers)* ;
+    -	le zonage d’urbanisme *(via le GPU)* ;
+    -	le taux d’espace urbanisé *(au sens des fichiers fonciers)* ;
+    -	le taux de logements vacants *(via les fichiers fonciers)* ;
+    -	la desserte en transports en commun (distance à la gare la plus proche) et à un échangeur autoroutier ;
+    -	et prochainement, il est envisagé de rajouter des informations sur l’artificialisation (via des croisements avec l’OCS-GE), le potentiel de renaturation (grâce aux travaux du projet POGEIS) et les usages potentiels de la friche.
+- **Mettre en visibilité les friches de son territoire** afin d’accélérer leur reconversion, via une mise à disposition des données en opendata et une représentation de ces données sous la forme d’une carte intéractive et un tableau d’exploration des données. De nombreux acteurs privés et bureaux d’études utilisent Cartofriches afin de sélectionner des sites d’implantation de projets pouvant répondre à leur besoin. Par ailleurs, les textes relatifs au développement des énergies renouvelables favorisent fortement l'installation de ces dernières sur des friches.
+- **Mettre en avant les friches récemment réhabilitées** sur son territoire, étant donné que Cartofriches intègre également les friches reconverties, avec notamment l’information du type de projet de reconversion (pour un projet d’habitat, d’activités, d’énergies renouvelables, etc.).
+- **Améliorer la connaissance des volumes de friches sur le territoire national** afin d’éclairer les politiques publiques et les aides à la reconversion des friches.

@@ -1,0 +1,5 @@
+La constitution d’un observatoire local de friches permet aux collectivités d’avoir des données fiables et à jour sur ces gisements fonciers importants, afin de coordonner l’action publique : connaissance du territoire, réflexions sur ses besoins actuels et futurs, arbitrage, inscription dans les documents de planification et maîtrise du foncier.
+
+Cartofriches regroupe l'ensemble des **recensements locaux**, pour consolider la base de données **au plus près du terrain**. La liste des observatoires locaux est détaillée <a href=https://artificialisation.developpement-durable.gouv.fr/cartofriches/observatoires-locaux/ target=_blank>**sur le portail de l'artificialisation des sols** <i class="fa fa-external-link"></i> </a> 
+
+C'est en continuant d'intégrer les données d'observatoires locaux et d'études de recensement portées par des acteurs de l'aménagement que l'inventaire national pourra être le plus exhaustif et à jour !

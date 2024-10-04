@@ -147,8 +147,10 @@ ui <-
     ),
   
   
-  # # __ONGLET STATISTIQUES ----
-  tabPanel("Explorer les données",
+  # # __ONGLET EXPLORER LES DONNEES ----
+  navbarMenu("Explorer les données",
+             
+  tabPanel("Cartofriches (tableau)", ## Tableau ----
            icon = icon("table"),
            
            tags$br(),tags$br(),
@@ -343,30 +345,134 @@ ui <-
   ) # fin tabPanel ONGLET STATISTIQUES
   
   ,
+  
+  tabPanel("Enseignements du Fonds Friches/Fonds Vert", ## Fonds Vert ----
+           # icon = icon("bar-chart")
+           icon = icon("book")
+           ,
+
+           fluidRow(
+             column(8 ,offset = 2,
+                    div(
+                      h1("Enseignements du Fonds Friches/Fonds Vert"),
+                      includeMarkdown("www/textes/fonds_friches.md")
+                    )
+                    ),
+                    br(),br(),
+             column(8 ,offset = 2,
+                    div('', style=glue("
+                            width: 100%;
+                            border-bottom: 2px solid #e4e4e4;
+                            margin-bottom: 10px;
+                            ")),
+                    div(
+                      h2("La mesure Recyclage urbain du Fonds Vert illustrée"),
+                      includeMarkdown("www/textes/fonds_friches_video.md")
+                      )
+                    ),
+             column(8 ,offset = 2,
+
+                    
+          #           div(
+          #             div(tags$span("Télécharger les données sur data.gouv.fr")),
+          #             div(tags$a(tags$img(src="logo-datagouv.png", width = "150px", style="margin-top:10px;"),
+          #                        href="https://www.data.gouv.fr/fr/datasets/sites-references-dans-cartofriches/",
+          #                        target="_blank")),
+          #             style="
+          # color:#144391;
+          # margin-top: 5px;
+          # padding-top: 10px;
+          # text-align: center;
+          # padding-bottom: 10px;
+          # border-radius: 5px;
+          # background-color: whitesmoke;
+          # font-size: 1.2em;
+          # width:400px;
+          # margin:auto;
+          #   ")
+          #           ,
+                    
+                    
+                    div(
+                      tags$a(tags$img(src="image_video_azay.jpg", width = "450px", style="margin-top:10px;"),
+                               href="https://dai.ly/x8g9pwt/",
+                               target="_blank"),
+                      tags$a(tags$img(src="image_video_meubeuge.jpg", width = "450px", style="margin-top:10px;"),
+                                          href="https://dai.ly/x90bcf4/",
+                                          target="_blank")
+                      )
+                    ),
+              column(8 ,offset = 2,
+                    div(
+                      includeMarkdown("www/textes/fonds_friches_video2.md")
+                    )
+                    ),
+                    br(),br(),
+             column(8 ,offset = 2,
+                    div('', style=glue("
+                            width: 100%;
+                            border-bottom: 2px solid #e4e4e4;
+                            margin-bottom: 10px;
+                            ")),
+                    div(
+                      h2("Les données du Fonds Vert en opendata"),
+                      includeMarkdown("www/textes/fonds_friches_données.md")
+                    )
+             )
+             )
+           
+           # fluidRow(
+           #   column(12 ,offset = 0,
+                    # div(
+                    #     modFondsfriches_ui("fonds_friches")
+                    # 
+                    # )
+           #   ))
+           
+           
+  ) # fin du tabPanel Fonds Vert
+  
+  ) # fin du navbarMenu
+  ,
 
 
   # __ONGLET CONTRIBUER ----
-  tabPanel("Contribuer",
+  tabPanel("Monter son observatoire local",
            icon = tags$i(class="far fa-paper-plane", role="presentation", `aria-label`="paper-plane icon", style="color:#EF7757"),
            
            fluidRow(column(8, offset=2, 
-                           uiOutput("ui_publier_une_friche")
+                           div(
+                             h1("Monter son observatoire local"),
+                             
+                             includeMarkdown("www/textes/contribuer_1_monter_observatoire_local.md"),
+                             h3("Pourquoi contribuer à Cartofriches ?"),
+                             includeMarkdown("www/textes/contribuer_1_pourquoicontribuer.md"),
+                             h3("Comment contribuer à Cartofriches ?"),
+                             includeMarkdown("www/textes/contribuer_1_commentcontribuer.md")
+                           )
            )
            )
-           ,
-           
-           fluidRow(
-             column(6, offset=2,
-                    downloadButton("downloadZIP_kit",
-                                   role = "button",`arial-label` = "Télécharger le kit Cartofriches",
-                                   class="btn-download",
-                                   "Télécharger le kit Cartofriches (dossier .zip)")
-             )
-           )
+           # ,
+           # 
+           # fluidRow(
+           #   column(6, offset=2,
+           #          downloadButton("downloadZIP_kit",
+           #                         role = "button",`arial-label` = "Télécharger le kit Cartofriches",
+           #                         class="btn-download",
+           #                         "Télécharger le kit Cartofriches (dossier .zip)")
+           #   )
+           # )
            
            ,
            fluidRow(column(8, offset=2, 
-                           uiOutput("ui_publier_une_friche_2")
+                           div(
+                             h3("UrbanSIMUL comme support à l'observation"),
+                             includeMarkdown("www/textes/contribuer_2_urbansimul.md")
+                           ),
+                           div(
+                             h3("Réseau des Inventaires Territoriaux des Friches"),
+                             includeMarkdown("www/textes/contribuer_3_lifti.md")
+                           )
            )
            )
            
