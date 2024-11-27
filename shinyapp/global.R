@@ -9,7 +9,7 @@ source("modules/module_fonds_friches.R", encoding = "UTF-8")
 Sys.setlocale("LC_TIME", "French")
 
 # DATE DE MISE A JOUR ####
-LAST_UPDATE_DATE <- "30 Septembre 2024"
+LAST_UPDATE_DATE <- "20 Novembre 2024"
 
 # PALETTE CEREMA ####
 couleurs_cerema <- readRDS("data/couleurs_cerema.rds")
@@ -65,6 +65,8 @@ Observatoires <- c(
   "DDT de la Marne"                              = "Marne",
   "DDTM de la Somme"                             = "Somme",
   "Grand Angoulême"                              = "Grand Angouleme",
+  "Communauté de communes Val de Gray"           = "CCVG",
+  "Agence d'Urbanisme - Reims (AUDRR)"           = "AUDRR",
   "Agence d'Urbanisme du Grand Amiénois (ADUGA)" = "ADUGA", 
   "Commune de Fougères"                          = "Fougeres"
 ) %>% get_slc(label = "Sélectionnez un observatoire")
@@ -168,7 +170,15 @@ Logos <- list(
   
   "Sud Foncier Eco" = list(img = "logos/logo_SFE.png", 
                 height = 70, 
-                message = "Bienvenue en Région Sud")
+                message = "Bienvenue en Région Sud"),
+  
+  CCVG = list(img = "logos/logo_CCVG.png", 
+                           height = 70, 
+                           message = "Bienvenue sur le territoire de la CCVG"),
+  
+  AUDRR = list(img = "logos/logo_AUDRR.png", 
+                           height = 70, 
+                           message = "Bienvenue sur le territoire de l'AUDRR")
   
   
   

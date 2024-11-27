@@ -6,10 +6,12 @@ load_data <- function() {
   # f.xy <<- readRDS("data/friches/f.xy.rds")
   # f.tup <<- readRDS("data/friches/f.tup.rds")
   f.xy <<- readRDS("data/friches/f.xy.rds") %>% # st_set_crs(2154) %>% st_transform(4326) %>% 
-    mutate(Long = st_coordinates(.)[, 1], Lat = st_coordinates(.)[, 2]) %>%
-    mutate(long = Long,
-           lat = Lat,
-           site_numero = site_id)  
+    # mutate(Long = st_coordinates(.)[, 1], Lat = st_coordinates(.)[, 2]) %>%
+    mutate(Long = long,
+           Lat = lat,
+           site_numero = site_id,
+           bati_surface = as.numeric(bati_surface),
+           desserte_distance_ferroviaire = as.numeric(desserte_distance_ferroviaire))  
   
   f.xy <- f.xy %>%
     mutate(site_type = ifelse(site_type == "agro-industrielle", "friche agro-industrielle",

@@ -668,9 +668,9 @@ server <- function(input, output, session) {
                                paste0(str_split(site_nom," - ", simplify = TRUE)[,1], " - ",str_split(site_nom," - ", simplify = TRUE)[,6]), 
                                site_nom)) %>%
     mutate(urba_zone_type_regroup = ifelse(urba_zone_type_regroup == "U","U - zone urbaine",
-                                           ifelse(urba_zone_type_regroup == "AU","U - zone à urbaniser",
-                                                  ifelse(urba_zone_type_regroup == "A","U - zone agricole",
-                                                         ifelse(urba_zone_type_regroup == "N","U - zone naturelle","Hors PLU/PLUi"))))) %>%
+                                           ifelse(urba_zone_type_regroup == "AU","AU - zone à urbaniser",
+                                                  ifelse(urba_zone_type_regroup == "A","A - zone agricole",
+                                                         ifelse(urba_zone_type_regroup == "N","N - zone naturelle","Hors PLU/PLUi"))))) %>%
     select(LienCartofriches3,dep,Commune,nom_court,nom_prodcartofriches,site_statut,site_type,urba_zone_type_regroup,site_surface, Long, Lat) %>%
     rename(
       "Nom du site" = nom_court,

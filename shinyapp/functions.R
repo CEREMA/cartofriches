@@ -1,7 +1,7 @@
 source("modules/mod_ban.R", encoding = "UTF-8")
 
-format_surface <- function(x) { paste0(format(round(x,0), big.mark = " ", decimal.mark = ",", trim = TRUE, scientific = FALSE)," m²") }
-format_numericFR <- function(x) { paste0(format(round(x,0), big.mark = " ", decimal.mark = ",", trim = TRUE, scientific = FALSE)) }
+format_surface <- function(x) { paste0(format(round(x,0), big.mark = " ", decimal.mark = ",",  scientific = FALSE)," m²") } #trim = TRUE,
+format_numericFR <- function(x) { paste0(format(round(x,0), big.mark = " ", decimal.mark = ",", scientific = FALSE)) } #trim = TRUE,
 
 
 # > CARTE ----
@@ -426,7 +426,7 @@ zoom_to <- function(m, coords, type, value, label = NULL) {
 # Les marqueurs sont affichésà un niveau de zoom moyen
 add_points <- function(proxy, f, replaceMarkers = TRUE) {
   
-  # f <- f.xy %>% filter(site_id == '65295_15083')
+   # f <- f.xy %>% filter(site_id == '65295_15083')
   
   message(">> add_points")
   
@@ -1057,6 +1057,8 @@ get_popup_content <- function(f) {
   
   # > get_popup_content(f.xy[1, ])
   
+  # print(f)
+  
   message(">> get_popup_content")
   
   # print(f)
@@ -1144,7 +1146,8 @@ get_popup_content <- function(f) {
   } else {
     bloc_actualisationdate <- tagList(
       # tags$b("Date d'actualisation de la friche : "), coalesce(format(as.Date(f$site_actu_date, "%d%m%y"), format="%d/%m/%Y"), "Pas d'actualisation"), tags$br(),
-      tags$b("Date d'actualisation de la friche : "), coalesce(format(f$site_actu_date, "%d/%m/%Y"), "Pas d'actualisation"), tags$br(),
+      # tags$b("Date d'actualisation de la friche : "), coalesce(format(f$site_actu_date, "%d/%m/%Y"), "Pas d'actualisation"), tags$br(),
+      tags$b("Date d'actualisation de la friche : "), coalesce(f$site_actu_date, "Pas d'actualisation"), tags$br(),
       )
   }  
 
@@ -1235,7 +1238,7 @@ get_popup_content <- function(f) {
       )
   }
   
-  
+  print("11")
   # print(f)
   
   # ## Surface
@@ -1250,7 +1253,7 @@ get_popup_content <- function(f) {
   
   #--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#
   
-  # f <- Data$points %>% filter(pk == 29085)
+  # f <- Data$points %>% filter(site_id == "13078_27858")
   
   # CONTENT
   content <- tagList(
@@ -1268,22 +1271,23 @@ get_popup_content <- function(f) {
     bloc_projet,
     bloc_urbanvitaliz,
     bloc_reconversion,
-    
+
     bloc_occupation,
     bloc_typefriche, tags$br(),
-    
+
     # tags$b("Surface de la friche : "), coalesce(format_surface(f$site_surface), "Non calculée"), tags$br(),
     # tags$b("Surface (de l'unité(s) de propriété) : "), coalesce(format_surface(f$unite_fonciere_surface), "Non calculée"), tags$br(),
     bloc_surface,tags$br(),
-    
-    
-    
-    tags$b("Taux d'espace urbanisé (de l'unité(s) de propriété) : "), 
-    ifelse(is.na(f$Taux_artif_ff),"Non renseigné",glue(f$Taux_artif_ff, " %")),
+
+
+
+    tags$b("Taux d'espace urbanisé (de l'unité(s) de propriété) : "),
+    ifelse(is.na(f$taux_artif_ff),"Non renseigné",glue(f$taux_artif_ff, " %")),
     tags$br(),
-    
+
     tags$b("Date d'identification de la friche : "), coalesce(format(f$site_identif_date, "%d/%m/%Y"), "Non renseignée"), tags$br(),
-    
+    # tags$b("Date d'identification de la friche : "), coalesce(f$site_identif_date, "Non renseignée"), tags$br(),
+
     bloc_actualisationdate,
 
 
@@ -1318,46 +1322,49 @@ get_popup_content <- function(f) {
     h4("Bâti"),
     tags$b("Nombre de bâtiments : "), coalesce(f$bati_nombre %>% as.character, "Non renseigné"), tags$br(),
     tags$b("Type de bâtiments : "), coalesce(f$bati_type, "Non renseignée"), tags$br(),
-    # bloc_surface,
+    bloc_surface,
     # tags$b("Surface de plancher totale des bâtiments : "), ifelse(is.na(f$bati_surface),
     #                                                               "Non renseignée",
     #                                                               coalesce(f$bati_surface,
-    #                                                                        "Non renseignée")), tags$br(),
+    #                                                                        "Non renseignée")), 
+    tags$br(),
     tags$b("Surface de plancher totale des bâtiments : "), ifelse(is.na(f$bati_surface),
                                                                   "Non renseignée",
                                                                   format_surface(f$bati_surface)), tags$br(),
     tags$b("Vacance de bâtis : "), coalesce(f$bati_vacance %>% as.character, "Non renseigné"), tags$br(),
-    
-    tags$b("Présence de logements vacants : "), coalesce(f$Friche_avec_vacance %>% as.character, "Non renseigné"), tags$br(),
-    
+
+    tags$b("Présence de logements vacants : "), coalesce(f$friche_avec_vacance %>% as.character, "Non renseigné"), tags$br(),
+
     tags$b("Présence de bâtiment de valeur patrimoniale : "), coalesce(f$bati_patrimoine %>% as.character, "Non renseigné"), tags$br(),
     tags$b("Etat de dégration des bâtiments : "), coalesce(f$bati_etat %>% as.character, "Non renseigné"), tags$br(),
-    tags$b("Année de construction du local le plus ancien : "), coalesce(format(f$local_ancienne_annee, "%Y"), "Non renseignée"), tags$br(),
-    tags$b("Année de construction du local le plus récent : "), coalesce(format(f$local_recent_annee, "%Y"), "Non renseignée"), tags$br(),
- 
-    ##=##=##=##=##
-    # Propriété =##
-    ##=##=##=##=##
+    tags$b("Année de construction du local le plus ancien : "), ifelse(is.na(f$local_ancienne_annee),"Non renseignée",f$local_ancienne_annee), tags$br(),
+    tags$b("Année de construction du local le plus ancien : "), ifelse(is.na(f$local_recent_annee),"Non renseignée",f$local_recent_annee), tags$br(),
+    # tags$b("Année de construction du local le plus ancien : "), coalesce(format(f$local_ancienne_annee, "%Y"), "Non renseignée"), tags$br(),
+    # tags$b("Année de construction du local le plus récent : "), coalesce(format(f$local_recent_annee, "%Y"), "Non renseignée"), tags$br(),
+
+    # ##=##=##=##=##
+    # # Propriété =##
+    # ##=##=##=##=##
     h4("Propriété"),
-    
+
     tags$b("Personne physique ou morale : "), ifelse(is.na(f$proprio_personne),
                                                      "Non renseigné",
                                                      coalesce(str_to_title(f$proprio_personne),
                                                               "Nom du propriétaire non renseigné")),
     tags$br(),
-    
+
     tags$b("Type de propriétaire : "), ifelse(is.na(f$l_catpro3txt),
                                              "Non renseigné",
                                              coalesce(f$l_catpro3txt %>% get_texte,
                                                       "Nom du propriétaire non renseigné")),
     tags$br(),
-    
+
     tags$b("Nom du propriétaire : "), ifelse(is.na(f$proprio_nom),
                                              "Non renseigné",
                                              coalesce(f$proprio_nom %>% get_texte,
                                                       "Nom du propriétaire non renseigné")),
     tags$br(),
-    
+
     tags$b("Date de la dernière mutation : "), ifelse(is.na(f$date_mutation),
                                              "Non renseigné",
                                              coalesce(f$date_mutation,
@@ -1388,31 +1395,31 @@ get_popup_content <- function(f) {
       #                                                   coalesce(f$urba_doc_type, "Non renseignée")), tags$br(),
       #
       # tags$b("Libellé de la zone : "), coalesce(f$urba_zone_lib, "Non renseignée"), tags$br(),
-      
-      tags$b("Date d'approbation du document d'urbanisme : "), ifelse(is.na(f$urba_datappro),
-                                                                  "Non renseigné",
-                                                                  f$urba_datappro),
+
+      tags$b("Date d'approbation du document d'urbanisme : "), ifelse(is.na(f$urba_datappro),"Non renseigné",
+                                                                  ifelse(nchar(f$urba_datappro) == 6,paste0(substring(f$urba_datappro,5,6),"/",substring(f$urba_datappro,1,4)),
+                                                                  f$urba_datappro)),
       tags$br(),
 
       tags$b("Forme dominante de la zone d'urbanisme : "), ifelse(is.na(f$urba_zone_formdomi_txt),
                                                  "Non renseigné",
                                                  paste0(f$urba_zone_formdomi," - ",f$urba_zone_formdomi_txt))
-      
+
       ),
-    
+
       tags$br(),
       # tags$b("Document approuvé le : "), ifelse(is.na(f$datappro),
       #                                           "Date non renseignée",
       #                                           format(as.Date(f$datappro, "%Y%m%d"), format="%d/%m/%Y"))),
-    
-    tags$b("Friche dans un périmètre de site économique "), 
-    tags$a(href = glue("https://datafoncier.cerema.fr/base-empcom-des-principales-emprises-dactivites-commerciales/"), 
-           tagList("(base EmpCom) :"), #icon("external-link"), 
+
+    tags$b("Friche dans un périmètre de site économique "),
+    tags$a(href = glue("https://datafoncier.cerema.fr/base-empcom-des-principales-emprises-dactivites-commerciales/"),
+           tagList("(base EmpCom) :"), #icon("external-link"),
            target="_blank", style="font-size: 1em;"),
     ifelse(is.na(f$zone_activites),
                                               "Non","Oui"
                                               ),
-    
+
     tags$br(),
 
     ##=##=##=##=##
@@ -1421,13 +1428,13 @@ get_popup_content <- function(f) {
     h4("Caractéristiques du sol"),
     bloc_pollution,
 
-    
+
     ##=##=##=##=##
     # Desserte en transport =##
     ##=##=##=##=##
     h4("Desserte en transport"),
     tagList(
-      
+
       tags$b("Distance d'accès au réseau ferroviaire : "), ifelse(is.na(f$desserte_distance_ferroviaire),
                                                                       "Non renseigné",
                                                                       glue(round(f$desserte_distance_ferroviaire/1000,1), " km")),
@@ -2003,7 +2010,7 @@ get_ui_nb_friches_accueil <- function() {
                               font-size: 1.4em;
                     margin-bottom: -15px;"), 
     
-    tags$p(14, " observatoires locaux", style="
+    tags$p(16, " observatoires locaux", style="
                               font-weight: 500;
                               font-size: 1.2em;
                     margin-bottom: -15px;"), 

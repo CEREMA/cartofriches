@@ -7,4 +7,4 @@ Autre avantage : le module friches d'UrbanSIMUL respecte le standard de données
 
 Le Cerema a rédigé <a href=https://urbansimul.cerema.fr/ressources/mobiliser-urbansimul-pour-suivi-des-friches/ target=_blank>**une fiche explicative pas à pas** <i class="fa fa-external-link"></i></a> afin de vous aidez à monter et maintenir à jour un observatoire local des friches dans UrbanSIMUL.
 
-De plus en plus de collectivités et services de l'Etat l'utilisent (Région SUD, Grand Périgueux, DDT67, DDT68, etc.), pourquoi pas vous !
+De plus en plus de collectivités et services de l'Etat l'utilisent (Région SUD, DDT67, DDT68, etc.), pourquoi pas vous !
