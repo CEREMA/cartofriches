@@ -62,12 +62,22 @@ ui <-
              # DETECTION MOBILE ----
              mobileDetect('isMobile'),
              
-             
-             # BANDEAU DU HAUT 1 ----
-             uiOutput("ui_bandeau"),
-             
              # PAVES ----
-             uiOutput("ui_pave"),
+             uiOutput("ui_pave_nico"),
+             
+             # Carroussel ---
+             fluidRow(
+               column(10,
+                      offset=1,
+                      petitTrait("10%"),
+                      div(
+                        tags$span("A la une", style="font-size: 20px;color:#EF7757; font-weight:700;"),
+                        style = "text-align: center;"
+                      ),
+                      slickROutput("carousel", width = "100%")
+               )
+             )
+             ,br(),             
              
              # BOUTONS ----
              fluidRow(
@@ -90,6 +100,43 @@ ui <-
                     padding-top:70px;
                     padding-bottom:70px;"),
     ),
+    
+    # __ONGLET HOME OLD ####
+    # tabPanel(" ",
+    #          title = "Accueil",
+    #          # icon("home", lib = "glyphicon"),
+    #          icon = icon("home", lib = "glyphicon"),
+    #          
+    #          # DETECTION MOBILE ----
+    #          mobileDetect('isMobile'),
+    # 
+    #          # BANDEAU DU HAUT 1 ----
+    #          uiOutput("ui_bandeau"),
+    #          
+    #          # PAVES ----
+    #          uiOutput("ui_pave"),
+    #          
+    #          # BOUTONS ----
+    #          fluidRow(
+    #            column(10,
+    #                   offset=1,
+    #                   fluidRow(
+    #                     get_bandeau2(titre = "Valoriser vos friches", 
+    #                                  sous_titre = "et rejoignez la communauté")
+    #                   ),
+    #                   tags$br(),
+    #                   tags$br(),
+    #                   
+    #                   fluidRow(
+    #                     column(4, div(get_bouton("button1", "Publier une friche", url = 'https://artificialisation.biodiversitetousvivants.fr/cartofriches/contribuer'), style="text-align:center;margin-top:5px;")),
+    #                     column(4, div(get_bouton("button2", "Voir les contributeurs", url = "https://artificialisation.biodiversitetousvivants.fr/cartofriches/observatoires-locaux"), style="text-align:center;margin-top:5px;")),
+    #                     column(4, div(get_bouton("button3", "Découvrir le Cerema", url = "https://www.cerema.fr/fr"), style="text-align:center;margin-top:5px;"))
+    #                   )
+    #            ), 
+    #            style="background-color:#EF7757;
+    #                 padding-top:70px;
+    #                 padding-bottom:70px;"),
+    # ),
     
     # __ONGLET RECHERCHE UNE FRICHE ----
     tabPanel(

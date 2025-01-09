@@ -1,5 +1,50 @@
 server <- function(input, output, session) {
   
+  output$carousel <- renderSlickR({
+    slickR(
+      obj = list(
+        # Image 1 avec lien
+        div(tags$a(href = "https://artificialisation.developpement-durable.gouv.fr/actualites/webinaire-cartofriches-du-15-octobre-2024-voir-replay/", target = "_blank", 
+               tags$img(src = "images/news_webinaire2024.PNG", 
+                        style = "width:100%;height:300px; object-fit:cover;display: block; margin-left: auto; margin-right: auto;")),
+            span("Webinaire Cartofriches du 15 octobre 2024",
+                 style="font-family:'Marianne-BoldItalic';")),
+        
+        # Image 2 avec lien
+        div(tags$a(href = "https://urbansimul.cerema.fr/ressources/monter-observatoire-des-friches-avec-urbansimul/", target = "_blank", 
+               tags$img(src = "images/news_guideUrbanSIMUL_friches2024.PNG", 
+                        style = "width:100%;height:300px; object-fit:cover;display: block; margin-left: auto; margin-right: auto;")),
+            span("Monter son observatoire des friches avec UrbanSIMUL",
+                 style="font-family:'Marianne-BoldItalic';")),
+        
+        # Image 2 avec lien
+        div(tags$a(href = "https://artificialisation.developpement-durable.gouv.fr/bibliographie/inventorier-ses-friches-guide-methodologique-audat/", target = "_blank", 
+               tags$img(src = "images/news_guidefriches_regionsud_2025.PNG", 
+                        style = "width:100%;height:300px; object-fit:cover;display: block; margin-left: auto; margin-right: auto;")),
+            span("Guide des friches de la Région SUD",
+                 style="font-family:'Marianne-BoldItalic';")),
+        
+        # Image 2 avec lien
+        div(tags$a(href = "https://www.data.gouv.fr/fr/datasets/sites-references-dans-cartofriches/", target = "_blank", 
+               tags$img(src = "images/news_datagouv.PNG", 
+                        style = "width:90px;height:100%; object-fit:cover;display: block; margin-left: auto; margin-right: auto;")),
+            span("Données Cartofriches data.gouv.fr",
+                 style="font-family:'Marianne-BoldItalic';"))
+        
+      )) +
+      settings(
+        autoplay = TRUE,        # Active le défilement automatique
+        autoplaySpeed = 2000,   # Temps entre les slides
+        slidesToShow = 3,       # Affiche une seule image à la fois
+        slidesToScroll = 1,     # Une image à la fois lors du défilement
+        dots = TRUE,            # Affiche les points de pagination
+        arrows = TRUE
+        #,vertical = TRUE
+      )
+    
+  })
+  
+  
   load_data()   # on charge les données
   
   # Va directement sur l'onglet "Contribuer" lorsqu'il y a 'contribuer' dans l'url
@@ -473,6 +518,16 @@ server <- function(input, output, session) {
   })
   
   # ui_pave ----
+  output$ui_pave_nico <- renderUI({
+    
+    get_ui_encart_nico(titre    = "Cartofriches", 
+                  titreSuite = ", un inventaire national des friches qui s'appuie sur la connaissance locale", 
+                  body       = includeMarkdown("www/textes/accueil.md"),
+                  # image      = "encart.jpg",
+                  isMobile   = input$isMobile)
+    
+  })
+  
   output$ui_pave <- renderUI({
     
     get_ui_encart(titre    = "Cartofriches", 

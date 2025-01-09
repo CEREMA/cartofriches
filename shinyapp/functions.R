@@ -2160,6 +2160,73 @@ petitTrait <- function(width="10%") {
 }
 
 # Crée l'encart avec texte et image
+get_ui_encart_nico <- function(titre, titreSuite, body, image, isMobile) {
+  
+  if(isMobile) {
+    fluidRow(
+      column(12,
+             div(
+               # petit trait
+               petitTrait("10%"),
+               
+               # Titre
+               div(
+                 tags$span(
+                   tags$span(titre, style="color:#EF7757; font-weight:700;"),
+                   titreSuite,
+                   style="font-size:2em; color:#464749")),
+               
+               # Corps
+               div(body, style="margin-bottom:40px;"),
+               
+               # Bouton
+               div(actionButton("btn_chercher", 
+                                "CHERCHER UNE FRICHE", 
+                                class="goto", 
+                                style="
+                                           padding-top:20px;
+                                           padding-bottom:20px;
+                                           padding-left:30px;
+                                           padding-right:30px;
+                                           ")),
+               style="
+                      margin-bottom:8%;
+                      margin-top:8%;                      
+                      width:80%;
+                          "), 
+             offset = 1),
+      style="background-color:white;"
+    )
+    
+  } else {
+    
+    fluidRow(
+      column(6, 
+             div(
+               div(
+                 tags$span(
+                   tags$span(titre, style="color:#EF7757; font-weight:700;"),
+                   titreSuite,
+                   style="font-size:2em; color:#464749")),
+               div(body, style="margin-bottom:40px;"),
+               style="
+                      margin-bottom:8%;
+                      margin-top:8%;
+                      width:80%
+                          "), 
+             offset = 1),
+      column(5,
+             fluidRow(
+               column(12,
+                      div(get_ui_nb_friches_accueil())))
+      ), 
+      
+      style="background-color:white;"
+    )
+  }
+}
+
+
 get_ui_encart <- function(titre, titreSuite, body, image, isMobile) {
   
   if(isMobile) {

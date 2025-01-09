@@ -1,7 +1,7 @@
 source("functions.R", encoding = "UTF-8")
 source("libraries.R", encoding = "UTF-8")
 source("load_data.R", encoding = "UTF-8")
-
+library("slickR")
 source("modules/mod_ban.R", encoding = "UTF-8")
 
 source("modules/module_fonds_friches.R", encoding = "UTF-8")
