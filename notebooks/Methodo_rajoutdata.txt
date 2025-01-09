@@ -1,0 +1,29 @@
+A chaque envoi de données : 
+
+NICOLAS : 
+1) vérification des données, sélection des champs et mise au format CNIG
+2) vérification des géométries possédant un trou
+3) export en gpkg
+
+
+BERNARD : 
+1) vérification de la validité de la géométrie
+2) ajout des champs CNIG
+3) test d'intersection :
+  - si la géométrie d'une nouvelle friche intersecte moins de 10% d'une friche déjà existante : conservation de la friche
+  - si la géométrie d'une nouvelle friche intersecte plus de 10% d'une friche existante, on considère qu'il y a un doublon
+  Dans ce cas, on garde la géométrie et les éventuels autres champs du producteur ayant la note la plus élévée
+  et on garde le site_id et le site_identif_date de la friche existante
+4) jointure avec les FF
+5) rajout des champs d'accessibilité à une gare et d'un échangeur autoroutier
+
+NICOLAS : 
+1) création d'une vue sur le serveur de Nantes, avec :
+  - le rajout de qq champs
+  - le croisement avec modifs_friches pour prendre en compte les retours par mail
+
+BERTRAND & LUDOVIC :
+1) rajout des champs du GPU
+2) rajout des champs de zonage enviro
+3) dépôt sur le serveur de Nantes d'une table
+
