@@ -87,6 +87,12 @@ library(yaml)
 ```
 
 ```{r}
+f <- read_yaml("https://raw.githubusercontent.com/CEREMA/cartofriches/refs/heads/main/shinyapp/www/actus/actus.yaml")
+f
+```
+
+
+```{r}
 f <- read_yaml("../shinyapp/www/actus/actus.yaml")
 ```
 
