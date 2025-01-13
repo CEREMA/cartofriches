@@ -3,15 +3,23 @@
     lien: https://artificialisation.developpement-durable.gouv.fr/actualites/webinaire-cartofriches-du-15-octobre-2024-voir-replay
     image: news_webinaire2024.PNG
     titre: Webinaire Cartofriches du 15 octobre 2024
+    width: 100%
+    height: 300px
 - actu2:
     lien: https://urbansimul.cerema.fr/ressources/monter-observatoire-des-friches-avec-urbansimul
     image: news_guideUrbanSIMUL_friches2024.PNG
     titre: Monter son observatoire des friches avec UrbanSIMUL
+    width: 100%
+    height: 300px
 - actu3:
     lien: https://artificialisation.developpement-durable.gouv.fr/bibliographie/inventorier-ses-friches-guide-methodologique-audat
     image: news_guidefriches_regionsud_2025.PNG
     titre: Guide des friches de la Région SUD
+    width: 100%
+    height: 300px
 - actu5:
     lien: https://www.data.gouv.fr/fr/datasets/sites-references-dans-cartofriches
     image: news_datagouv.PNG
     titre: Données Cartofriches data.gouv.fr
+    width: 90px
+    height: 100%

@@ -9,12 +9,16 @@ render_actu <- function(actu) {
   
   # Rend une actu pour carroussel
   
+  # Paramètres
+  lien <- actu$lien
   img_path <- file.path("actus", actu$image)
+  width <- actu$width
+  height <- actu$height
   
   div(tags$a(href = actu$lien,
              target = "_blank", 
              tags$img(src = img_path, 
-                      style = "width:100%;height:300px; object-fit:cover;display: block; margin-left: auto; margin-right: auto;")),
+                      style = glue("width:{width};height:{height}; object-fit:cover;display: block; margin-left: auto; margin-right: auto;"))),
       span(actu$titre,
            style="font-family:'Marianne-BoldItalic';"))
 }
