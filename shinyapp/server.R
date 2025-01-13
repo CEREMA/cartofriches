@@ -1,5 +1,7 @@
 server <- function(input, output, session) {
   
+  
+  # Il s'agit du carroussel d'informations
   output$carousel <- renderSlickR({
     slickR(
       obj = list(
@@ -17,14 +19,14 @@ server <- function(input, output, session) {
             span("Monter son observatoire des friches avec UrbanSIMUL",
                  style="font-family:'Marianne-BoldItalic';")),
         
-        # Image 2 avec lien
+        # Image 3 avec lien
         div(tags$a(href = "https://artificialisation.developpement-durable.gouv.fr/bibliographie/inventorier-ses-friches-guide-methodologique-audat/", target = "_blank", 
                tags$img(src = "images/news_guidefriches_regionsud_2025.PNG", 
                         style = "width:100%;height:300px; object-fit:cover;display: block; margin-left: auto; margin-right: auto;")),
             span("Guide des friches de la Région SUD",
                  style="font-family:'Marianne-BoldItalic';")),
         
-        # Image 2 avec lien
+        # Image 4 avec lien
         div(tags$a(href = "https://www.data.gouv.fr/fr/datasets/sites-references-dans-cartofriches/", target = "_blank", 
                tags$img(src = "images/news_datagouv.PNG", 
                         style = "width:90px;height:100%; object-fit:cover;display: block; margin-left: auto; margin-right: auto;")),
