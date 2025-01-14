@@ -1,13 +1,10 @@
 scripts
 .Rproj.user
 TODO.txt
-<<<<<<< HEAD
 .Rhistory
 Cartofriches_RapportHTML.Rmd
 Cartofriches_RapportHTML.html
 rsconnect
 cartofriches.Rproj
 shinyapp/files
-=======
 *ignore*
->>>>>>> 41b5dac962a00c9e45aea96b0edc48affc790f53

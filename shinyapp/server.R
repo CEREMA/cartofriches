@@ -5,6 +5,7 @@ server <- function(input, output, session) {
   output$carousel <- renderSlickR({
     
     f <- read_yaml("https://raw.githubusercontent.com/CEREMA/cartofriches/refs/heads/main/shinyapp/www/actus/actus.yaml")
+    #f <- read_yaml("www/actus/actus.yaml")
     
     actus <- render_actus(f)
     
@@ -13,7 +14,7 @@ server <- function(input, output, session) {
       ) +
       settings(
         autoplay = TRUE,        # Active le défilement automatique
-        autoplaySpeed = 2000,   # Temps entre les slides
+        autoplaySpeed = 3000,   # Temps entre les slides
         slidesToShow = 3,       # Affiche une seule image à la fois
         slidesToScroll = 1,     # Une image à la fois lors du défilement
         dots = TRUE,            # Affiche les points de pagination

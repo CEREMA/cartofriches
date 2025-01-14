@@ -3,8 +3,8 @@
     lien: https://artificialisation.developpement-durable.gouv.fr/actualites/webinaire-cartofriches-du-15-octobre-2024-voir-replay
     image: news_webinaire2024.PNG
     titre: Webinaire Cartofriches du 15 octobre 2024
-    width: 100%
-    height: 300px
+    width: 90%
+    height: 250px
 - actu2:
     lien: https://urbansimul.cerema.fr/ressources/monter-observatoire-des-friches-avec-urbansimul
     image: news_guideUrbanSIMUL_friches2024.PNG
@@ -19,7 +19,7 @@
     height: 300px
 - actu5:
     lien: https://www.data.gouv.fr/fr/datasets/sites-references-dans-cartofriches
-    image: news_datagouv.PNG
+    image: news_datagouv_data.PNG
     titre: Données Cartofriches data.gouv.fr
-    width: 90px
-    height: 100%
+    width: 50%
+    height: 200px

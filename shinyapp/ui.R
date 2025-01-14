@@ -74,6 +74,7 @@ ui <-
                         tags$span("A la une", style="font-size: 20px;color:#EF7757; font-weight:700;"),
                         style = "text-align: center;"
                       ),
+                      br(),
                       slickROutput("carousel", width = "100%")
                )
              )
