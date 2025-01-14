@@ -1,37 +1,16 @@
 server <- function(input, output, session) {
   
+  
+  # Il s'agit du carroussel d'informations
   output$carousel <- renderSlickR({
+    
+    f <- read_yaml("https://raw.githubusercontent.com/CEREMA/cartofriches/refs/heads/main/shinyapp/www/actus/actus.yaml")
+    
+    actus <- render_actus(f)
+    
     slickR(
-      obj = list(
-        # Image 1 avec lien
-        div(tags$a(href = "https://artificialisation.developpement-durable.gouv.fr/actualites/webinaire-cartofriches-du-15-octobre-2024-voir-replay/", target = "_blank", 
-               tags$img(src = "images/news_webinaire2024.PNG", 
-                        style = "width:100%;height:300px; object-fit:cover;display: block; margin-left: auto; margin-right: auto;")),
-            span("Webinaire Cartofriches du 15 octobre 2024",
-                 style="font-family:'Marianne-BoldItalic';")),
-        
-        # Image 2 avec lien
-        div(tags$a(href = "https://urbansimul.cerema.fr/ressources/monter-observatoire-des-friches-avec-urbansimul/", target = "_blank", 
-               tags$img(src = "images/news_guideUrbanSIMUL_friches2024.PNG", 
-                        style = "width:100%;height:300px; object-fit:cover;display: block; margin-left: auto; margin-right: auto;")),
-            span("Monter son observatoire des friches avec UrbanSIMUL",
-                 style="font-family:'Marianne-BoldItalic';")),
-        
-        # Image 2 avec lien
-        div(tags$a(href = "https://artificialisation.developpement-durable.gouv.fr/bibliographie/inventorier-ses-friches-guide-methodologique-audat/", target = "_blank", 
-               tags$img(src = "images/news_guidefriches_regionsud_2025.PNG", 
-                        style = "width:100%;height:300px; object-fit:cover;display: block; margin-left: auto; margin-right: auto;")),
-            span("Guide des friches de la Région SUD",
-                 style="font-family:'Marianne-BoldItalic';")),
-        
-        # Image 2 avec lien
-        div(tags$a(href = "https://www.data.gouv.fr/fr/datasets/sites-references-dans-cartofriches/", target = "_blank", 
-               tags$img(src = "images/news_datagouv.PNG", 
-                        style = "width:90px;height:100%; object-fit:cover;display: block; margin-left: auto; margin-right: auto;")),
-            span("Données Cartofriches data.gouv.fr",
-                 style="font-family:'Marianne-BoldItalic';"))
-        
-      )) +
+      obj = actus
+      ) +
       settings(
         autoplay = TRUE,        # Active le défilement automatique
         autoplaySpeed = 2000,   # Temps entre les slides
@@ -41,7 +20,6 @@ server <- function(input, output, session) {
         arrows = TRUE
         #,vertical = TRUE
       )
-    
   })
   
   

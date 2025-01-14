@@ -1,2 +1,0 @@
-## Une première version stabilisée
-Cette version présente les données de plusieurs [observatoires locaux](https://artificialisation.biodiversitetousvivants.fr/cartofriches/observatoires-locaux) , et l'expertise du Cerema est mise à profit afin de tirer le meilleur parti de bases de données institutionnelles telles que les **données BASIAS et BASOL** ([en savoir plus sur les données](https://artificialisation.biodiversitetousvivants.fr/cartofriches/donnees-utilisees))

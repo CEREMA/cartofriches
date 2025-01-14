@@ -1,0 +1,145 @@
+---
+title: "Test actus YAML"
+output: html_notebook
+---
+
+Lecture d'un YAML comprenant les actualités
+
+Ce YAML contient les informations suivantes :
+
+- actus
+  - actu
+    - lien, par ex. https://artificialisation.developpement-durable.gouv.fr/actualites/webinaire-cartofriches-du-15-octobre-2024-voir-replay/
+    - image, par ex. images/news_webinaire2024.PNG
+    - titre, par ex. Webinaire Cartofriches du 15 octobre 
+    
+Partons du JSON :
+```{json}
+[
+  {
+    "actu1":
+    {"lien": "http://lien1",
+    "image" : "mon image1",
+    "titre" : "titre1"
+    }
+  },
+  {
+    "actu2":
+    {
+    "lien": "http://lien2",
+    "image" : "mon image2",
+    "titre" : "titre1"
+    }
+  }
+]
+```
+
+Utilisons https://www.bairesdev.com/tools/json2yaml/
+
+Cela donne ce modèle :
+```{YAML}
+---
+- actu1:
+    lien: http://lien1
+    image: mon image1
+    titre: titre1
+- actu2:
+    lien: http://lien2
+    image: mon image2
+    titre: titre1
+```
+
+Créons le YAML final
+```{YAML}
+---
+- actu1:
+    lien: https://artificialisation.developpement-durable.gouv.fr/actualites/webinaire-cartofriches-du-15-octobre-2024-voir-replay
+    image: news_webinaire2024.PNG
+    titre: Webinaire Cartofriches du 15 octobre 2024
+    width: 100%
+    height: 300px
+- actu2:
+    lien: https://urbansimul.cerema.fr/ressources/monter-observatoire-des-friches-avec-urbansimul
+    image: news_guideUrbanSIMUL_friches2024.PNG
+    titre: Monter son observatoire des friches avec UrbanSIMUL
+    width: 100%
+    height: 300px
+- actu3:
+    lien: https://artificialisation.developpement-durable.gouv.fr/bibliographie/inventorier-ses-friches-guide-methodologique-audat
+    image: news_guidefriches_regionsud_2025.PNG
+    titre: Guide des friches de la Région SUD
+    width: 100%
+    height: 300px
+- actu5:
+    lien: https://www.data.gouv.fr/fr/datasets/sites-references-dans-cartofriches
+    image: news_datagouv.PNG
+    titre: Données Cartofriches data.gouv.fr
+    width: 90px
+    height: 100%
+```
+
+```{r}
+# install.packages("yaml")
+```
+
+```{r}
+library(yaml)
+```
+
+```{r}
+f <- read_yaml("https://raw.githubusercontent.com/CEREMA/cartofriches/refs/heads/main/shinyapp/www/actus/actus.yaml")
+f
+```
+
+
+```{r}
+f <- read_yaml("../shinyapp/www/actus/actus.yaml")
+```
+
+
+```{r}
+f
+```
+
+Une actu :
+```{r}
+actu <- f[[1]][[1]]
+actu
+```
+
+```{r}
+actu$lien
+```
+
+
+Fonction render_actu :
+```{r}
+library(shiny)
+
+render_actu <- function(actu) {
+  div(tags$a(href = actu$lien, target = "_blank", 
+               tags$img(src = actu$image, 
+                        style = "width:100%;height:300px; object-fit:cover;display: block; margin-left: auto; margin-right: auto;")),
+            span(actu$titre,
+                 style="font-family:'Marianne-BoldItalic';"))
+}
+
+render_actu(actu)
+```
+Liste des liens : render_actus
+```{r}
+render_actus <- function(actus) {
+  
+  res <- lapply(actus, function(x) render_actu(x[[1]]))
+  
+  return(res)
+  
+}
+
+actus <- render_actus(f)
+
+actus
+```
+On met cette fonction dans server.r au niveau du caroussel
+
+

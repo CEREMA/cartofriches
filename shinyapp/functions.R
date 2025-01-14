@@ -1,8 +1,35 @@
 source("modules/mod_ban.R", encoding = "UTF-8")
 
+# > UTILITAIRES ----
+
 format_surface <- function(x) { paste0(format(round(x,0), big.mark = " ", decimal.mark = ",",  scientific = FALSE)," m²") } #trim = TRUE,
 format_numericFR <- function(x) { paste0(format(round(x,0), big.mark = " ", decimal.mark = ",", scientific = FALSE)) } #trim = TRUE,
 
+render_actu <- function(actu) {
+  
+  # Rend une actu pour carroussel
+  
+  # Paramètres
+  lien <- actu$lien
+  img_path <- file.path("actus", actu$image)
+  width <- actu$width
+  height <- actu$height
+  
+  div(tags$a(href = actu$lien,
+             target = "_blank", 
+             tags$img(src = img_path, 
+                      style = glue("width:{width};height:{height}; object-fit:cover;display: block; margin-left: auto; margin-right: auto;"))),
+      span(actu$titre,
+           style="font-family:'Marianne-BoldItalic';"))
+}
+
+render_actus <- function(actus) {
+  
+  res <- lapply(actus, function(x) render_actu(x[[1]]))
+  
+  return(res)
+  
+}
 
 # > CARTE ----
 
