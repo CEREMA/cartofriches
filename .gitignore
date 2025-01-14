@@ -1,3 +1,9 @@
 scripts
 .Rproj.user
 TODO.txt
+.Rhistory
+Cartofriches_RapportHTML.Rmd
+Cartofriches_RapportHTML.html
+rsconnect
+cartofriches.Rproj
+shinyapp/files

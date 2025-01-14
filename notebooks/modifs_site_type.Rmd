@@ -1,0 +1,179 @@
+---
+title: "Modification site_type"
+output:
+  html_document:
+    df_print: paged
+---
+
+## Import des packages
+```{r}
+library(glue)
+library(dplyr)
+require(RPostgreSQL)
+require(pool)
+require(getPass)
+library(dbplyr)
+library(sf)
+library(lubridate)
+library(readr)
+library(stringr)
+```
+
+## Export csv
+```{r}
+friches <- read_csv2("C:/Users/nicolas.pele/Downloads/friches_standard_typesite.csv") %>%
+  select(site_id, site_nom, activite_libelle, site_statut, source_nom, site_type)
+
+table(friches$source_nom)
+
+friches_ff0 <- friches %>% filter(source_nom == "Appel a projet Fonds Friches", site_type == "inconnu")
+friches_obslocaux0 <- friches %>% filter(source_nom == "Contribution utilisateur" | source_nom =="Contributeur Cerema", site_type == "inconnu")
+
+```
+ 
+ 
+ 
+```{r}
+FCT_site_type <- function(Dataframe){
+  
+  Dataframe %>% 
+    mutate(site_type_recod = ifelse(str_like(site_nom, "%carriere%") == T | str_like(site_nom, "%mine%") == T | str_like(site_nom, "%minier%") == T, "friche carrière ou mines", 
+
+                           ifelse(str_like(site_nom, "%college%") == T | str_like(site_nom, "%lycee%") == T | str_like(site_nom, "%ecole%") == T  | str_like(site_nom, "%campus%") == T , "friche enseignement",
+                                                              
+                           ifelse(str_like(site_nom, "%usine%") == T | str_like(site_nom, "%imprime%") == T | str_like(site_nom, "%industr%") == T | str_like(site_nom, "%depot%") == T | str_like(site_nom, "%forge%") == T | str_like(site_nom, "%edf%") == T | str_like(site_nom, "%scierie%") == T | str_like(site_nom, "%manusfacture%") == T | str_like(site_nom, "%entreprise%") == T, "friche industrielle",
+                                  
+                           ifelse(str_like(site_nom, "%ruine%") == T | str_like(site_nom, "%manoir%") == T | str_like(site_nom, "%residence%") == T | str_like(site_nom, "%logement%") == T | str_like(site_nom, "%immeuble%") == T, "friche d'habitat",
+                                  
+                           ifelse(str_like(site_nom, "%caserne%") == T | str_like(site_nom, "%gendarm%") == T | str_like(site_nom, "%militaire%") == T, "friche militaire",
+                                  
+                           ifelse(str_like(site_nom, "%presbyter%") == T | str_like(site_nom, "%eglise%") == T | str_like(site_nom, "%couvent%") == T, "friche cultuelle",
+                                  
+                           ifelse(str_like(site_nom, "%agricol%") == T | str_like(site_nom, "%porcine%") == T | str_like(site_nom, "%vignero%") == T | str_like(site_nom, "%abattoir%") == T | str_like(site_nom, "%ferme%") == T, "friche agro-industrielle",
+                                  
+                           ifelse(str_like(site_nom, "%cinema%") == T | str_like(site_nom, "%hotel%") == T | str_like(site_nom, "%therme%") == T | str_like(site_nom, "%bungalow%") == T | str_like(site_nom, "%tennis%") == T | str_like(site_nom, "%discotheque%") == T | str_like(site_nom, "%restau%") == T, "friche loisir tourisme hôtellerie",
+                                                             
+                            ifelse(str_like(site_nom, "%piscine%") == T | str_like(site_nom, "%poste%") == T | str_like(site_nom, "%decharge%") == T | str_like(site_nom, "%mairie%") == T | str_like(site_nom, "%dechetterie%") == T, "friche d'équipement public",  
+                                   
+                           ifelse(str_like(site_nom, "%gare%") == T | str_like(site_nom, "%sncf%") == T | str_like(site_nom, "%ferrov%") == T, "friche ferroviaire",
+                                  
+                           ifelse(str_like(site_nom, "%aeroport%") == T | str_like(site_nom, "%aerodrome%") == T, "friche aéroportuaire",
+                                  
+                           ifelse(str_like(site_nom, "%portuaire%") == T, "friche portuaire",
+
+                                  
+                           ifelse(str_like(site_nom, "%clinique%") == T | str_like(site_nom, "%hopital%") == T | str_like(site_nom, "%ehpad%") == T | str_like(site_nom, "%medical%") == T | str_like(site_nom, "%hospice%") == T, "friche hospitalière",
+
+                           ifelse(str_like(site_nom, "%boulangerie%") == T | str_like(site_nom, "%station service%") == T | str_like(site_nom, "%garage%") == T | str_like(site_nom, "%atelier%") == T | str_like(site_nom, "%esso%") == T | str_like(site_nom, "%total%") == T | str_like(site_nom, "%leader price%") == T | str_like(site_nom, "%magasin%") == T | str_like(site_nom, "%shop%") == T | str_like(site_nom, "%cafe%") == T | str_like(site_nom, "%intersport%") == T | str_like(site_nom, "%intermarche%") == T | str_like(site_nom, "%supermarche%") == T, "friche commerciale",
+                                  
+                           ifelse(str_like(site_nom, "%ilot%") == T | str_like(site_nom, "%COEUR DE VILLE%") == T, "friche mixte",
+                                  
+                                  site_type))))))))))))))))
+  
+}
+```
+ 
+ 
+ 
+```{r}
+friches_ff <- friches_ff0 %>%
+FCT_site_type
+
+friches_obslocaux <- friches_obslocaux0 %>%
+  FCT_site_type
+
+table(friches_obslocaux$site_type_recod)
+table(friches_ff$site_type_recod)
+
+friches_ff_connu <- friches_ff %>% filter(site_type_recod != "inconnu")
+friches_ff_inconnu <- friches_ff %>% filter(site_type_recod == "inconnu")
+
+write.csv2(friches_obslocaux,
+           "C:/Users/nicolas.pele/Downloads/friches_friches_obslocaux_typesite_recod.csv")
+write.csv2(friches_ff_connu,
+           "C:/Users/nicolas.pele/Downloads/friches_standard_typesite_recod_connu.csv")
+write.csv2(friches_ff_inconnu,
+           "C:/Users/nicolas.pele/Downloads/friches_standard_typesite_recod.csv")
+```
+ 
+ 
+ 
+
+ 
+Analyses pour le compte du DG Cerema
+Nombre et surface de friches en fonction du type de commune
+```{r}
+
+Communes_par_densite_2022 <- read_excel("Communes_par_densite_2022.xlsx")
+
+f.tup[f.tup$site_id == "16010_8195","comm_insee"] <- "16186"
+
+Friches_Densite <- f.tup %>%
+  as.data.frame() %>%
+  left_join(Communes_par_densite_2022, by = "comm_insee") %>%
+  filter(nom_prodcartofriches != "Site Basias ou Basol non vérifié par le Cerema") %>% #select(typo_densite,site_id,comm_insee)
+  group_by(typo_densite) %>%
+  summarise('Nombre de friches' = n(),
+            Surface_UF = sum(unite_fonciere_surface, na.rm = T),
+            Surface = sum(site_surface, na.rm = T)
+            ) %>%
+  mutate('Surface des unité foncière en friches (Ha)' = round(Surface_UF/10000, 0),
+         'Surface des friches (Ha)' = round(Surface/10000, 0)) %>%
+  select(-Surface_UF,-Surface)
+Friches_Densite$typo_densite_txt <- as.character(Friches_Densite$typo_densite)
+Friches_Densite$typo_densite_txt[Friches_Densite$typo_densite == "1"] <- "Commune densément peuplée"
+Friches_Densite$typo_densite_txt[Friches_Densite$typo_densite == "2"] <- "Commune de densité intermédiaire"
+Friches_Densite$typo_densite_txt[Friches_Densite$typo_densite == "3"] <- "Commune peu dense"
+Friches_Densite$typo_densite_txt[Friches_Densite$typo_densite == "4"] <- "Commune très peu dense"
+Friches_Densite$typo_densite_txt <- factor(Friches_Densite$typo_densite_txt)
+
+Nbre_Friches <- sum(Friches_Densite$`Nombre de friches`)
+Surface_Friches <- sum(Friches_Densite$`Surface des friches (Ha)`)
+
+Friches_Densite <- Friches_Densite %>%
+  rename('Degré de densité de la commune' = typo_densite_txt) %>%
+  select('Degré de densité de la commune','Nombre de friches','Surface des friches (Ha)') %>%
+  mutate('Pourcentage Nombre de friche' = round(`Nombre de friches`/Nbre_Friches*100,1),
+         'Pourcentage Surface de friche' = round(`Surface des friches (Ha)`/Surface_Friches*100,1))
+
+Friches_Densite
+
+
+Friches_Densite_dep <-  f.tup %>%
+  as.data.frame() %>%
+  left_join(Communes_par_densite_2022, by = "comm_insee") %>%
+  filter(nom_prodcartofriches != "Site Basias ou Basol non vérifié par le Cerema") %>% #select(typo_densite,site_id,comm_insee)
+  group_by(typo_densite,dep) %>%
+  summarise('Nombre de friches' = n(),
+            Surface_UF = sum(unite_fonciere_surface, na.rm = T),
+            Surface = sum(site_surface, na.rm = T)
+            ) %>%
+  mutate('Surface des unité foncière en friches (Ha)' = round(Surface_UF/10000, 0),
+         'Surface des friches (Ha)' = round(Surface/10000, 0)) %>%
+  select(-Surface_UF,-Surface)
+Friches_Densite_dep$typo_densite_txt <- as.character(Friches_Densite_dep$typo_densite)
+Friches_Densite_dep$typo_densite_txt[Friches_Densite_dep$typo_densite == "1"] <- "Commune densément peuplée"
+Friches_Densite_dep$typo_densite_txt[Friches_Densite_dep$typo_densite == "2"] <- "Commune de densité intermédiaire"
+Friches_Densite_dep$typo_densite_txt[Friches_Densite_dep$typo_densite == "3"] <- "Commune peu dense"
+Friches_Densite_dep$typo_densite_txt[Friches_Densite_dep$typo_densite == "4"] <- "Commune très peu dense"
+Friches_Densite_dep$typo_densite_txt <- factor(Friches_Densite_dep$typo_densite_txt)
+
+Friches_Densite_dep <- Friches_Densite_dep %>%
+  rename('Degré de densité de la commune' = typo_densite_txt) %>%
+  select(dep,'Degré de densité de la commune','Nombre de friches','Surface des friches (Ha)')
+
+Friches_Densite_dep_nb <- Friches_Densite_dep %>%
+  select(-'Surface des friches (Ha)',-'Degré de densité de la commune') %>%
+  spread(key = dep, value = 'Nombre de friches')
+Friches_Densite_dep_nb
+
+Friches_Densite_dep_surf <- Friches_Densite_dep %>%
+  select(-'Nombre de friches',-'Degré de densité de la commune') %>%
+  spread(key = dep, value = 'Surface des friches (Ha)')
+Friches_Densite_dep_surf
+
+
+write.csv2(Friches_Densite, "Friches_Densite_DG_20230405.csv")
+write.csv2(Friches_Densite_dep_nb, "Friches_Densite_DG_20230405_dep.csv")
+write.csv2(Friches_Densite_dep_surf, "Friches_Densite_DG_20230405_dep_surf.csv")
+```
