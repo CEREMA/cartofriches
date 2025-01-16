@@ -24,7 +24,8 @@ orange <- palette$secondaire$orange
 gris <- "#e4e4e4"
 
 # LEAFLET ####
-baseGroups <- c("OpenStreetMap", "Ortho IGN", "Plan IGN")
+baseGroups <- c("OpenStreetMap", "Ortho IGN","Plan IGN")
+baseGroups_anciennesortho <- c("OpenStreetMap", "Ortho IGN", "Ortho IGN 2011-2015", "Ortho IGN 2000-2005","Plan IGN")
 overlayGroups <- c("Parcelles IGN")
 # baseGroups <- c("Ortho IGN", "Plan IGN", "OpenStreetMap", "OSM Stamen")
 # overlayGroups <- c("Villes", "Parcelles IGN")

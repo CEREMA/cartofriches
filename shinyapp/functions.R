@@ -75,7 +75,67 @@ add_tiles <- function(m) {
     )
     
 }
-
+add_tiles_anciennesortho <- function(m) {
+  
+  
+  # leaflet() %>% 
+  #   addTiles(
+  #     "http://data.geopf.fr/wmts?REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0&style=PCI%20vecteur&TILEMATRIXSET=PM&FORMAT=image/png&LAYER=CADASTRALPARCELS.PARCELLAIRE_EXPRESS&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}",
+  #   )
+  
+  m %>% 
+    
+    # OSM
+    addTiles(group = "OpenStreetMap") %>% 
+    
+    # Ortho
+    addTiles(
+      # "http://wxs.ign.fr/choisirgeoportail/wmts?REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0&STYLE=normal&TILEMATRIXSET=PM&FORMAT=image/jpeg&LAYER=ORTHOIMAGERY.ORTHOPHOTOS&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}",
+      "https://data.geopf.fr/wmts?REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0&STYLE=normal&TILEMATRIXSET=PM&FORMAT=image/jpeg&LAYER=ORTHOIMAGERY.ORTHOPHOTOS&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}",
+      options = c(WMSTileOptions(tileSize = 256), 
+                  providerTileOptions(minZoom = 1, maxZoom = 22)),
+      attribution='<a target="_blank" href="https://www.geoportail.gouv.fr/">Geoportail France</a>',
+      group = "Ortho IGN"
+    ) %>%
+    
+    # Ortho 2011-2015
+    addTiles(
+      # "http://wxs.ign.fr/choisirgeoportail/wmts?REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0&STYLE=normal&TILEMATRIXSET=PM&FORMAT=image/jpeg&LAYER=ORTHOIMAGERY.ORTHOPHOTOS&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}",
+      "https://data.geopf.fr/wmts?REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0&STYLE=normal&TILEMATRIXSET=PM&FORMAT=image/jpeg&LAYER=ORTHOIMAGERY.ORTHOPHOTOS2011-2015&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}",
+      options = c(WMSTileOptions(tileSize = 256), 
+                  providerTileOptions(minZoom = 1, maxZoom = 22)),
+      attribution='<a target="_blank" href="https://www.geoportail.gouv.fr/">Geoportail France</a>',
+      group = "Ortho IGN 2011-2015"
+    ) %>%
+    
+    # Ortho 2000-2005
+    addTiles(
+      # "http://wxs.ign.fr/choisirgeoportail/wmts?REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0&STYLE=normal&TILEMATRIXSET=PM&FORMAT=image/jpeg&LAYER=ORTHOIMAGERY.ORTHOPHOTOS&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}",
+      "https://data.geopf.fr/wmts?REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0&STYLE=normal&TILEMATRIXSET=PM&FORMAT=image/jpeg&LAYER=ORTHOIMAGERY.ORTHOPHOTOS2000-2005&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}",
+      options = c(WMSTileOptions(tileSize = 256), 
+                  providerTileOptions(minZoom = 1, maxZoom = 22)),
+      attribution='<a target="_blank" href="https://www.geoportail.gouv.fr/">Geoportail France</a>',
+      group = "Ortho IGN 2000-2005"
+    ) %>%
+    
+    # Plan
+    addTiles(
+      # "http://wxs.ign.fr/choisirgeoportail/wmts?REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0&STYLE=normal&TILEMATRIXSET=PM&FORMAT=image/png&LAYER=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}",
+      "https://data.geopf.fr/wmts?REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0&STYLE=normal&TILEMATRIXSET=PM&FORMAT=image/png&LAYER=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}",
+      options = WMSTileOptions(tileSize = 256, minZoom = 1, maxZoom = 20),
+      group = "Plan IGN"
+    ) %>%
+    
+    # Parcelles
+    addTiles(
+      # "http://wxs.ign.fr/choisirgeoportail/wmts?REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0&style=PCI%20vecteur&TILEMATRIXSET=PM&FORMAT=image/png&LAYER=CADASTRALPARCELS.PARCELLAIRE_EXPRESS&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}",
+      "https://data.geopf.fr/wmts?REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0&STYLE=PCI%20vecteur&TILEMATRIXSET=PM&FORMAT=image/png&LAYER=CADASTRALPARCELS.PARCELLAIRE_EXPRESS&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}",
+      options = WMSTileOptions(tileSize = 256),
+      attribution='<a target="_blank" href="https://www.geoportail.gouv.fr/">Geoportail France</a>',
+      group = "Parcelles IGN"
+    )
+  
+}
 # Ajoute les cercles statistiques à la carte
 # Lors du lancement de Cartofriches, ce sont les stats qui sont affichées
 add_circles <- function(proxy, 
@@ -842,8 +902,8 @@ show_info_friche <- function(id) {
   
   mymap_modalDialog <- leaflet(width = 50, height = 50, 
                                options = leafletOptions(minZoom = 0, maxZoom = 20)) %>%
-    add_tiles() %>%
-    addLayersControl(baseGroups = baseGroups,
+    add_tiles_anciennesortho() %>%
+    addLayersControl(baseGroups = baseGroups_anciennesortho,
                      overlayGroups = c("Parcelles IGN"),
                      options = layersControlOptions(collapsed = TRUE)) %>% 
     showGroup("Ortho IGN") %>% 
