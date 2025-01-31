@@ -901,7 +901,7 @@ show_info_friche <- function(id) {
   message(">> show_info_friche_industrielle ", id)
   
   mymap_modalDialog <- leaflet(width = 50, height = 50, 
-                               options = leafletOptions(minZoom = 0, maxZoom = 20)) %>%
+                               options = leafletOptions(minZoom = 0, maxZoom = 18)) %>%
     add_tiles_anciennesortho() %>%
     addLayersControl(baseGroups = baseGroups_anciennesortho,
                      overlayGroups = c("Parcelles IGN"),
@@ -1234,7 +1234,9 @@ get_popup_content <- function(f) {
     bloc_actualisationdate <- tagList(
       # tags$b("Date d'actualisation de la friche : "), coalesce(format(as.Date(f$site_actu_date, "%d%m%y"), format="%d/%m/%Y"), "Pas d'actualisation"), tags$br(),
       # tags$b("Date d'actualisation de la friche : "), coalesce(format(f$site_actu_date, "%d/%m/%Y"), "Pas d'actualisation"), tags$br(),
-      tags$b("Date d'actualisation de la friche : "), coalesce(f$site_actu_date, "Pas d'actualisation"), tags$br(),
+      
+      #tags$b("Date d'actualisation de la friche : "), coalesce(f$site_actu_date, "Pas d'actualisation"), tags$br(),
+      tags$b("Date d'actualisation de la friche : "), coalesce(f$site_actu_date), tags$br(),
       )
   }  
 
@@ -1336,6 +1338,17 @@ get_popup_content <- function(f) {
   # } else {
   #   bloc_surface <- "Non renseigné"
   # }
+  
+  ## bloc_siteeco
+  print("12")
+  if(!is.na(f$zone_activites) | f$zone_activites != "non") {
+    bloc_siteeco <- tagList(
+      tags$b("Vocation dominante du site économique : "),coalesce(f$site_vocadomi, "Non renseignée")
+    )
+  } else {
+    bloc_siteeco <- ""
+  }
+  
   
   
   #--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#
@@ -1498,14 +1511,31 @@ get_popup_content <- function(f) {
       # tags$b("Document approuvé le : "), ifelse(is.na(f$datappro),
       #                                           "Date non renseignée",
       #                                           format(as.Date(f$datappro, "%Y%m%d"), format="%d/%m/%Y"))),
-
+    
     tags$b("Friche dans un périmètre de site économique "),
-    tags$a(href = glue("https://datafoncier.cerema.fr/base-empcom-des-principales-emprises-dactivites-commerciales/"),
-           tagList("(base EmpCom) :"), #icon("external-link"),
+    tags$a(href = glue("https://datafoncier.cerema.fr/fusac/"),
+           tagList("(base FUSAC) :"),
            target="_blank", style="font-size: 1em;"),
+    
     ifelse(is.na(f$zone_activites),
                                               "Non","Oui"
                                               ),
+    tags$br(),
+    bloc_siteeco,
+    
+    
+    tags$br(),
+    
+    tags$b("Monument historique "), 
+    tags$a(href = glue("https://www.data.gouv.fr/fr/datasets/immeubles-proteges-au-titre-des-monuments-historiques-2/"),
+           tagList("(data.gouv.fr) :"),
+           target="_blank", style="font-size: 1em;"),
+    ifelse(f$monuhisto == "oui",
+           "Oui",
+           ifelse(f$monuhisto500 == "oui",
+                  "Au sein d'un périmètre de 500m autour d'un monument historique",
+                  "Non"
+           )),
 
     tags$br(),
 
@@ -1524,7 +1554,17 @@ get_popup_content <- function(f) {
 
       tags$b("Distance d'accès au réseau ferroviaire : "), ifelse(is.na(f$desserte_distance_ferroviaire),
                                                                       "Non renseigné",
-                                                                      glue(round(f$desserte_distance_ferroviaire/1000,1), " km")),
+                                                                  ifelse(f$desserte_distance_ferroviaire == 999,"Plus de 100 km",
+                                                                      #glue(round(f$desserte_distance_ferroviaire/1000,1), " km")
+                                                                  glue(f$desserte_distance_ferroviaire, " km")
+                                                                  )),
+      tags$br(),
+      tags$b("Distance d'accès à un échangeur autoroutier : "), ifelse(is.na(f$desserte_distance_route),
+                                                                  "Non renseigné",
+                                                                  ifelse(f$desserte_distance_route == 999,"Plus de 100 km",
+                                                                  #glue(round(f$desserte_distance_ferroviaire/1000,1), " km")
+                                                                  glue(f$desserte_distance_route, " km")
+                                                                  )),
     ),
 
     # ##=##=##=##=##=##=##=##=##
@@ -2097,7 +2137,7 @@ get_ui_nb_friches_accueil <- function() {
                               font-size: 1.4em;
                     margin-bottom: -15px;"), 
     
-    tags$p(16, " observatoires locaux", style="
+    tags$p(17, " observatoires locaux", style="
                               font-weight: 500;
                               font-size: 1.2em;
                     margin-bottom: -15px;"), 

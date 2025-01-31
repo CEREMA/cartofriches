@@ -6,4 +6,7 @@ Cartofriches a vocation à consolider **ce recensement avec la participation des
 
 C'est en intégrant les données des observatoires locaux et des études de recensement portées par des acteurs de l’aménagement que l'inventaire national pourra être le plus pertinent et mis à jour.
 
-À ce jour, plusieurs lots de données locales sont intégrés.
+À ce jour, plusieurs <a href=https://artificialisation.developpement-durable.gouv.fr/agir-et-etre-accompagne/cartofriches/observatoires-locaux/ target=_blank>observatoires locaux sont intégrés <i class="fa fa-external-link"></i></a>
+
+
+

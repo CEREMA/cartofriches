@@ -9,7 +9,7 @@ source("modules/module_fonds_friches.R", encoding = "UTF-8")
 Sys.setlocale("LC_TIME", "French")
 
 # DATE DE MISE A JOUR ####
-LAST_UPDATE_DATE <- "20 Novembre 2024"
+LAST_UPDATE_DATE <- "4 Février 2025"
 
 # PALETTE CEREMA ####
 couleurs_cerema <- readRDS("data/couleurs_cerema.rds")
@@ -67,8 +67,10 @@ Observatoires <- c(
   "DDTM de la Somme"                             = "Somme",
   "Grand Angoulême"                              = "Grand Angouleme",
   "Communauté de communes Val de Gray"           = "CCVG",
+  "Communauté d'agglomération Caux Seine"        = "Caux Seine",
   "Agence d'Urbanisme - Reims (AUDRR)"           = "AUDRR",
   "Agence d'Urbanisme du Grand Amiénois (ADUGA)" = "ADUGA", 
+  "Ville d'Ajaccio"                              = "Ajaccio",
   "Commune de Fougères"                          = "Fougeres"
 ) %>% get_slc(label = "Sélectionnez un observatoire")
 
@@ -112,6 +114,9 @@ Filtres <- c("Friches sans projet"  = "friche sans projet",
 
 # LOGOS DES OBSERVATOIRES (IMAGE, TAILLE ET MESSAGE D'ACCUEIL) ----
 Logos <- list(
+  UrbanVitaliz = list(img = "logos/logo_UrbanVitaliz.png", 
+             height = 50, 
+             message = "UrbanVitaliz"),
   MTE = list(img = "logos/logo-brgm-mtes.png", 
                height = 60, 
                message = "Friches vérifiées MTE"),
@@ -179,7 +184,15 @@ Logos <- list(
   
   AUDRR = list(img = "logos/logo_AUDRR.png", 
                            height = 70, 
-                           message = "Bienvenue sur le territoire de l'AUDRR")
+                           message = "Bienvenue sur le territoire de l'AUDRR"),
+  
+  Ajaccio = list(img = "logos/logo_Ajaccio.png", 
+               height = 70, 
+               message = "Bienvenue sur le territoire d'Ajaccio"),
+  
+  "Caux Seine" = list(img = "logos/logo_CauxSeine.png", 
+               height = 70, 
+               message = "Bienvenue sur le territoire de Caux Sein Agglo")
   
   
   

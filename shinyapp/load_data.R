@@ -16,10 +16,16 @@ load_data <- function() {
   f.xy <- f.xy %>%
     mutate(site_type = ifelse(site_type == "agro-industrielle", "friche agro-industrielle",
                               ifelse(site_type == "friche hospitaliere", "friche hospitalière",site_type))) %>% 
-    filter(pk != '28015')
+    mutate(nom_prodcartofriches = ifelse(nom_prodcartofriches == "urban vitaliz", "UrbanVitaliz",nom_prodcartofriches),
+           source_nom = ifelse(source_nom == "urban vitaliz", "UrbanVitaliz",source_nom)) %>%
+    filter(pk != '28015',
+           nom_prodcartofriches != "DDT de la Marne")
   
   f.tup <<- readRDS("data/friches/f.tup.rds") %>% # st_set_crs(2154) %>% st_transform(4326) %>%
-    mutate(site_numero = site_id) #%>% filter(id_from_file == '8227138')
+    mutate(nom_prodcartofriches = ifelse(nom_prodcartofriches == "urban vitaliz", "UrbanVitaliz",nom_prodcartofriches),
+           source_nom = ifelse(source_nom == "urban vitaliz", "UrbanVitaliz",source_nom)) %>%
+    mutate(site_numero = site_id) %>%
+    filter(nom_prodcartofriches != "DDT de la Marne")
   
   # LAYER IDS
   f.xy$layerId      <- paste0("friche_xy_", f.xy$site_id)
