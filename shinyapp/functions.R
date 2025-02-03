@@ -1246,7 +1246,9 @@ get_popup_content <- function(f) {
       bloc_zonePLU <- ""
     } else if(f$urba_doc_type == "CC") {
     bloc_zonePLU <- tagList(tags$b("Type de document d'urbanisme : "), "Carte communale", tags$br())
-  }  else {
+  }  else if(f$urba_doc_type == "PSMV") {
+    bloc_zonePLU <- tagList(tags$b("Type de document d'urbanisme : "), "Plan de Sauvegarde et de Mise en Valeur (PSMV)", tags$br())
+  } else {
     bloc_zonePLU <- tagList(
 
       tags$b("Type de document d'urbanisme : "), f$urba_doc_type, tags$br(),
@@ -1340,15 +1342,27 @@ get_popup_content <- function(f) {
   # }
   
   ## bloc_siteeco
-  print("12")
-  if(!is.na(f$zone_activites) | f$zone_activites != "non") {
-    bloc_siteeco <- tagList(
-      tags$b("Vocation dominante du site économique : "),coalesce(f$site_vocadomi, "Non renseignée")
-    )
-  } else {
-    bloc_siteeco <- ""
-  }
+  # print("12")
+  # if(!is.na(f$zone_activites) | f$zone_activites != "non") {
+  #   bloc_siteeco <- tagList(
+  #     tags$b("Vocation dominante du site économique : "),coalesce(f$site_vocadomi, "Non renseignée")
+  #   )
+  # } else {
+  #   bloc_siteeco <- ""
+  # }
+  # 
   
+  # bloc_siteeco
+  print("12")
+  if(is.na(f$urba_zone_formdomi) | is.na(f$urba_zone_formdomi_txt)) {
+    bloc_urba_zone_formdomi <- ""
+  } else {
+    bloc_urba_zone_formdomi <- tagList(
+      tags$br(),
+      tags$b("Forme dominante de la zone d'urbanisme : "), paste0(f$urba_zone_formdomi," - ",f$urba_zone_formdomi_txt)
+    )
+  }
+
   
   
   #--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#
@@ -1420,6 +1434,8 @@ get_popup_content <- function(f) {
     # Bâti =##
     ##=##=##=##
     h4("Bâti"),
+    
+    tags$b("Emprise au sol des bâtis : "), coalesce(glue(f$emprise_sol_bati, " m²"), "Non renseigné"), tags$br(),
     tags$b("Nombre de bâtiments : "), coalesce(f$bati_nombre %>% as.character, "Non renseigné"), tags$br(),
     tags$b("Type de bâtiments : "), coalesce(f$bati_type, "Non renseignée"), tags$br(),
     bloc_surface,
@@ -1499,29 +1515,42 @@ get_popup_content <- function(f) {
       tags$b("Date d'approbation du document d'urbanisme : "), ifelse(is.na(f$urba_datappro),"Non renseigné",
                                                                   ifelse(nchar(f$urba_datappro) == 6,paste0(substring(f$urba_datappro,5,6),"/",substring(f$urba_datappro,1,4)),
                                                                   f$urba_datappro)),
-      tags$br(),
+      bloc_urba_zone_formdomi,
+      # tags$b("Forme dominante de la zone d'urbanisme : "), ifelse(is.na(f$urba_zone_formdomi_txt),
+      #                                            "Non renseigné",
+      #                                            paste0(f$urba_zone_formdomi," - ",f$urba_zone_formdomi_txt))
 
-      tags$b("Forme dominante de la zone d'urbanisme : "), ifelse(is.na(f$urba_zone_formdomi_txt),
-                                                 "Non renseigné",
-                                                 paste0(f$urba_zone_formdomi," - ",f$urba_zone_formdomi_txt))
+      ), tags$br(),
 
-      ),
-
-      tags$br(),
-      # tags$b("Document approuvé le : "), ifelse(is.na(f$datappro),
-      #                                           "Date non renseignée",
-      #                                           format(as.Date(f$datappro, "%Y%m%d"), format="%d/%m/%Y"))),
+      
+    tags$b("Intersection avec un zonage environnemental : "), 
+    ifelse(is.na(f$zonage_enviro),"Non renseigné",
+           ifelse(f$zonage_enviro == "hors zone","Hors zonage environnemental (Natura2000, réserve naturelle, ZNIEFF)",
+                  ifelse(f$zonage_enviro == "natura_2000","Intersecte une zone Natura2000",
+                         ifelse(f$zonage_enviro == "reserve_naturelle","Intersecte une réserve naturelle",
+                                ifelse(f$zonage_enviro == "znieff","Intersecte une ZNIEFF",
+                                       ifelse(f$zonage_enviro == "proximite_zone (natura_2000)","A proximité d'une zone Natura2000 (<5km)",
+                                              ifelse(f$zonage_enviro == "proximite_zone (reserves_naturelles)","A proximité d'une réserve naturelle (<5km)",
+                                                     ifelse(f$zonage_enviro == "proximite_zone (znieff)","A proximité d'une ZNIEFF (<5km)",
+                                                                f$zonage_enviro)))))))),
+    tags$br(),
     
     tags$b("Friche dans un périmètre de site économique "),
     tags$a(href = glue("https://datafoncier.cerema.fr/fusac/"),
            tagList("(base FUSAC) :"),
            target="_blank", style="font-size: 1em;"),
     
-    ifelse(is.na(f$zone_activites),
-                                              "Non","Oui"
-                                              ),
-    tags$br(),
-    bloc_siteeco,
+    ifelse(is.na(f$zone_activites) |  f$zone_activites == "non",
+                                              "Non",
+           ifelse(f$site_vocadomi == "inconnu" | is.na(f$site_vocadomi),
+           
+           "Oui", glue("Oui - site économique à vocation dominante ", f$site_vocadomi)
+                                              )),
+    # ifelse(is.na(f$zone_activites),
+    #        "Non","Oui"
+    # ),
+    # tags$br(),
+    # bloc_siteeco,
     
     
     tags$br(),
@@ -1546,9 +1575,9 @@ get_popup_content <- function(f) {
     bloc_pollution,
 
 
-    ##=##=##=##=##
+    ##=##=##=##=##=##=##=##=##
     # Desserte en transport =##
-    ##=##=##=##=##
+    ##=##=##=##=##=##=##=##=##
     h4("Desserte en transport"),
     tagList(
 

@@ -9,7 +9,7 @@ source("modules/module_fonds_friches.R", encoding = "UTF-8")
 Sys.setlocale("LC_TIME", "French")
 
 # DATE DE MISE A JOUR ####
-LAST_UPDATE_DATE <- "4 Février 2025"
+LAST_UPDATE_DATE <- "3 Février 2025"
 
 # PALETTE CEREMA ####
 couleurs_cerema <- readRDS("data/couleurs_cerema.rds")
@@ -63,7 +63,7 @@ Observatoires <- c(
   "DDT du Cantal"                                = "Cantal",
   "DDT de la Loire"                              = "Loire",
   "DDT du Loiret"                                = "Loiret",
-  "DDT de la Marne"                              = "Marne",
+  #"DDT de la Marne"                              = "Marne",
   "DDTM de la Somme"                             = "Somme",
   "Grand Angoulême"                              = "Grand Angouleme",
   "Communauté de communes Val de Gray"           = "CCVG",
@@ -141,9 +141,9 @@ Logos <- list(
   "Grand Angouleme" = list(img = "logos/grand-angouleme.jpg", 
                   height = 80, 
                   message = "Bienvenue sur le territoire du Grand Angoulême"),
-  Marne = list(img = "logos/logo-org-marne.png", 
-               height = 110, 
-               message = "Bienvenue sur le territoire de la Marne"),
+  # Marne = list(img = "logos/logo-org-marne.png", 
+  #              height = 110, 
+  #              message = "Bienvenue sur le territoire de la Marne"),
   Fougeres = list(img = "logos/logo-fougeres.png", 
                   height = 50, 
                   message = "Bienvenue sur la commune de Fougères"),

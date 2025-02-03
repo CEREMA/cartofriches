@@ -1,7 +1,10 @@
 L’intérêt pour un observatoire local de friches de verser ses données dans l’inventaire national est multiple :
 - **Enrichir les données de son observatoire :** le Cerema réalise en effet certains enrichissements de données, en rajoutant systématiquement des informations concernant :
     -	la propriété *(via les fichiers fonciers)* ;
-    -	le zonage d’urbanisme *(via le GPU)* ;
+    -	le zonage d’urbanisme *(via le Géoportail de l'Urbanisme)* ;
+    - les zonages environnementaux qui intersectent la friche *(via le Géoportail de l'Urbanisme et l'INPN)* ;
+    - la présence de la friche dans un périmètre de 500m autour d'un monument historique *(via data.gouv.fr)*  ;
+    - la surface de bâti au sol *(via la BDTopo)* ;
     -	le taux d’espace urbanisé *(au sens des fichiers fonciers)* ;
     -	le taux de logements vacants *(via les fichiers fonciers)* ;
     -	la desserte en transports en commun (distance à la gare la plus proche) et à un échangeur autoroutier ;
