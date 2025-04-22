@@ -3,10 +3,14 @@ L’intérêt pour un observatoire local de friches de verser ses données dans 
     -	la propriété *(via les fichiers fonciers)* ;
     -	le zonage d’urbanisme *(via le Géoportail de l'Urbanisme)* ;
     - les zonages environnementaux qui intersectent la friche *(via le Géoportail de l'Urbanisme et l'INPN)* ;
+    - les risques naturels et technologiques qui intersectent la friche *(via le Géoportail de l'Urbanisme et l'INPN)*;
+    - la présence de la friche dans un site économique *(via la base de données FUSAC)* ;
     - la présence de la friche dans un périmètre de 500m autour d'un monument historique *(via data.gouv.fr)*  ;
-    - la surface de bâti au sol *(via la BDTopo)* ;
+    - la surface de bâti au sol et le coefficient d'emprise au sol *(via la BDTopo)* ;
     -	le taux d’espace urbanisé *(au sens des fichiers fonciers)* ;
     -	le taux de logements vacants *(via les fichiers fonciers)* ;
+    - la proximité aux commerces *(via la base permantente des Equipements de l'INSEE)* ;
+    - la distance à un poste électrique *(via les données ENEDIS)* ;
     -	la desserte en transports en commun (distance à la gare la plus proche) et à un échangeur autoroutier ;
     -	et prochainement, il est envisagé de rajouter des informations sur l’artificialisation (via des croisements avec l’OCS-GE), le potentiel de renaturation (grâce aux travaux du projet POGEIS) et les usages potentiels de la friche.
 - **Mettre en visibilité les friches de son territoire** afin d’accélérer leur reconversion, via une mise à disposition des données en opendata et une représentation de ces données sous la forme d’une carte intéractive et un tableau d’exploration des données. De nombreux acteurs privés et bureaux d’études utilisent Cartofriches afin de sélectionner des sites d’implantation de projets pouvant répondre à leur besoin. Par ailleurs, les textes relatifs au développement des énergies renouvelables favorisent fortement l'installation de ces dernières sur des friches.

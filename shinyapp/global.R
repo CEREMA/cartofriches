@@ -9,7 +9,7 @@ source("modules/module_fonds_friches.R", encoding = "UTF-8")
 Sys.setlocale("LC_TIME", "French")
 
 # DATE DE MISE A JOUR ####
-LAST_UPDATE_DATE <- "3 Février 2025"
+LAST_UPDATE_DATE <- "22 Avril 2025"
 
 # PALETTE CEREMA ####
 couleurs_cerema <- readRDS("data/couleurs_cerema.rds")
@@ -55,15 +55,17 @@ ZOOM_LEVELS <- c("Région"      = 6,
 # OBSERVATOIRES ####
 Observatoires <- c(
   "Sud Foncier Eco"                              = "Sud Foncier Eco",
-  "Région Occitanie"                             = "Occitanie",
+  "Institut Paris Région"                        = "IPR",
   "Établissement Public Foncier de Grand Est"    = "Grand Est",
-  "Établissement Public Foncier de Normandie"    = "Normandie",  
+  "Établissement Public Foncier de Normandie"    = "Normandie",
+  "Région Occitanie"                             = "Occitanie",
   "DDT de l'Ain"                                 = "Ain",
   "DDT des Ardennes"                             = "Ardennes",
   "DDT du Cantal"                                = "Cantal",
   "DDT de la Loire"                              = "Loire",
   "DDT du Loiret"                                = "Loiret",
   #"DDT de la Marne"                              = "Marne",
+  "DDT de la Haute-Marne"                        = "Haute-Marne",
   "DDTM de la Somme"                             = "Somme",
   "Grand Angoulême"                              = "Grand Angouleme",
   "Communauté de communes Val de Gray"           = "CCVG",
@@ -192,7 +194,15 @@ Logos <- list(
   
   "Caux Seine" = list(img = "logos/logo_CauxSeine.png", 
                height = 70, 
-               message = "Bienvenue sur le territoire de Caux Sein Agglo")
+               message = "Bienvenue sur le territoire de Caux Sein Agglo"),
+  
+  IPR = list(img = "logos/logo_IPR.png", 
+                                 height = 70, 
+                                 message = "Bienvenue sur le territoire d'Ile de France"),
+  
+  "Haute-Marne" = list(img = "logos/logo_DDT52.png", 
+                                 height = 70, 
+                                 message = "Bienvenue sur le territoire de la Haute-Marne") 
   
   
   

@@ -27,13 +27,12 @@ Ce rapport contient les principales informations concernant la dernière mise à
 f.xy <- readRDS("data/friches/f.xy.rds") %>%
     mutate(Long = st_coordinates(.)[, 1], Lat = st_coordinates(.)[, 2]) %>%
     mutate(long = Long,
-           lat = Lat,
-           site_numero = pk)
+           lat = Lat)
 # stats <- get_n_friches(f.xy)
 # get_ui_legende(stats, 
 #               chk_all = TRUE, 
 #               popup = FALSE)
-glue("Il y a ",format_numericFR(nrow(f.xy %>% filter(nom_prodcartofriches != "Site Basias ou Basol non vérifié par le Cerema")))," friches qualifiées et ",format_numericFR(nrow(f.xy %>% filter(nom_prodcartofriches == "Site Basias ou Basol non vérifié par le Cerema"))) ," friches non vérifiées recensées dans Cartofriches.")
+glue("Il y a ",format_numericFR(nrow(f.xy %>% filter(site_statut != "friche potentielle")))," friches qualifiées et ",format_numericFR(nrow(f.xy %>% filter(site_statut == "friche potentielle"))) ," friches potentielles recensées dans Cartofriches.")
 ```
 
 ## Typologie des friches recensées (hors friches non vérifiées)
@@ -45,7 +44,9 @@ Les friches sont classées selon leur statut : friche reconvertie, friche avec o
 ```{r}
 TABLE_statut <- f.xy %>% 
   as.data.frame() %>%
-  filter(nom_prodcartofriches != "Site Basias ou Basol non vérifié par le Cerema") %>%
+  filter(site_statut != "friche potentielle"
+         #nom_prodcartofriches != "Site Basias ou Basol non vérifié par le Cerema"
+         ) %>%
   group_by(site_statut) %>%
   summarise('Nombre de friches' = n(),
             Surface_UF = sum(unite_fonciere_surface, na.rm = T),
@@ -79,7 +80,8 @@ Les friches sont également classées selon leur type : industrielle, commercial
 
 TABLE_type <- f.xy %>% 
   as.data.frame() %>%
-  filter(nom_prodcartofriches != "Site Basias ou Basol non vérifié par le Cerema",
+  # filter(nom_prodcartofriches != "Site Basias ou Basol non vérifié par le Cerema",
+    filter(site_statut != "friche potentielle",
          site_statut != "friche reconvertie") %>%
   group_by(site_type) %>%
   summarise(nombre = n(),
@@ -114,7 +116,8 @@ L'information sur le zonage d'urbanisme sur lequel est situé la friche est éga
 
 TABLE_urba <- f.xy %>% 
   as.data.frame() %>%
-  filter(nom_prodcartofriches != "Site Basias ou Basol non vérifié par le Cerema",
+  filter(site_statut != "friche potentielle",
+         #nom_prodcartofriches != "Site Basias ou Basol non vérifié par le Cerema",
          site_statut != "friche reconvertie") %>%
   group_by(urba_zone_type) %>%
   summarise(nombre = n(),

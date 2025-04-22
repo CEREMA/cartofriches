@@ -1,4 +1,8 @@
-Le besoin principal auquel souhaite répondre Cartofriches est l'**aide au recensement les friches pour les qualifier et faciliter leur réutilisation**. Il s'adresse à tout porteur de projet, public ou privé.
+Cartofriches permet aux acteurs nationaux du territoire de disposer **d'informations harmonisées et enrichies sur les friches** grâce à la consolidation et enrichissement d’inventaires locaux, afin de territorialiser des politiques publiques.
+
+Cartofriches permet également aux collectivités **d’enrichir leur recensement de friches grâce à des caractéristiques complémentaires** permettant de mieux décrire la friche et son environnement, afin de faciliter l’identification des usages possibles pour le réemploi de ces friches.
+
+Cet inventaire national s'adresse à tout porteur de projet, public ou privé.
 
 Le Cerema utilise les données de BASIAS et BASOL, ainsi que d'autres lots de données nationaux (candidatures aux appels à projets, par exemple) pour assurer une **pré-identification des friches sur tout le territoire national**.
 

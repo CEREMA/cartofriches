@@ -658,6 +658,14 @@ ui <-
              tabPanel("Cartofriches",
                       fluidRow(column(8, offset=2, uiOutput("ui_apropos_cartofriches")))),
              
+             # # __ONGLETS Mutafriches ----       
+             # tabPanel("Indice de mutabilité",
+             #          fluidRow(column(8, offset=2, includeMarkdown("www/textes/mutafriches.md")))),
+             
+             # __ONGLETS enrichissementdata ----       
+             tabPanel("Enrichissement de données",
+                      fluidRow(column(8, offset=2, includeMarkdown("www/textes/enrichissementdata.md")))),
+          
              # Un clic amène vers la page observatoires du portail artificialisation.biodiversitetousvivants
              tabPanel(tags$a(href = "https://artificialisation.biodiversitetousvivants.fr/cartofriches/observatoires-locaux",
                              div("Observatoires locaux",icon("external-link")), 
