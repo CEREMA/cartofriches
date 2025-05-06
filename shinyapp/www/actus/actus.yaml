@@ -1,13 +1,13 @@
 ---
 - actu1:
     lien: https://datafoncier.cerema.fr/actualites/retour-sur-rendez-datafoncier-ndeg7-du-3-avril-2025
-    image: news_webinairedatafoncier_2025.PNG
+    image: https://github.com/CEREMA/cartofriches/blob/main/shinyapp/www/actus/news_webinairedatafoncier_2025.PNG
     titre: Webinaire Datafoncier du 3 avril 2025
     width: 70%
     height: 250px
 - actu2:
     lien: https://artificialisation.developpement-durable.gouv.fr/actualites/webinaire-amenager-les-friches-avec-urbanvitaliz-et-cartofriches-replay
-    image: news_webinaireCNFPT_2025.PNG
+    image: https://github.com/CEREMA/cartofriches/blob/main/shinyapp/www/actus/news_webinaireCNFPT_2025.PNG
     titre: Webinaire CNFPT/Intercommunalité de France du 11 mars 2025
     width: 70%
     height: 250px
