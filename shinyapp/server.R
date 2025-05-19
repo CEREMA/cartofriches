@@ -5,7 +5,7 @@ server <- function(input, output, session) {
   output$carousel <- renderSlickR({
     
     f <- read_yaml("https://raw.githubusercontent.com/CEREMA/cartofriches/refs/heads/main/shinyapp/www/actus/actus.yaml")
-    #f <- read_yaml("www/actus/actus.yaml")
+    # f <- read_yaml("www/actus/actus.yaml")
     
     actus <- render_actus(f)
     
@@ -14,7 +14,7 @@ server <- function(input, output, session) {
       ) +
       settings(
         autoplay = TRUE,        # Active le défilement automatique
-        autoplaySpeed = 3000,   # Temps entre les slides
+        autoplaySpeed = 4000,   # Temps entre les slides
         slidesToShow = 3,       # Affiche une seule image à la fois
         slidesToScroll = 1,     # Une image à la fois lors du défilement
         dots = TRUE,            # Affiche les points de pagination
@@ -191,7 +191,7 @@ server <- function(input, output, session) {
   })
   
   # > OBSERVE ####
-  
+ 
   # lnk_close ----
   observeEvent(input$lnk_close, {
     removeModal()
@@ -292,6 +292,20 @@ server <- function(input, output, session) {
   observeEvent(input$open_mentions, {
     message(">> Ouverture des mentions")
     updateNavbarPage(session, "app_navbar", selected = "Mentions légales") 
+  })
+  
+  # open_mutafriches ----
+  observeEvent(input$open_mutafriches, {
+    message(">> Ouverture mutafriches")
+    updateNavbarPage(session, "app_navbar", selected = "Indice de mutabilité")
+    removeModal()
+  })
+  
+  # open_enrichissementdata ----
+  observeEvent(input$open_enrichissementdata, {
+    message(">> Ouverture Enrichissement de données")
+    updateNavbarPage(session, "app_navbar", selected = "Enrichissement de données")
+    removeModal()
   })
   
   # Affichage du bouton "Aller vers la friche la plus proche" ---- PB NICOLAS FINDFRICHE
@@ -424,6 +438,166 @@ server <- function(input, output, session) {
       glue("?site={site_id}"),
       mode = c("replace")
     )
+    
+
+    
+    output$Texte_friche3lignes <- renderText({
+
+      # test
+      # f <- f.xy %>% filter(site_id == "01166_11982")
+      # f <- f.xy %>% filter(site_id == "13073_10570")
+
+      # print(f)
+      
+      print(f)
+      print("proprio")
+      # proprio
+      text_proprio <- if(f$proprio_mutafriches == "Public"){
+        "La friche appartient à un propriétaire public. "
+      } else if(f$proprio_mutafriches == "Privé"){
+        "La friche appartient à un propriétaire privé. "
+      } else if (f$proprio_mutafriches == "Mixte public privé") {
+        "La friche appartient à des propriétaires publics et privés. "
+      } else {""}
+      
+      print("text_centrebourg")
+      # localisation
+      text_centrebourg <-  if(f$site_centrebourg == "Non" | is.na(f$site_centrebourg)){
+        "Elle ne fait pas partie du centre-bourg "
+      } else if(f$site_centrebourg == "Oui"){
+        "Elle fait partie du centre-bourg "
+      } else {""}
+      
+      text_commerce <- if(f$distancecommerce == "Plus500m" | is.na(f$distancecommerce)){
+        "et n'est pas située à proximité de commerces. "
+      } else if(f$distancecommerce == "moins500m"){
+        "et est située à proximité de commerces. "
+      } else {""}
+      
+      # surface et bâti
+      print("text_surface")
+      text_surface <- if(f$site_surface < 10000){
+        "Sa surface est inférieure à 1 hectare, "
+      } else if(f$site_surface < 50000){
+        "Sa surface est comprise entre 1 et 5 hectares, "
+      } else if (f$site_surface >= 50000) {
+        "Sa surface est supérieure à 5 hectares, "
+      } else {""}
+      
+      text_emprisebati <-  if (f$emprise_sol_bati == 0) {
+        "sans bâti. "
+        } else if(f$emprise_sol_bati < 10000){
+        "avec une emprise de bâti inférieur à 1ha"
+      } else if (f$emprise_sol_bati >= 10000) {
+        "avec une emprise de bâti supérieure à 1ha"
+      } else {""}
+      
+      text_etatbati <- if(f$bati_etat == "dégradation très importante"){
+        ", dont l'état est très dégradé. "
+      } else if (f$bati_etat == "dégradation inexistante ou faible") {
+        ", dont l'état est peu dégradé. "
+      } else if (f$bati_etat == "dégradation moyenne") {
+        ", dont l'état est moyennement dégradé. "
+      } else if (f$emprise_sol_bati == 0) {
+        ""
+      } else {"."}
+      
+      # zonage PLU et zone activité
+      print("text_zone_activites")
+      text_zone_activites <- if(is.na(f$urba_zone_type)){
+        " Elle est située dans une zone d'activité."
+      } else if(f$zone_activites == "oui" | f$urba_site_eco == "oui"){
+        " Elle est située dans une zone d'activité."
+      } else if(f$urba_zone_type %in% c("U")) {
+        " Elle est située en zonage U."
+      } else if(f$urba_zone_type %in% c("AUc","AUs")) {
+        " Elle est située en zonage AU."
+      } else if(f$urba_zone_type %in% c("N","Nh")) {
+        " Elle est située en zonage N."
+      } else if(f$urba_zone_type %in% c("A","Ah")) {
+        " Elle est située en zonage A."
+      } else {""}
+      
+      print("text_zonage_enviro")
+      text_zonage_enviro <- if(is.na(f$zonage_enviro)){
+        "La friche est située"
+      } else if(f$zonage_enviro == "hors zone"){
+        "La friche est située hors périmètre de ZNIEFF, Natura2000 ou réserve naturelle"
+      } else if(str_detect(f$zonage_enviro,"proximite_zone")) {
+        "La friche est située à proximité d'un périmètre de ZNIEFF, Natura2000 ou réserve naturelle"
+      } else if(f$zonage_enviro == "natura_2000") {
+        "La friche est située dans un périmètre de Natura2000"
+      } else if(f$zonage_enviro == "znieff") {
+        "La friche est située dans un périmètre de ZNIEFF"
+      } else {""}
+      
+      print("text_zone_activites")
+      text_tvb <- if(is.na(f$tramevb_2)) {
+        ""
+      } else if(f$tramevb_2 == "hors_tvb"){
+        " et hors trame verte et bleue connue. "
+      } else if(f$tramevb_2 == "tvb") {
+        " au sein d'une trame verte et bleue connue. "
+      } else {""}
+      
+      # risques
+      print("risques")
+      text_risque_enviro <- if(is.na(f$pprmouppri)) {
+        ""
+      } else if(f$pprmouppri == "hors_risques"){
+        "elle n'est pas soumise à un risque naturel"
+      } else if(f$pprmouppri == "pprm_ou_ppri") {
+        "elle est soumis à un risque naturel"
+      } else {""}
+      
+      text_risque_techno <- if(is.na(f$pprt_2)) {
+        ""
+      } else if(f$pprt_2 == "hors_pprt"){
+        " et n'est pas soumise à un risque technologique. "
+      } else if(f$pprt_2 == "pprt") {
+        " et soumise à un risque technologique. "
+      } else {""}
+      
+      # desserte
+      print("desserte")
+      text_desserte_route <- if(is.na(f$desserte_distance_route)) {
+        ""
+      } else if(as.numeric(f$desserte_distance_route) < 1){
+        "elle est localisée à moins d'1km d'un échangeur autoroutier, "
+      } else if(as.numeric(f$desserte_distance_route) < 5){
+        "elle est localisée à moins de 5km d'un échangeur autoroutier, "
+      } else {"elle est à plus de 5km d'un échangeur autoroutier, "}
+      
+      text_desserte_ferroviaire <- if(is.na(f$desserte_distance_ferroviaire)) {
+        ""
+      } else if(as.numeric(f$desserte_distance_ferroviaire < 1)){
+        "à moins d'1km d'une gare "
+      } else {"à plus d'1km d'une gare "}
+      
+      print("text_posteelect")
+      text_posteelect <- if (f$distanceposteelect != "moins1km" | is.na(f$distanceposteelect)){
+        "et à plus d'1km d'un point de raccordement BT/HT. "
+      } else if(f$distanceposteelect == "moins1km"){
+        "et à moins d'1km d'un point de raccordement BT/HT. "
+      } else {""} 
+      
+      print("text_zaer")
+      text_zaer <- if(f$site_zaer == "oui"){
+        "La friche est située dans une Zone d'Accélération d'Energie Renouvelable."
+      } else {""}
+
+      HTML(
+        paste0(text_proprio,
+             # text_centrebourg,text_commerce,
+             "\n",text_surface,text_emprisebati,text_etatbati,
+             text_zone_activites,
+             "\n",text_zonage_enviro,text_tvb,
+             "\n","Concernant l'exposition aux risques, ",text_risque_enviro,text_risque_techno,
+             "\n","Concernant l'accessibilité aux transports, ",text_desserte_route, text_desserte_ferroviaire,text_posteelect,text_zaer)
+      )
+
+
+    })
     
     # On affiche la popup associée au site
     isolate({

@@ -3,6 +3,9 @@ load_data <- function() {
   ## LECTURE DE LA DATA ############################################################
   
   # > FRICHES ----
+  
+  cf_mutafriches <- read.csv2("data/friches/cf_mutafriches.csv")
+  
   # f.xy <<- readRDS("data/friches/f.xy.rds")
   # f.tup <<- readRDS("data/friches/f.tup.rds")
   f.xy <<- readRDS("data/friches/f.xy.rds") %>% # st_set_crs(2154) %>% st_transform(4326) %>% 
@@ -11,21 +14,26 @@ load_data <- function() {
            Lat = lat,
            site_numero = site_id,
            bati_surface = as.numeric(bati_surface),
-           desserte_distance_ferroviaire = as.numeric(desserte_distance_ferroviaire))  
+           desserte_distance_ferroviaire = as.numeric(desserte_distance_ferroviaire))  %>% 
+    mutate(CES = round(as.numeric(emprise_sol_bati) / as.numeric(site_surface),3)) 
   
   f.xy <- f.xy %>%
     mutate(site_type = ifelse(site_type == "agro-industrielle", "friche agro-industrielle",
                               ifelse(site_type == "friche hospitaliere", "friche hospitalière",site_type))) %>% 
     mutate(nom_prodcartofriches = ifelse(nom_prodcartofriches == "urban vitaliz", "UrbanVitaliz",nom_prodcartofriches),
            source_nom = ifelse(source_nom == "urban vitaliz", "UrbanVitaliz",source_nom)) %>%
-    filter(pk != '28015',
-           nom_prodcartofriches != "DDT de la Marne")
+    filter(#pk != '28015',
+           nom_prodcartofriches != "DDT de la Marne")  %>%
+     left_join(cf_mutafriches, by = "site_id")
   
   f.tup <<- readRDS("data/friches/f.tup.rds") %>% # st_set_crs(2154) %>% st_transform(4326) %>%
     mutate(nom_prodcartofriches = ifelse(nom_prodcartofriches == "urban vitaliz", "UrbanVitaliz",nom_prodcartofriches),
            source_nom = ifelse(source_nom == "urban vitaliz", "UrbanVitaliz",source_nom)) %>%
     mutate(site_numero = site_id) %>%
-    filter(nom_prodcartofriches != "DDT de la Marne")
+    filter(nom_prodcartofriches != "DDT de la Marne") %>% 
+    mutate(CES = round(as.numeric(emprise_sol_bati) / as.numeric(site_surface),3)) %>%
+    left_join(cf_mutafriches, by = "site_id")
+  
   
   # LAYER IDS
   f.xy$layerId      <- paste0("friche_xy_", f.xy$site_id)
