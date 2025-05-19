@@ -4,8 +4,8 @@ server <- function(input, output, session) {
   # Il s'agit du carroussel d'informations
   output$carousel <- renderSlickR({
     
-    f <- read_yaml("https://raw.githubusercontent.com/CEREMA/cartofriches/refs/heads/main/shinyapp/www/actus/actus.yaml")
-    # f <- read_yaml("www/actus/actus.yaml")
+    # f <- read_yaml("https://raw.githubusercontent.com/CEREMA/cartofriches/refs/heads/main/shinyapp/www/actus/actus.yaml")
+    f <- read_yaml("www/actus/actus.yaml")
     
     actus <- render_actus(f)
     
