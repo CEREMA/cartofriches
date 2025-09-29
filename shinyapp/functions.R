@@ -1203,7 +1203,7 @@ get_popup_content <- function(f) {
   if(f$site_statut != "friche reconvertie") {
     bloc_urbanvitaliz <- tagList(
       # tags$b("Besoin d'un coup de pouce UrbanVitaliz ? : "), 
-      tags$a(href = glue("https://urbanvitaliz.fr/"), 
+      tags$a(href = glue("https://urbanvitaliz.fr/?mtm_campaign=cartofriche&mtm_kwd=site_id_", f$site_id),
              tagList(icon("envelope"), "Vous avez l'accord de la commune pour lancer votre projet et avez besoin d'un coup de pouce ? Contactez UrbanVitaliz !"), 
              target="_blank", style="font-size: 1em; margin-left: 10px;"),
       tags$br()
