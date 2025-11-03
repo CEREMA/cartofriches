@@ -1,4 +1,12 @@
 ---
+
+
+- actu1:
+    lien: https://www.cerema.fr/fr/presse/document/inventaire-national-friches-etat-lieux-enjeux
+    image: news_synthese_sept2025.PNG
+    titre: Portrait des friches en France - Septembre 2025
+    width: 70%
+    height: 250px
 - actu1:
     lien: https://datafoncier.cerema.fr/actualites/retour-sur-rendez-datafoncier-ndeg7-du-3-avril-2025
     image: news_webinairedatafoncier_2025.PNG

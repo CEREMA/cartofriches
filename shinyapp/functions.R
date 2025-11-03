@@ -1,7 +1,7 @@
 source("modules/mod_ban.R", encoding = "UTF-8")
 
 # > UTILITAIRES ----
-
+`%notin%` = function(x,y) !(x %in% y)
 format_surface <- function(x) { paste0(format(round(x,0), big.mark = " ", decimal.mark = ",",  scientific = FALSE)," m²") } #trim = TRUE,
 format_numericFR <- function(x) { paste0(format(round(x,0), big.mark = " ", decimal.mark = ",", scientific = FALSE)) } #trim = TRUE,
 
@@ -36,12 +36,6 @@ render_actus <- function(actus) {
 # Ajout des tiles les plus utiles
 add_tiles <- function(m) {
   
-  
-  # leaflet() %>% 
-  #   addTiles(
-  #     "http://data.geopf.fr/wmts?REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0&style=PCI%20vecteur&TILEMATRIXSET=PM&FORMAT=image/png&LAYER=CADASTRALPARCELS.PARCELLAIRE_EXPRESS&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}",
-  #   )
-  
   m %>% 
     
     # OSM
@@ -49,39 +43,30 @@ add_tiles <- function(m) {
     
     # Ortho
     addTiles(
-      # "http://wxs.ign.fr/choisirgeoportail/wmts?REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0&STYLE=normal&TILEMATRIXSET=PM&FORMAT=image/jpeg&LAYER=ORTHOIMAGERY.ORTHOPHOTOS&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}",
       "https://data.geopf.fr/wmts?REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0&STYLE=normal&TILEMATRIXSET=PM&FORMAT=image/jpeg&LAYER=ORTHOIMAGERY.ORTHOPHOTOS&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}",
-             options = c(WMSTileOptions(tileSize = 256), 
-                         providerTileOptions(minZoom = 1, maxZoom = 22)),
-             attribution='<a target="_blank" href="https://www.geoportail.gouv.fr/">Geoportail France</a>',
-             group = "Ortho IGN"
+      options = c(WMSTileOptions(tileSize = 256), 
+                  providerTileOptions(minZoom = 1, maxZoom = 22)),
+      attribution='<a target="_blank" href="https://www.geoportail.gouv.fr/">Geoportail France</a>',
+      group = "Ortho IGN"
     ) %>%
     
     # Plan
     addTiles(
-      # "http://wxs.ign.fr/choisirgeoportail/wmts?REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0&STYLE=normal&TILEMATRIXSET=PM&FORMAT=image/png&LAYER=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}",
       "https://data.geopf.fr/wmts?REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0&STYLE=normal&TILEMATRIXSET=PM&FORMAT=image/png&LAYER=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}",
       options = WMSTileOptions(tileSize = 256, minZoom = 1, maxZoom = 20),
-             group = "Plan IGN"
+      group = "Plan IGN"
     ) %>%
     
     # Parcelles
     addTiles(
-      # "http://wxs.ign.fr/choisirgeoportail/wmts?REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0&style=PCI%20vecteur&TILEMATRIXSET=PM&FORMAT=image/png&LAYER=CADASTRALPARCELS.PARCELLAIRE_EXPRESS&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}",
       "https://data.geopf.fr/wmts?REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0&STYLE=PCI%20vecteur&TILEMATRIXSET=PM&FORMAT=image/png&LAYER=CADASTRALPARCELS.PARCELLAIRE_EXPRESS&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}",
-             options = WMSTileOptions(tileSize = 256),
-             attribution='<a target="_blank" href="https://www.geoportail.gouv.fr/">Geoportail France</a>',
-             group = "Parcelles IGN"
+      options = WMSTileOptions(tileSize = 256),
+      attribution='<a target="_blank" href="https://www.geoportail.gouv.fr/">Geoportail France</a>',
+      group = "Parcelles IGN"
     )
-    
+  
 }
 add_tiles_anciennesortho <- function(m) {
-  
-  
-  # leaflet() %>% 
-  #   addTiles(
-  #     "http://data.geopf.fr/wmts?REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0&style=PCI%20vecteur&TILEMATRIXSET=PM&FORMAT=image/png&LAYER=CADASTRALPARCELS.PARCELLAIRE_EXPRESS&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}",
-  #   )
   
   m %>% 
     
@@ -90,7 +75,6 @@ add_tiles_anciennesortho <- function(m) {
     
     # Ortho
     addTiles(
-      # "http://wxs.ign.fr/choisirgeoportail/wmts?REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0&STYLE=normal&TILEMATRIXSET=PM&FORMAT=image/jpeg&LAYER=ORTHOIMAGERY.ORTHOPHOTOS&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}",
       "https://data.geopf.fr/wmts?REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0&STYLE=normal&TILEMATRIXSET=PM&FORMAT=image/jpeg&LAYER=ORTHOIMAGERY.ORTHOPHOTOS&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}",
       options = c(WMSTileOptions(tileSize = 256), 
                   providerTileOptions(minZoom = 1, maxZoom = 22)),
@@ -100,7 +84,6 @@ add_tiles_anciennesortho <- function(m) {
     
     # Ortho 2011-2015
     addTiles(
-      # "http://wxs.ign.fr/choisirgeoportail/wmts?REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0&STYLE=normal&TILEMATRIXSET=PM&FORMAT=image/jpeg&LAYER=ORTHOIMAGERY.ORTHOPHOTOS&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}",
       "https://data.geopf.fr/wmts?REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0&STYLE=normal&TILEMATRIXSET=PM&FORMAT=image/jpeg&LAYER=ORTHOIMAGERY.ORTHOPHOTOS2011-2015&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}",
       options = c(WMSTileOptions(tileSize = 256), 
                   providerTileOptions(minZoom = 1, maxZoom = 22)),
@@ -110,7 +93,6 @@ add_tiles_anciennesortho <- function(m) {
     
     # Ortho 2000-2005
     addTiles(
-      # "http://wxs.ign.fr/choisirgeoportail/wmts?REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0&STYLE=normal&TILEMATRIXSET=PM&FORMAT=image/jpeg&LAYER=ORTHOIMAGERY.ORTHOPHOTOS&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}",
       "https://data.geopf.fr/wmts?REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0&STYLE=normal&TILEMATRIXSET=PM&FORMAT=image/jpeg&LAYER=ORTHOIMAGERY.ORTHOPHOTOS2000-2005&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}",
       options = c(WMSTileOptions(tileSize = 256), 
                   providerTileOptions(minZoom = 1, maxZoom = 22)),
@@ -120,7 +102,6 @@ add_tiles_anciennesortho <- function(m) {
     
     # Plan
     addTiles(
-      # "http://wxs.ign.fr/choisirgeoportail/wmts?REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0&STYLE=normal&TILEMATRIXSET=PM&FORMAT=image/png&LAYER=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}",
       "https://data.geopf.fr/wmts?REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0&STYLE=normal&TILEMATRIXSET=PM&FORMAT=image/png&LAYER=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}",
       options = WMSTileOptions(tileSize = 256, minZoom = 1, maxZoom = 20),
       group = "Plan IGN"
@@ -128,7 +109,6 @@ add_tiles_anciennesortho <- function(m) {
     
     # Parcelles
     addTiles(
-      # "http://wxs.ign.fr/choisirgeoportail/wmts?REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0&style=PCI%20vecteur&TILEMATRIXSET=PM&FORMAT=image/png&LAYER=CADASTRALPARCELS.PARCELLAIRE_EXPRESS&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}",
       "https://data.geopf.fr/wmts?REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0&STYLE=PCI%20vecteur&TILEMATRIXSET=PM&FORMAT=image/png&LAYER=CADASTRALPARCELS.PARCELLAIRE_EXPRESS&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}",
       options = WMSTileOptions(tileSize = 256),
       attribution='<a target="_blank" href="https://www.geoportail.gouv.fr/">Geoportail France</a>',
@@ -188,7 +168,7 @@ add_circles <- function(proxy,
   circle_sizes <- get_sizes(values, min_size=8, max_size=30)
   
   ##=##=##=##=##=##
-  #  Couleurs   ##
+  #  Couleurs    ##
   ##=##=##=##=##=##
   get_fillColor <- function(n_friches) {
     if(n_friches == 0) {
@@ -222,8 +202,6 @@ add_circles <- function(proxy,
   ##=##=##=##=##=#=#
   # Stats friches
   ##=##=##=##=##=#=#
-  # n_friches_observatoires <- f$n_friches_industrielles_observatoires
-  # n_friches_qualifiees    <- f$n_friches_industrielles_mte_qualifiees
   
   popup_stats <- lapply(1:nrow(f), function(x) {
     # print(x)
@@ -255,7 +233,7 @@ add_circles <- function(proxy,
   popups <- popups %>% as.list %>% lapply(HTML)
   
   ##=##=##=##=##
-  #  Carte   ##
+  #  Carte    ##
   ##=##=##=##=##
   circle_sizes <- as.numeric(circle_sizes)
   proxy %>%
@@ -350,7 +328,7 @@ add_circles_AVANTSTANDARD <- function(proxy, f, group = "group") {
     if(n_friches == 0) {
       "#808285"
     } else { 
-      "#F58220" # Nicolas
+      "#F58220" 
     }
   }
   fillColors <- sapply(f$n_friches, get_fillColor) %>% as.character
@@ -359,7 +337,7 @@ add_circles_AVANTSTANDARD <- function(proxy, f, group = "group") {
     if(n_friches == 0) {
       "#BCBDC0"
     } else {
-      "#E54719" # Nicolas
+      "#E54719" 
     }
   }
   strokeColors <- sapply(f$n_friches, get_strokeColor) %>% as.character
@@ -513,16 +491,11 @@ zoom_to <- function(m, coords, type, value, label = NULL) {
 # Les marqueurs sont affichésà un niveau de zoom moyen
 add_points <- function(proxy, f, replaceMarkers = TRUE) {
   
-   # f <- f.xy %>% filter(site_id == '65295_15083')
+  # f <- f.xy %>% filter(site_id == '65295_15083')
   
   message(">> add_points")
   
-  # # ICONS
-  # icons <- get_icone_friche(f)
-  
   # POPUP
-  # nom_site <- sapply(1:nrow(f), function(x) get_nom_site(f[x, ]))
-  # nom_site <- toupper(f$site_nom)
   nom_site <- sapply(1:nrow(f), function(x) get_nom_site(f[x, ]))
   
   width <- 40
@@ -539,7 +512,7 @@ add_points <- function(proxy, f, replaceMarkers = TRUE) {
   
   # SOURCES  
   sources <- sapply(f$nom_prodcartofriches, function(x) paste(strwrap(x, width), 
-                                                           collapse=br_code))
+                                                              collapse=br_code))
   
   # LOGOS
   the_logos <- sapply(f$source_r, get_img_logo)
@@ -635,29 +608,6 @@ add_polygons <- function(proxy, f, group = "Locaux vacants") {
   )
 }
 
-add_polygons_AVANTSTANDARD <- function(proxy, f, group = "Locaux vacants") {
-  
-  labels <- glue("<div class='map_popup'>Unit&eacute fonci&egravere de <b>{round(f$site_surface) %>% format_number}m<sup>2</sup></b><br><i><small>Regroupement de parcelles contig&uuml;es<br>appartenant au m&ecirc;me propri&eacutetaire</small></i></div>") %>% 
-    as.list(labels) %>% 
-    lapply(HTML)  
-  
-  # Add Polygons
-  proxy %>% addPolygons(data = f,
-                        label = labels,
-                        layerId=~layerId,
-                        color = "#e632ef", 
-                        weight = 1, 
-                        smoothFactor = 0.5,
-                        opacity = 1.0, 
-                        fillOpacity = 0.3,
-                        fillColor = "#ad24ad",
-                        highlightOptions = highlightOptions(color = "#ad24ad", 
-                                                            fillOpacity = 0,
-                                                            weight = 2,
-                                                            bringToFront = FALSE),
-                        group = group)
-}
-
 # CARTE
 # On récupère l'objet (emprise) correspondant à la recherche
 # On récupère l'objet cliqué quand on a des cercles
@@ -726,13 +676,7 @@ get_objects_bounds <- function(f, map_bb) {
   map_bb_xmax <- map_bb$east
   map_bb_ymax <- map_bb$north
   
-  # map_bb_xmin <- -9.84375
-  # map_bb_ymin <- 30.63791
-  # map_bb_xmax <- 14.98535
-  # map_bb_ymax <- 58.47072
-  
   # Filter and count
-  # f <- f %>% filter(long >= map_bb_xmin & long <= map_bb_xmax & lat >= map_bb_ymin & lat <= map_bb_ymax)  #AVANTSTANDARD
   f <- f %>% filter(Long >= map_bb_xmin & Long <= map_bb_xmax & Lat >= map_bb_ymin & Lat <= map_bb_ymax)
   
   return(f)
@@ -742,7 +686,6 @@ get_objects_bounds <- function(f, map_bb) {
 # Récupère un site friche depuis son identifiant
 get_friche_from_id <- function(id) {
   message(">> get_friche_from_id ", id)
-  # num_site <- gsub("^industrielle_[a-z]*_(.*)$", "\\1", id)
   num_site <- id
   f <- Data$points %>% filter(site_id == num_site)
   
@@ -753,7 +696,7 @@ get_friche_from_id <- function(id) {
 zoom_observatoire <- function(proxy, observatoire) {
   
   message(">> Zoom sur l'observatoire")
-
+  
   elt <- observatoire %>% remove_accents()
   
   # Zoom
@@ -859,7 +802,6 @@ add_contour <- function(proxy, f, label, group) {
                        overlayGroups = c(overlayGroups, "Contours"),
                        options       = layersControlOptions(collapsed = FALSE)) %>% 
       showGroup("Contours")
-    # hideGroup("Parcelles IGN")
   }
 }
 
@@ -978,8 +920,6 @@ show_info_friche <- function(id) {
   
   # 2. Ajout de Surface
   if(!is.null(sf_polygons)) {
-    # print(sf_polygons$site_id)
-    # sf_polygons <- sf_points %>% st_buffer(1)
     mymap_modalDialog <- mymap_modalDialog %>% 
       add_polygons(sf_polygons,
                    group = "Unités foncières")
@@ -1007,27 +947,6 @@ show_info_friche <- function(id) {
                bloc_fiche),
         bloc_close))
     
-    # OFF
-    # if(sf_points$checked) {
-    #   bloc_title <- fluidRow(
-    #     fluidRow(
-    #       column(10, 
-    #              bloc_site, 
-    #              bloc_fiche),
-    #       bloc_close))
-    # } else {
-    #   # On n'affiche pas de logo pour les Sources MTE
-    #   bloc_title <- fluidRow(
-    #     fluidRow(
-    #       column(8, 
-    #              bloc_site, 
-    #              bloc_fiche),
-    #       column(2,
-    #              tags$span("Non qualifiée", 
-    #                        style = glue("color:{tag_color};"))),
-    #       bloc_close))
-    # }
-    
   } else {
     
     # Logo de l'observatoire
@@ -1043,8 +962,7 @@ show_info_friche <- function(id) {
     bloc_title <- fluidRow(
       fluidRow(
         column(10,
-               bloc_site, #NICO
-               #NICO toupper(sf_points$site_nom), 
+               bloc_site,
                bloc_fiche),
         bloc_close),
       fluidRow(column(12, 
@@ -1143,14 +1061,21 @@ get_docs_depollution <- function(value){
 # Fait appel à d'autres fonctions présentes dans helpers.R comme get_docs_depollution, etc...
 get_popup_content <- function(f) {
   
-  # > get_popup_content(f.xy[1, ])
-  
   # print(f)
-  
   message(">> get_popup_content")
-  
-  # print(f)
-
+  f <- f %>%
+    mutate(proprio_nom = gsub('[{}\\\\"]', '', proprio_nom),
+           # proprio_nom = gsub('[^A-Za-zÀ-ÿ0-9 ]', '', proprio_nom),
+           l_catpro3txt = gsub('[{}\\\\"]', '', l_catpro3txt),
+           # l_catpro3txt = gsub('[^A-Za-zÀ-ÿ0-9 ]', '', l_catpro3txt)
+    ) %>%
+    mutate(bati_vacance = ifelse(is.na(bati_vacance),"inconnu",bati_vacance),
+           bati_etat = ifelse(is.na(bati_etat),"inconnu",bati_etat)
+    )
+  # gsub('[^A-Za-zÀ-ÿ0-9 ]', '', proprio_nom))
+  # f <- f %>% mutate(proprio_nom = gsub('"', '', proprio_nom),
+  #              proprio_nom = gsub('\\{', '', proprio_nom),
+  #              proprio_nom = gsub('\\}', '', proprio_nom))
   coords <- f %>% st_coordinates
   
   # Bloc du nom du projet
@@ -1186,24 +1111,22 @@ get_popup_content <- function(f) {
   #bloc_typefriche
   print("4_bloc_typefriche")
   if(f$site_statut == "friche avec projet") {
-    bloc_typefriche <- tagList(#tags$b("Occupation du site : "), coalesce(f$site_occupation, "Non renseignée"), tags$br(),
-                                              tags$b("Type de friche (avant projet de reconversion) : "), ifelse(is.na(f$site_type),"Non renseigné",
-                                                                                  f$site_type %>% sapply(function(x) paste(x, collapse=","))))
+    bloc_typefriche <- tagList(tags$b("Type de friche (avant projet de reconversion) : "), ifelse(is.na(f$site_type),"Non renseigné",
+                                                                                                  f$site_type %>% sapply(function(x) paste(x, collapse=","))))
   }  else if(f$site_statut == "friche reconvertie") {
     bloc_typefriche <- tagList(tags$b("Type de friche (avant reconversion) : "), ifelse(is.na(f$site_type),"Non renseigné",
-                                                                                  f$site_type %>% sapply(function(x) paste(x, collapse=","))))
+                                                                                        f$site_type %>% sapply(function(x) paste(x, collapse=","))))
   } else {
-    bloc_typefriche <- tagList(#tags$b("Occupation du site : "), coalesce(f$site_occupation, "Non renseignée"), tags$br(),
-                                              tags$b("Type de friche : "), ifelse(is.na(f$site_type),"Non renseigné",
-                                                                                  f$site_type %>% sapply(function(x) paste(x, collapse=","))))
+    bloc_typefriche <- tagList(tags$b("Type de friche : "), ifelse(is.na(f$site_type),"Non renseigné",
+                                                                   f$site_type %>% sapply(function(x) paste(x, collapse=","))))
   }
-   
+  
   
   # bloc_urbanvitaliz
   if(f$site_statut != "friche reconvertie") {
     bloc_urbanvitaliz <- tagList(
-      # tags$b("Besoin d'un coup de pouce UrbanVitaliz ? : "), 
-      tags$a(href = glue("https://urbanvitaliz.fr/"), 
+      # tags$a(href = glue("https://urbanvitaliz.fr/"),
+      tags$a(href = glue("https://urbanvitaliz.fr/?mtm_campaign=cartofriche&mtm_kwd=site_id_", f$site_id),
              tagList(icon("envelope"), "Vous avez l'accord de la commune pour lancer votre projet et avez besoin d'un coup de pouce ? Contactez UrbanVitaliz !"), 
              target="_blank", style="font-size: 1em; margin-left: 10px;"),
       tags$br()
@@ -1212,7 +1135,7 @@ get_popup_content <- function(f) {
     bloc_urbanvitaliz <- ""
   }
   
-
+  
   # bloc_reconversion
   print("5_bloc_reconversion")
   if(f$site_statut == "friche avec projet" & !is.na(f$site_reconv_type)) {
@@ -1226,92 +1149,119 @@ get_popup_content <- function(f) {
   } else {
     bloc_reconversion <- ""
   }
-
+  
   # Actualisation de la date
   print("6_bloc_actualisationdate")
   if(is.na(f$site_actu_date) | f$site_actu_date == f$site_identif_date) {
     bloc_actualisationdate <- ""
   } else {
     bloc_actualisationdate <- tagList(
-      # tags$b("Date d'actualisation de la friche : "), coalesce(format(as.Date(f$site_actu_date, "%d%m%y"), format="%d/%m/%Y"), "Pas d'actualisation"), tags$br(),
-      # tags$b("Date d'actualisation de la friche : "), coalesce(format(f$site_actu_date, "%d/%m/%Y"), "Pas d'actualisation"), tags$br(),
-      
-      #tags$b("Date d'actualisation de la friche : "), coalesce(f$site_actu_date, "Pas d'actualisation"), tags$br(),
       tags$b("Date d'actualisation de la friche : "), coalesce(f$site_actu_date), tags$br(),
-      )
+    )
   }  
-
+  
+  # bloc_bati
+  print("6b_bloc_bati")
+  if(all(is.na(c(f$emprise_sol_bati,
+                 f$CES)))) {
+    bloc_bati_emprise <- ""
+  } else {
+    bloc_bati_emprise <- tagList(
+      tags$b("Emprise au sol des bâtis : "), coalesce(glue(f$emprise_sol_bati, " m²"), "Non renseigné"), tags$br(),
+      tags$b("Coefficient d'emprise au sol de la friche : "), coalesce(glue(f$CES * 100, " %"), "Non renseigné"), tags$br(),
+      tags$b("Surface de plancher totale des bâtiments : "), ifelse(is.na(f$bati_surface),
+                                                                    "Non renseignée",
+                                                                    format_surface(f$bati_surface)), tags$br()
+    )
+  }  
+  
+  
+  if(all(is.na(c(f$bati_vacance,
+                 f$bati_etat))) |
+     
+     (f$bati_vacance == "inconnu" & f$bati_etat == "inconnu")
+  ) {
+    bloc_bati_etatvacance <- ""
+  } else {
+    bloc_bati_etatvacance <- tagList(
+      tags$b("Vacance de bâtis : "), coalesce(f$bati_vacance %>% as.character, "Non renseigné"), tags$br(),
+      tags$b("Etat de dégration des bâtiments : "), coalesce(f$bati_etat %>% as.character, "Non renseigné"), tags$br(),
+    )
+  }  
+  
   # Libellé de la zone du PLU
   print("7_bloc_zonePLU")
   if (is.na(f$urba_doc_type)) {
-      bloc_zonePLU <- ""
-    } else if(f$urba_doc_type == "CC") {
+    bloc_zonePLU <- ""
+  } else if(f$urba_doc_type == "CC") {
     bloc_zonePLU <- tagList(tags$b("Type de document d'urbanisme : "), "Carte communale", tags$br())
   }  else if(f$urba_doc_type == "PSMV") {
     bloc_zonePLU <- tagList(tags$b("Type de document d'urbanisme : "), "Plan de Sauvegarde et de Mise en Valeur (PSMV)", tags$br())
   } else {
     bloc_zonePLU <- tagList(
-
+      
       tags$b("Type de document d'urbanisme : "), f$urba_doc_type, tags$br(),
       tags$b("Libellé de la zone : "), f$urba_zone_lib, tags$br()
     ) }
   
-
+  
   # POLLUTION
   print("8_bloc_pollution")
   if(all(is.na(c(f$sol_pollution_annee,
                  f$sol_pollution_commentaire,
-                 f$sol_depollution_fiche))) & f$sol_pollution_existe == "inconnu" & f$sol_pollution_origine == "inconnu") {
+                 f$sol_depollution_fiche))) & 
+     (f$sol_pollution_existe == "inconnu" | is.na(f$sol_pollution_existe)) & 
+     (f$sol_pollution_origine == "inconnu" | is.na(f$sol_pollution_origine)) ) {
     bloc_pollution <- tags$i("Informations sur la pollution des sols non renseignées")
   } else if (f$sol_pollution_existe == "pollution inexistante") {
     bloc_pollution <- tags$i("Pollution inexistante")
-    }  else if (f$sol_pollution_existe %in% c("pollution avérée","pollution peu probable","pollution probable","pollution supposée","pollution traitée") &  all(is.na(c(f$sol_pollution_annee,
-                                                                                      f$sol_pollution_commentaire,
-                                                                                      f$sol_depollution_fiche)))) {
-      bloc_pollution <- tagList(tags$b("Existence de pollution : "), f$sol_pollution_existe %>% get_texte)
-    } else {
+  }  else if (f$sol_pollution_existe %in% c("pollution avérée","pollution peu probable","pollution probable","pollution supposée","pollution traitée") &  all(is.na(c(f$sol_pollution_annee,
+                                                                                                                                                                      f$sol_pollution_commentaire,
+                                                                                                                                                                      f$sol_depollution_fiche)))) {
+    bloc_pollution <- tagList(tags$b("Existence de pollution : "), f$sol_pollution_existe %>% get_texte)
+  } else {
     sol_pollution_annee <- f$sol_pollution_annee %>% get_texte
     sol_pollution_existe <- f$sol_pollution_existe %>% get_texte
     sol_pollution_origine <- f$site_en_securite %>% get_texte
     sol_pollution_commentaire <- f$sol_pollution_commentaire %>% get_texte
     sol_depollution_fiche <- f$sol_depollution_fiche %>% get_texte
-
+    
     bloc_pollution <- tagList(tags$b("Existence de pollution : "), sol_pollution_existe, tags$br(),
-                                tags$b("Année de constatation de la pollution : "), sol_pollution_annee %>% get_texte, tags$br(),
-                                tags$b("Origine de la pollution : "), sol_pollution_origine, tags$br(),
-                                tags$b("Commentaires : "), sol_pollution_commentaire, tags$br(),
-                                tags$b("Fiches de dépollution : "), sol_depollution_fiche
+                              tags$b("Année de constatation de la pollution : "), sol_pollution_annee %>% get_texte, tags$br(),
+                              tags$b("Origine de la pollution : "), sol_pollution_origine, tags$br(),
+                              tags$b("Commentaires : "), sol_pollution_commentaire, tags$br(),
+                              tags$b("Fiches de dépollution : "), sol_depollution_fiche
     )
-
-    }
+    
+  }
   
   # ## Source des données
   print("9_bloc_source_data")
   if(!is.na(f$source_contact)) {
     bloc_source_contact <- tagList(
       tagList(tags$b("Adresse mail de contact : "), coalesce(f$source_contact, "Non renseignée"))
-      )
+    )
   } else {
     bloc_source_contact <- ""
   }
-
+  
   if(!is.na(f$source_url)) {
     bloc_source_data <- tagList(
-      h4("Source des données"),
-      tagList(tags$b("Source de la donnée : "), ifelse(is.na(f$source_r),"Non renseigné",f$nom_prodcartofriches),tags$br(),
-              icon("database"),
-              tags$a(href=f$source_url, target="_blank", "Accéder à la source des données")),tags$br(),
+      h4("Source d'information de la friche"),
+      tagList(#tags$b("Source d'information de la friche : "),
+        ifelse(is.na(f$source_r),"Non renseigné",f$nom_prodcartofriches),tags$br(),
+        icon("database"),
+        tags$a(href=f$source_url, target="_blank", "Accéder à la source des données")),tags$br(),
       bloc_source_contact
-      )
+    )
   } else {
     bloc_source_data <- tagList(
-      h4("Source des données"),
-      tagList(tags$b("Source de la donnée : "), ifelse(is.na(f$source_r),"Non renseigné",f$nom_prodcartofriches)
-    )
+      h4("Source d'information de la friche"),
+      tagList(#tags$b("Source de la donnée : "),
+        ifelse(is.na(f$source_r),"Non renseigné",f$nom_prodcartofriches)
+      )
     )
   }
-
-  
   
   
   # ## Surface friches 
@@ -1329,7 +1279,7 @@ get_popup_content <- function(f) {
       )
   }
   
-
+  
   # bloc_urba_zone_formdomi
   print("11_bloc_urba_zone_formdomi")
   if(is.na(f$urba_zone_formdomi) | is.na(f$urba_zone_formdomi_txt)) {
@@ -1352,139 +1302,202 @@ get_popup_content <- function(f) {
   }
   
   
-  # bloc_mutafriches ####
-  # print("13_mutafriches")
-  # 
-  # if(f$site_statut == "friche sans projet" | f$site_statut == "friche potentielle"){
-  #   bloc_mutafriches <- tagList(
-  # 
-  #     h4("Mutabilité de la friche - version beta"),
-  #     # Précaution, sources
-  #     "Cette section apporte certaines informations concernant la mutabilité de la friche, à partir d'une méthodologie issue de ",
-  #     tags$a(href = glue("https://librairie.ademe.fr/urbanisme-territoires-et-sols/7241-evaluer-la-mutabilite-des-friches-outil-mutafriches.html"),
-  #            tagList("Mutafriches de l'Ademe"),icon("external-link"),
-  #            target="_blank", style="font-size: 1em;"),
-  #     "Cette nouvelle fonctionnalité de Cartofriches est en version test, n'hésitez pas à nous faire part de vos retours.",
-  #     tags$br(),
-  #     "De nombreuses caractéristiques de la friche et de son environnement ont été collectées par Cartofriches pour apporter une première information de mutabilité : zonage du PLU(i), zonages environnementaux, risques, type de propriétaire, accessibilité aux transports, etc...",
-  #     actionLink("open_mutafriches", "Pour en savoir plus sur la méthode"),
-  # 
-  #     tags$br(),
-  #     icon("exclamation-triangle"),
-  #     "Les résultats suivants doivent être enrichis et vérifiés par des visites terrain, et confrontés aux besoins du territoire.",
-  #     tags$br(),tags$br(),
-  #     # Description de la friche
-  #     tags$b("Description de la friche et son environnement :"),
-  #     fluidRow(
-  #       column(12,
-  #              textOutput("Texte_mutafriches")
-  #       )),
-  # 
-  #     # Résultats synthétiques
-  #     fluidRow(
-  #       column(7,
-  #              plotOutput("GRAPH_mutafriches",
-  #                         width = "100%")
-  #       ),
-  #       column(5,
-  #              br(),
-  #              gt_output("GT_mutafriches")
-  #       )
-  #     ),
-  # 
-  #     icon("circle-info"),tags$i("L'indice de mutabilité correspond au niveau de pertinence de chaque usage pour cette friche. Plus il est élevé, plus une reconversion du site vers cet usage est pertinent."),
-  #     tags$br(),tags$br(),
-  # 
-  #     # Affiner les données
-  #     icon("lightbulb"),
-  #     "Vous souhaitez", tags$b("affiner le résultat"), "en rajoutant certaines informations ?",tags$br(),
-  #     "Vous pouvez renseigner les informations suivantes pour obtenir un résultat plus précis ",
-  #     icon("level-down"),tags$br(),
-  #     # Le pourquoi en 1 phrase ??
-  # 
-  # 
-  #     fluidRow(
-  #       column(4,
-  #              pickerInput("INPUT_zonehumide",
-  #                          "Présence d'une zone humide ?",
-  #                          choices = c("Inconnu" = "Inconnu",
-  #                                      "Présence avérée sur site" = "Oui",
-  #                                      "Absence" = "Non")
-  #              ),
-  #              pickerInput("INPUT_voieeau",
-  #                          "Voie d'eau à proximité ?",
-  #                          choices = c("Inconnu" = "Inconnu",
-  #                                      "Oui et navigable" = "Oui",
-  #                                      "Oui et non navigable" = "Oui_nv",
-  #                                      "Non" = "Non")
-  #              )
-  #       ),
-  #       column(4,
-  #              pickerInput("INPUT_terrainviabilise",
-  #                          "Terrain viabilisé ?",
-  #                          choices = c("Inconnu" = "Inconnu",
-  #                                      "Oui" = "Oui",
-  #                                      "Non" = "Non")
-  #              ),
-  #              pickerInput("INPUT_archi",
-  #                          "Valeur architecturale et/ou sociale ?",
-  #                          choices = c("Inconnu" = "Inconnu",
-  #                                      "Sans intérêt" = "Non",
-  #                                      "Banal / infra-ordinaire" = "faible",
-  #                                      "Ordinaire" = "moyen",
-  #                                      "Intérêt fort" = "fort",
-  #                                      "Exceptionnel" = "except")
-  #              )
-  #       ),
-  #       column(4,
-  #              pickerInput("INPUT_especeprotege",
-  #                          "Présence d'une espèce protégée ?",
-  #                          choices = c("Inconnu" = "Inconnu",
-  #                                      "Oui" = "Oui",
-  #                                      "Non" = "Non")
-  #              ),
-  #              pickerInput("INPUT_couvertvege",
-  #                          "Couvert végétal",
-  #                          choices = c("Inconnu" = "Inconnu",
-  #                                      "Imperméabilisé" = "Imper",
-  #                                      "Sol nu ou faiblement herbacé" = "Solnu",
-  #                                      "Végétation arbustive faible" = "Vegefaible",
-  #                                      "Végétation arbustive prédominante" = "Vegepredominante")
-  #              )
-  #       )
-  #     ),
-  #     tags$br(),
-  # 
-  #     # Pour en savoir plus
-  #     tags$b("Vous souhaitez être accompagné pour travailler sur la mutabilité de vos friches ?"),tags$br(),
-  #     tags$a(href = get_mailto_mutafriches(),
-  #            tagList(icon("envelope"),"Contactez-nous à l'adresse cartofriches@cerema.fr ! "), target="_blank"),
-  #   )
-  # } else {
-  #   bloc_mutafriches <- ""
-  # }
+  # bloc_mutabilite ####
+  print("13_mutabilite")
+  
+  if(f$site_statut == "friche sans projet" | f$site_statut == "friche potentielle"){
+    bloc_mutabilite <- tagList(
+      
+      # h4("Mutabilité de la friche - version beta"),
+      
+      h4(
+        "Mutabilité de la friche - version beta ",
+        icon("info-circle", 
+             title = "Cette section apporte certaines informations concernant la mutabilité de la friche, selon une méthodologie élaborée par le Cerema à partir des travaux de l'Ademe.",
+             style = "cursor: help;")
+      ),
+      
+      # Précaution, sources
+      # "Cette section apporte certaines informations concernant la mutabilité de la friche, à partir d'une méthodologie élaborée par le Cerema à partir des travaux de l'Ademe. ",
+      # tags$a(href = glue("https://librairie.ademe.fr/urbanisme-territoires-et-sols/7241-evaluer-la-mutabilite-des-friches-outil-mutafriches.html"),
+      # tagList("Mutafriches de l'Ademe"),icon("external-link"),
+      # target="_blank", style="font-size: 1em;"
+      # ),
+      "De nombreuses caractéristiques de la friche et de son environnement ont été collectées par le Cerema afin d'apporter une première information de mutabilité : zonage du PLU(i), zonages environnementaux, risques, type de propriétaire, accessibilité aux transports, etc...",
+      "L'indice de mutabilité correspond au niveau de pertinence de chaque usage pour cette friche. Plus il est élevé, plus une reconversion du site vers cet usage est pertinent.",
+      # actionLink("open_mutabilite", "Pour en savoir plus sur la méthode utilisée."),
+      actionLink("mon_lien", "Pour en savoir plus sur la méthode utilisée.",
+                 onclick = "window.open('https://cartofriches.cerema.fr/cartofriches/?mutabilite', '_blank'); return false;"),
+      
+      
+      fluidRow(
+        column(12,
+               textOutput("Texte_mutabilite")
+        )),
+      
+      # Résultats synthétiques
+      fluidRow(
+        column(7,
+               plotOutput("GRAPH_mutabilite",
+                          width = "100%")
+        ),
+        column(5,
+               br(),
+               gt_output("GT_mutabilite")
+        )
+      ),
+      
+      icon("exclamation-triangle"),
+      "Les résultats suivants doivent être enrichis et vérifiés par des visites terrain, et confrontés aux besoins du territoire. Des projets mixtes peuvent également être réalisés.",
+      tags$br(),tags$br(),
+      
+      # Affiner les données
+      icon("lightbulb"),
+      "Vous souhaitez", tags$b("affiner le résultat de mutabilité"), "en précisant certaines informations sur le site ?",tags$br(),
+      "Vous pouvez renseigner ou corriger les informations suivantes pour obtenir un résultat plus précis ",
+      icon("level-down"),tags$br(),
+      
+      fluidRow(
+        column(4,
+               pickerInput("INPUT_centrebourg",
+                           "Localisé en centre bourg ?",
+                           choices = c("Oui" = "Oui",
+                                       "Non" = "Non"),
+                           selected = f$site_centrebourg
+               ),
+               pickerInput("INPUT_terrainviabilise",
+                           "Terrain viabilisé ?",
+                           choices = c("Inconnu" = "Inconnu",
+                                       "Oui" = "Oui",
+                                       "Non" = "Non")
+               ),
+               
+               pickerInput("INPUT_archi",
+                           "Valeur architecturale ou sociale ?",
+                           choices = c("Inconnu" = "Inconnu",
+                                       "Banal / infra-ordinaire" = "faible",
+                                       "Ordinaire" = "moyen",
+                                       "Intérêt fort" = "fort",
+                                       "Exceptionnel" = "except")
+               )
+               
+        ),
+        column(4,
+               pickerInput("INPUT_pollution",
+                           "Pollution du site ?",
+                           choices = c("Pollution avérée - composés volatils" = "pollution volatil",
+                                       "Pollution avérée" = "pollution avérée", 
+                                       "Pollution supposée" = "pollution supposée",
+                                       "Pollution peu probable" = "pollution peu probable",
+                                       "Pollution peu probable" = "pollution peu probable",
+                                       "Pollution inexistante" = "pollution inexistante",
+                                       "Inconnu" = "inconnu"
+                           ),
+                           selected = f$sol_pollution_existe
+               ),
+               
+               pickerInput("INPUT_zonehumide",
+                           "Présence d'une zone humide ?",
+                           choices = c("Inconnu" = "Inconnu",
+                                       "Présence avérée sur site" = "Oui",
+                                       "Absence" = "Non")
+               ),
+               pickerInput("INPUT_voieeau",
+                           "Voie d'eau à proximité ?",
+                           choices = c("Inconnu" = "Inconnu",
+                                       "Oui et navigable" = "Oui",
+                                       "Oui et non navigable" = "Oui_nv",
+                                       "Non" = "Non")
+               )
+               
+        )
+        ,
+        column(4,
+               pickerInput("INPUT_risquesnaturels",
+                           "Présence de risques naturels ?",
+                           choices = c("Oui, risque fort" = "risque fort",
+                                       "Oui, risque moyen" = "pprm_ou_ppri",
+                                       "Non ou risque faible" = "hors_risques"),
+                           selected = f$pprmouppri
+               ),
+               
+               pickerInput("INPUT_especeprotege",
+                           "Présence d'une espèce protégée ?",
+                           choices = c("Inconnu" = "Inconnu",
+                                       "Oui" = "Oui",
+                                       "Non" = "Non")
+               )
+               # ,
+               # pickerInput("INPUT_couvertvege",
+               #             "Couvert végétal",
+               #             choices = c("Inconnu" = "Inconnu",
+               #                         "Imperméabilisé" = "Imper",
+               #                         "Sol nu ou faiblement herbacé" = "Solnu",
+               #                         "Végétation arbustive faible" = "Vegefaible",
+               #                         "Végétation arbustive prédominante" = "Vegepredominante")
+               # )
+               
+               
+        )
+      ),
+      tags$br(),
+      
+      
+      # "Cette nouvelle fonctionnalité de Cartofriches est en version test, n'hésitez pas à nous faire part de vos retours.",
+      # tags$br(),
+      
+      
+      # Pour en savoir plus
+      tags$b("Cette nouvelle fonctionnalité de Cartofriches est en version beta. Vous souhaitez nous faire un retour sur ce calcul de mutabilité ?"),#tags$br(),
+      tags$b("Les directions territoriales du Cerema peuvent également vous apporter un appui pour approfondir les potentialités des friches."),
+      tags$br(),
+      tags$a(href = get_mailto_mutabilite(),
+             tagList(icon("envelope"),"Contactez-nous à l'adresse cartofriches@cerema.fr ! "), target="_blank"),
+      
+      # div(tags$a(href = get_mailto_mutabilite(), 
+      #            tagList(icon("envelope"),"Contactez-nous à l'adresse cartofriches@cerema.fr !"), target="_blank"), 
+      #     style="
+      #           background-color: #E6E7E8;
+      #           padding: 10px;
+      #           padding-left: 20px;
+      #           border-radius: 10px;
+      #           padding-right: 20px;
+      #           color: white;
+      #           margin-top: 10px;
+      #           text-align: center;
+      #           /* border: 1px solid #F58220; */
+      #           margin-left: 20%;
+      #           margin-right: 20%;
+      #           margin-bottom: 20px;
+      #           font-size: 1em;
+      #         "),
+      
+      tags$br()
+    )
+  } else {
+    bloc_mutabilite <- ""
+  }
   
   # bloc_friche3lignes ####
   print("14_friche3lignes")
-
-      if(f$site_statut == "friche sans projet" | f$site_statut == "friche potentielle"){
-      bloc_friche3lignes <- tagList(
+  
+  if(f$site_statut == "friche sans projet" | f$site_statut == "friche potentielle" | f$site_statut == "friche avec projet"){
+    bloc_friche3lignes <- tagList(
       
       h4("Résumé de la friche et de son environnement"),
-      "De nombreuses caractéristiques de la friche et de son environnement ont été collectées par Cartofriches pour apporter une première information de mutabilité : zonage du PLU(i), zonages environnementaux, risques, type de propriétaire, accessibilité aux transports, etc...",
-      actionLink("open_enrichissementdata", "Pour en savoir plus"),
+      # "De nombreuses caractéristiques de la friche et de son environnement ont été collectées par Cartofriches pour apporter une première information de mutabilité : zonage du PLU(i), zonages environnementaux, risques, type de propriétaire, accessibilité aux transports, etc...",
+      # actionLink("open_enrichissementdata", "Pour en savoir plus"),
+      # tags$br(),
       
-      tags$br(),
-
       fluidRow(
         column(12,
                textOutput("Texte_friche3lignes")
         )
       )
-      )
-      } else {
-        bloc_friche3lignes <- ""
-      }
+    )
+  } else {
+    bloc_friche3lignes <- ""
+  }
   
   
   
@@ -1498,7 +1511,7 @@ get_popup_content <- function(f) {
       tags$b("Année de construction du local le plus ancien : "), ifelse(is.na(f$local_recent_annee),"Non renseignée",f$local_recent_annee), tags$br()
     )
   }
-
+  
   if(f$site_statut == "friche reconvertie") {
     bloc_descriptionfriche <- tagList(
       h4("Description de la friche (avant reconvertion)")
@@ -1506,23 +1519,36 @@ get_popup_content <- function(f) {
   } else {
     bloc_descriptionfriche <- tagList(
       h4("Description de la friche")
-      )
+    )
   }
-
-  # bloc_risques ####
-  # print("15_risques")
-  # 
-  # if(is.na(f$pprm) & is.na(f$ppri) & is.na(f$pprt)) {
-  #   bloc_risques <- tagList(
-  #     bloc_risques <- ""
-  #   )
-  # } else {
-  #   bloc_risques <- tagList(
-  #     h4("Risques naturels et technologiques"),
-  #     tags$b("Risques naturels : "), ifelse(is.na(f$pprm),"Non renseignée",glue(f$pprm, " - ", f$ppri)), tags$br(),
-  #     tags$b("Risques technologiques : "), ifelse(is.na(f$pprt),"Non renseignée",f$pprt), tags$br()
-  #   )
-  # }
+  
+  
+  # bloc_anciennesactivites ####
+  print("bloc_anciennesactivites")
+  if(is.na(f$activite_libelle) & is.na(f$activite_fin_annee)) {
+    bloc_anciennesactivites <- ""
+  } else {
+    bloc_anciennesactivites <- tagList(
+      tags$b("Ancienne(s) activité(s) : "), coalesce(f$activite_libelle, "Non renseignée"), tags$br(),
+      tags$b("Année de fin d'activité : "), coalesce(format(as.Date(f$activite_fin_annee, "%y"), format="%Y"), "Non renseignée"), tags$br(),
+    )
+  }
+  
+  # tags$b("Codes NAF de(s) ancienne(s) activité(s) : "), coalesce(f$activite_code, "Non renseignée"), tags$br(),
+  
+  
+  # print(f %>% select(site_id,
+  #                    zone_activites,urba_zone_type,
+  #                    sol_pollution_existe,
+  #                    desserte_distance_route,
+  #                    desserte_distance_ferroviaire,
+  #                    site_surface,emprise_sol_bati,
+  #                    bati_etat,
+  #                    zonage_enviro,
+  #                    proprio_mutafriches,
+  #                    monuhisto,monuhisto500,
+  #                    distancecommerce,distanceposteelect,distancecommerce_m,distanceposteelect_m,distancemairie_m,urba_site_ux,
+  #                    pprmouppri,pprt_2,tramevb_2,site_centrebourg,site_zaer,PGE_SurfTot_QualiEnvTot))
   
   #--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#
   
@@ -1534,10 +1560,10 @@ get_popup_content <- function(f) {
     ##=##=##=##=##=##=##
     # Infos générales =##
     ##=##=##=##=##=##=##
+    
     h4("Informations générales")
     ,
     tags$b("Identifiant du site : "), f$site_id, tags$br(),
-    # tags$b("Nom du site : "), f$site_nom, tags$br(),
     bloc_nom_site,
     
     tags$b("Statut du site (projet en cours) : "),coalesce(f$site_statut, "Non renseignée"), tags$br(),
@@ -1548,401 +1574,210 @@ get_popup_content <- function(f) {
     bloc_typefriche, 
     tags$br(),bloc_urbanvitaliz,
     
-
-    # ##=##=##=##=##=##
+    # ##=##=##=##=##=##=##=##=
     # # bloc_friche3lignes =##
-    # ##=##=##=##=##=##
+    # ##=##=##=##=##=##=##=##
     bloc_friche3lignes,
     
-
+    ##=##=##=##=##
+    # Mutabilite =##
+    ##=##=##=##=##
+    bloc_mutabilite,
+    
+    
     # ##=##=##=##=##=##
     # # Localisation =##
     # ##=##=##=##=##=##
-    h4("Localisation"),
-    tags$b("Commune : "), coalesce(f$comm_nom, "Non renseignée"), tags$br(),
-    #tags$b("Adresse : "), coalesce(f$site_adresse, "Non renseignée"), tags$br(),
-
-
-    # ##=##=##=##=##=##=##=##=##
-    # # Existence d'un projet =##
-    # ##=##=##=##=##=##=##=##=##
-    # h4("Existence d'un projet / friche réhabilitée"),
-    # tags$b("Statut du site (projet en cours) : "), coalesce(f$site_statut, "Non renseignée"), tags$br(),
-    # bloc_projet,
-    # bloc_reconversion,
-
-    ##=##=##=##=##=##=##=##
-    # Description de la friche =##
-    ##=##=##=##=##=##=##=##
-    bloc_descriptionfriche,
-    # h4("Description de la friche"),
-    # tags$b("Surface de la friche : "), coalesce(format_surface(f$site_surface), "Non calculée"), tags$br(),
-    # tags$b("Surface (de l'unité(s) de propriété) : "), coalesce(format_surface(f$unite_fonciere_surface), "Non calculée"), tags$br(),
-    bloc_surface,tags$br(),
+    # h4("Localisation"),
     
-    tags$b("Taux d'espace urbanisé (de l'unité(s) de propriété) : "),
-    ifelse(is.na(f$taux_artif_ff),"Non renseigné",glue(f$taux_artif_ff, " %")),
     tags$br(),
     
-    tags$b("Date d'identification de la friche : "), coalesce(format(f$site_identif_date, "%d/%m/%Y"), "Non renseignée"), tags$br(),
-    # tags$b("Date d'identification de la friche : "), coalesce(f$site_identif_date, "Non renseignée"), tags$br(),
-    
-    bloc_actualisationdate,
-    tags$b("Ancienne(s) activité(s) : "), coalesce(f$activite_libelle, "Non renseignée"), tags$br(),
-    tags$b("Codes NAF de(s) ancienne(s) activité(s) : "), coalesce(f$activite_code, "Non renseignée"), tags$br(),
-    tags$b("Année de fin d'activité : "), coalesce(format(as.Date(f$activite_fin_annee, "%y"), format="%Y"), "Non renseignée"), tags$br(),
-
-    ##=##=##=##
-    # Bâti =##
-    ##=##=##=##
-    
-    
-    tags$b("Emprise au sol des bâtis : "), coalesce(glue(f$emprise_sol_bati, " m²"), "Non renseigné"), tags$br(),
-    tags$b("Coefficient d'emprise au sol de la friche : "), coalesce(glue(f$CES * 100, " %"), "Non renseigné"), tags$br(),
-    tags$b("Nombre de bâtiments : "), coalesce(f$bati_nombre %>% as.character, "Non renseigné"), tags$br(),
-    tags$b("Type de bâtiments : "), coalesce(f$bati_type, "Non renseignée"), tags$br(),
-    # bloc_surface,
-    # tags$b("Surface de plancher totale des bâtiments : "), ifelse(is.na(f$bati_surface),
-    #                                                               "Non renseignée",
-    #                                                               coalesce(f$bati_surface,
-    #                                                                        "Non renseignée")), 
-    
-    tags$b("Surface de plancher totale des bâtiments : "), ifelse(is.na(f$bati_surface),
-                                                                  "Non renseignée",
-                                                                  format_surface(f$bati_surface)), tags$br(),
-    tags$b("Vacance de bâtis : "), coalesce(f$bati_vacance %>% as.character, "Non renseigné"), tags$br(),
-
-    tags$b("Présence de logements vacants : "), coalesce(f$friche_avec_vacance %>% as.character, "Non renseigné"), tags$br(),
-
-    tags$b("Présence de bâtiment de valeur patrimoniale : "), coalesce(f$bati_patrimoine %>% as.character, "Non renseigné"), tags$br(),
-    tags$b("Etat de dégration des bâtiments : "), coalesce(f$bati_etat %>% as.character, "Non renseigné"), tags$br(),
-    
-    bloc_anneeconstruction,
-    
-    # tags$b("Année de construction du local le plus ancien : "), ifelse(is.na(f$local_ancienne_annee),"Non renseignée",f$local_ancienne_annee), tags$br(),
-    # tags$b("Année de construction du local le plus ancien : "), ifelse(is.na(f$local_recent_annee),"Non renseignée",f$local_recent_annee), tags$br(),
-    # tags$b("Année de construction du local le plus ancien : "), coalesce(format(f$local_ancienne_annee, "%Y"), "Non renseignée"), tags$br(),
-    # tags$b("Année de construction du local le plus récent : "), coalesce(format(f$local_recent_annee, "%Y"), "Non renseignée"), tags$br(),
-
-    # ##=##=##=##=##
-    # # Propriété =##
-    # ##=##=##=##=##
-    h4("Propriété"),
-
-    tags$b("Personne physique ou morale : "), ifelse(is.na(f$proprio_personne),
-                                                     "Non renseigné",
-                                                     coalesce(str_to_title(f$proprio_personne),
-                                                              "Nom du propriétaire non renseigné")),
-    tags$br(),
-
-    tags$b("Type de propriétaire : "), ifelse(is.na(f$l_catpro3txt),
-                                             "Non renseigné",
-                                             coalesce(f$l_catpro3txt %>% get_texte,
-                                                      "Nom du propriétaire non renseigné")),
-    tags$br(),
-
-    tags$b("Nom du propriétaire : "), ifelse(is.na(f$proprio_nom),
-                                             "Non renseigné",
-                                             coalesce(f$proprio_nom %>% get_texte,
-                                                      "Nom du propriétaire non renseigné")),
-    tags$br(),
-
-    tags$b("Date de la dernière mutation : "), ifelse(is.na(f$date_mutation),
-                                             "Non renseigné",
-                                             coalesce(f$date_mutation,
-                                                      "Non renseigné")),
-    tags$br(),
-
-    # tagList(tags$b("Références des unités foncières :"),
-    #         ifelse(is.null(f$l_idtup),
-    #                "Non renseignées",
-    #                get_texte(f$l_idtup)),
-    #         tags$br()),
-    tagList(tags$b("Références cadastrales :"),
-            ifelse(is.null(f$l_idpar),
-                   "Non renseignées",
-                   get_texte(f$l_idpar)),
-            tags$br()),
-
-    # ##=##=##=##=##
-    # # Urbanisme =##
-    # ##=##=##=##=##
-    h4("Urbanisme"),
-    bloc_zonePLU,
-
-    tagList(
-
-      # tags$b("Type de document d'urbanisme : "), ifelse(f$urba_doc_type == "CC",
-      #                                                   "Carte communale",
-      #                                                   coalesce(f$urba_doc_type, "Non renseignée")), tags$br(),
-      #
-      # tags$b("Libellé de la zone : "), coalesce(f$urba_zone_lib, "Non renseignée"), tags$br(),
-
-      tags$b("Date d'approbation du document d'urbanisme : "), ifelse(is.na(f$urba_datappro),"Non renseigné",
-                                                                  ifelse(nchar(f$urba_datappro) == 6,paste0(substring(f$urba_datappro,5,6),"/",substring(f$urba_datappro,1,4)),
-                                                                  f$urba_datappro)),
-      bloc_urba_zone_formdomi,
-      # tags$b("Forme dominante de la zone d'urbanisme : "), ifelse(is.na(f$urba_zone_formdomi_txt),
-      #                                            "Non renseigné",
-      #                                            paste0(f$urba_zone_formdomi," - ",f$urba_zone_formdomi_txt))
-
-      ), tags$br(),
-
-      
-    tags$b("Intersection avec un zonage environnemental : "), 
-    ifelse(is.na(f$zonage_enviro),"Non renseigné",
-           ifelse(f$zonage_enviro == "hors zone","Hors zonage environnemental (Natura2000, réserve naturelle, ZNIEFF)",
-                  ifelse(f$zonage_enviro == "natura_2000","Intersecte une zone Natura2000",
-                         ifelse(f$zonage_enviro == "reserve_naturelle","Intersecte une réserve naturelle",
-                                ifelse(f$zonage_enviro == "znieff","Intersecte une ZNIEFF",
-                                       ifelse(f$zonage_enviro == "proximite_zone (natura_2000)","A proximité d'une zone Natura2000 (<5km)",
-                                              ifelse(f$zonage_enviro == "proximite_zone (reserves_naturelles)","A proximité d'une réserve naturelle (<5km)",
-                                                     ifelse(f$zonage_enviro == "proximite_zone (znieff)","A proximité d'une ZNIEFF (<5km)",
-                                                                f$zonage_enviro)))))))),
-    tags$br(),
-    
-    tags$b("Friche dans un périmètre de site économique "),
-    tags$a(href = glue("https://datafoncier.cerema.fr/fusac/"),
-           tagList("(base FUSAC) :"),
-           target="_blank", style="font-size: 1em;"),
-    
-    ifelse(is.na(f$zone_activites) |  f$zone_activites == "non",
-                                              "Non",
-           ifelse(f$site_vocadomi == "inconnu" | is.na(f$site_vocadomi),
-           
-           "Oui", glue("Oui - site économique à vocation dominante ", f$site_vocadomi)
-                                              )),
-    tags$br(),
-    
-    tags$b("Monument historique "), 
-    tags$a(href = glue("https://www.data.gouv.fr/fr/datasets/immeubles-proteges-au-titre-des-monuments-historiques-2/"),
-           tagList("(data.gouv.fr) :"),
-           target="_blank", style="font-size: 1em;"),
-    ifelse(f$monuhisto == "oui",
-           "Oui",
-           ifelse(f$monuhisto500 == "oui",
-                  "Au sein d'un périmètre de 500m autour d'un monument historique",
-                  "Non"
-           )),
-
-    tags$br(),
-
-    ##=##=##=##=##
-    # Pollution =##
-    ##=##=##=##=##
-    h4("Pollution du sol"),
-    bloc_pollution,
-    
-    
-    ##=##=##=##
-    # Risques =##
-    ##=##=##=##
-    # bloc_risques,
-
-    ##=##=##=##=##=##=##=##=##
-    # Desserte en transport =##
-    ##=##=##=##=##=##=##=##=##
-    h4("Desserte en transport"),
-    tagList(
-
-      tags$b("Distance d'accès au réseau ferroviaire : "), ifelse(is.na(f$desserte_distance_ferroviaire),
-                                                                      "Non renseigné",
-                                                                  ifelse(f$desserte_distance_ferroviaire == 999,"Plus de 100 km",
-                                                                      #glue(round(f$desserte_distance_ferroviaire/1000,1), " km")
-                                                                  glue(round(f$desserte_distance_ferroviaire,1), " km")
-                                                                  )),
-      tags$br(),
-      tags$b("Distance d'accès à un échangeur autoroutier : "), ifelse(is.na(f$desserte_distance_route),
-                                                                  "Non renseigné",
-                                                                  ifelse(f$desserte_distance_route == 999,"Plus de 100 km",
-                                                                  #glue(round(f$desserte_distance_ferroviaire/1000,1), " km")
-                                                                  glue(f$desserte_distance_route*100, " km")
-                                                                  )),
+    # Bouton pour déplier/replier
+    tags$button(
+      HTML('<i class="fa fa-mouse-pointer"></i> Cliquer ici pour afficher l\'ensemble de la fiche d\'information <i class="fa fa-chevron-down"></i>'),
+      # "Cliquer ici pour afficher l'ensemble de la fiche d'information",
+      class = "btn btn-info btn-block",
+      `data-toggle` = "collapse",  
+      `data-target` = "#blocDepliable", 
+      style = "margin: 10px 0;"
     ),
-
     
-    ##=##=##=##=##=##
-    # Mutafriches =##
-    ##=##=##=##=##=##
-    # bloc_mutafriches,
-    
-    # ##=##=##=##=##=##=##=##=##
-    # # Sources des données =##
-    # ##=##=##=##=##=##=##=##=##
-    bloc_source_data
+    # Bloc dépliable ----
+    tags$div(
+      id = "blocDepliable",
+      class = "collapse",
+      tags$div(
+        style = "padding: 15px; background-color: #f8f9fa; border-radius: 5px; margin: 10px 0;",
+        
+        
+        ##=##=##=##=##=##=##=##=##=##
+        # Description de la friche =##
+        ##=##=##=##=##=##=##=##=##=##
+        bloc_descriptionfriche,
+        tags$b("Commune : "), coalesce(f$comm_nom, "Non renseignée"), tags$br(),
+        bloc_surface,tags$br(),
+        
+        tags$b("Taux d'espace urbanisé (de l'unité(s) de propriété) : "),
+        ifelse(is.na(f$taux_artif_ff),"Non renseigné",glue(f$taux_artif_ff, " %")),
+        tags$br(),
+        
+        tags$b("Date d'identification de la friche : "), coalesce(format(f$site_identif_date, "%d/%m/%Y"), "Non renseignée"), tags$br(),
+        
+        bloc_actualisationdate,
+        
+        bloc_anciennesactivites,
+        # tags$b("Ancienne(s) activité(s) : "), coalesce(f$activite_libelle, "Non renseignée"), tags$br(),
+        # # tags$b("Codes NAF de(s) ancienne(s) activité(s) : "), coalesce(f$activite_code, "Non renseignée"), tags$br(),
+        # tags$b("Année de fin d'activité : "), coalesce(format(as.Date(f$activite_fin_annee, "%y"), format="%Y"), "Non renseignée"), tags$br(),
+        
+        ##=##=##=##
+        # Bâti =##
+        ##=##=##=##
+        bloc_bati_emprise,
+        bloc_bati_etatvacance,
+        tags$b("Présence de logements vacants : "), coalesce(f$friche_avec_vacance %>% as.character, "Non renseigné"), tags$br(),
+        bloc_anneeconstruction,
+        
+        ##=##=##=##=##
+        # Propriété =##
+        ##=##=##=##=##
+        h4("Propriété"),
+        
+        # tags$b("Personne physique ou morale : "), ifelse(is.na(f$proprio_personne),
+        #                                                  "Non renseigné",
+        #                                                  coalesce(str_to_title(f$proprio_personne),
+        #                                                           "Nom du propriétaire non renseigné")),
+        # tags$br(),
+        
+        tags$b("Type de propriétaire : "), ifelse(is.na(f$l_catpro3txt),
+                                                  "Non renseigné",
+                                                  coalesce(f$l_catpro3txt %>% get_texte,
+                                                           "Nom du propriétaire non renseigné")),
+        tags$br(),
+        
+        
+        tags$b("Nom du propriétaire : "), ifelse(is.na(f$proprio_nom),
+                                                 "Non renseigné",
+                                                 coalesce(f$proprio_nom %>% get_texte,
+                                                          "Nom du propriétaire non renseigné")),
+        tags$br(),
+        
+        tags$b("Date de la dernière mutation : "), ifelse(is.na(f$date_mutation),
+                                                          "Non renseigné",
+                                                          coalesce(f$date_mutation,
+                                                                   "Non renseigné")),
+        tags$br(),
+        
+        tagList(tags$b("Références cadastrales :"),
+                ifelse(is.null(f$unite_fonciere_refcad),
+                       "Non renseignées",
+                       get_texte(f$unite_fonciere_refcad)),
+                tags$br()),
+        
+        # ##=##=##=##=##
+        # # Urbanisme =##
+        # ##=##=##=##=##
+        h4("Urbanisme"),
+        bloc_zonePLU,
+        
+        tagList(
+          tags$b("Date d'approbation du document d'urbanisme : "), ifelse(is.na(f$urba_datappro),"Non renseigné",
+                                                                          ifelse(nchar(f$urba_datappro) == 6,paste0(substring(f$urba_datappro,5,6),"/",substring(f$urba_datappro,1,4)),
+                                                                                 f$urba_datappro)),
+          bloc_urba_zone_formdomi,
+          
+        ), tags$br(),
+        
+        
+        tags$b("Intersection avec un zonage environnemental : "), 
+        ifelse(is.na(f$zonage_enviro),"Non renseigné",
+               ifelse(f$zonage_enviro == "hors zone","Hors zonage environnemental (Natura2000, réserve naturelle, ZNIEFF)",
+                      ifelse(f$zonage_enviro == "natura_2000","Intersecte une zone Natura2000",
+                             ifelse(f$zonage_enviro == "reserve_naturelle","Intersecte une réserve naturelle",
+                                    ifelse(f$zonage_enviro == "znieff","Intersecte une ZNIEFF",
+                                           ifelse(f$zonage_enviro == "proximite_zone (natura_2000)","A proximité d'une zone Natura2000 (<5km)",
+                                                  ifelse(f$zonage_enviro == "proximite_zone (reserves_naturelles)","A proximité d'une réserve naturelle (<5km)",
+                                                         ifelse(f$zonage_enviro == "proximite_zone (znieff)","A proximité d'une ZNIEFF (<5km)",
+                                                                f$zonage_enviro)))))))),
+        tags$br(),
+        
+        tags$b("Friche dans un périmètre de site économique "),
+        tags$a(href = glue("https://datafoncier.cerema.fr/fusac/"),
+               tagList("(base FUSAC) :"),
+               target="_blank", style="font-size: 1em;"),
+        
+        ifelse(is.na(f$zone_activites) |  f$zone_activites == "non",
+               "Non",
+               ifelse(f$site_vocadomi == "inconnu" | is.na(f$site_vocadomi),
+                      
+                      "Oui", glue("Oui - site économique à vocation dominante ", f$site_vocadomi)
+               )),
+        tags$br(),
+        
+        tags$b("Monument historique "), 
+        tags$a(href = glue("https://www.data.gouv.fr/fr/datasets/immeubles-proteges-au-titre-des-monuments-historiques-2/"),
+               tagList("(data.gouv.fr) :"),
+               target="_blank", style="font-size: 1em;"),
+        ifelse(f$monuhisto == "oui",
+               "Oui",
+               ifelse(f$monuhisto500 == "oui",
+                      "Au sein d'un périmètre de 500m autour d'un monument historique",
+                      "Non"
+               )),
+        
+        tags$br(),
+        
+        ##=##=##=##=##
+        # Pollution =##
+        ##=##=##=##=##
+        h4("Pollution du sol"),
+        bloc_pollution,
+        
+        ##=##=##=##=##=##=##=##=##
+        # Desserte en transport =##
+        ##=##=##=##=##=##=##=##=##
+        h4("Desserte en transport"),
+        tagList(
+          
+          tags$b("Distance d'accès au réseau ferroviaire : "), ifelse(is.na(f$desserte_distance_ferroviaire),
+                                                                      "Non renseigné",
+                                                                      ifelse(f$desserte_distance_ferroviaire == 999,"Plus de 100 km",
+                                                                             glue(round(f$desserte_distance_ferroviaire,1), " km")
+                                                                      )),
+          tags$br(),
+          tags$b("Distance d'accès à un échangeur autoroutier : "), ifelse(is.na(f$desserte_distance_route),
+                                                                           "Non renseigné",
+                                                                           ifelse(f$desserte_distance_route == 999,"Plus de 100 km",
+                                                                                  glue(f$desserte_distance_route, " km")
+                                                                           )),
+        )
+        
+        
+        
+        ,
+        
+        
+        
+        
+        
+        # ##=##=##=##=##=##=##=##=##
+        # # Sources des données =## ----
+        # ##=##=##=##=##=##=##=##=##
+        bloc_source_data
+        
+        
+        
+        
+        
+        
+      )
+    )
   )
   
   print("// content")
   
   return(content)
 }
-# get_popup_content_AVANTSTANDARD <- function(f) {
-#   
-#   coords <- f %>% st_coordinates
-#   
-#   # URBANISME
-#   if(all(is.na(c(f$libzone, f$zone, f$destdomi, f$datappro)))) {
-#     bloc_urba <- "Non renseigné"
-#   } else {
-#     destdomi_lib <- switch(f$destdomi,
-#                            "00" = "sans objet ou non encore définie dans le règlement",
-#                            "01" = "habitat",
-#                            "02" = "activité",
-#                            "03" = "destination mixte habitat / activité",
-#                            "04" = "Loisirs et tourisme",
-#                            "05" = "Équipement public",
-#                            "07" = "activité agricole",
-#                            "01" = "espace naturel",
-#                            "09" = "espace remarquable (dispositions littoral / montagne)",
-#                            "10" = "secteur de carrière",
-#                            "99" = "autre")
-#     
-#     bloc_urba <- tagList(
-#       
-#       tags$b("Type de document d'urbanisme : "), f$docurba, tags$br(),
-#       
-#       tags$b("Zone : "), coalesce(glue("{f$libelle} - "), ""), 
-#       unique(f$libzone), 
-#       tags$br(), # f$zone enlevé
-#       
-#       tags$b("Destination dominante : "), ifelse(is.na(f$destdomi), 
-#                                                  "Non renseigné", 
-#                                                  paste0(destdomi_lib, "(", f$destdomi, ")")), 
-#       tags$br(),
-#       
-#       tags$b("Document approuvé le : "), ifelse(is.na(f$datappro), 
-#                                                 "Date non renseignée", 
-#                                                 format(as.Date(f$datappro, "%Y%m%d"), format="%d/%m/%Y")))
-#   }
-#   
-#   # POLLUTION
-#   if(all(is.na(c(f$annee_pollution, 
-#                  f$risque_pollution, 
-#                  f$pollution, 
-#                  f$site_en_securite, 
-#                  f$comment_depollution)))) {
-#     bloc_pollution_1 <- tags$i("Informations sur la pollution des sols non renseignées")
-#   } else {
-#     
-#     annee_pollution <- f$annee_pollution %>% get_texte
-#     origine_pollution <- f$origine_pollution %>% get_texte(json = TRUE)
-#     pollution <- f$pollution %>% get_texte(json = grepl("\"", f$pollution)) # si on trouve des guillemets, alors on a du JSON, donc on met json = TRUE
-#     
-#     if(class(f$risque_pollution) == "character") {
-#       risque_pollution <- f$risque_pollution %>% get_texte(json = FALSE)
-#     } else {
-#       risque_pollution <- f$risque_pollution %>% get_texte(json = TRUE)
-#     }
-#     
-#     site_en_securite <- f$site_en_securite %>% get_texte(json = TRUE)
-#     docs_depollution <- f$comment_depollution %>% get_docs_depollution
-#     
-#     bloc_pollution_1 <- tagList(tags$b("Année de constatation de la pollution : "), annee_pollution %>% get_texte, tags$br(),
-#                                 tags$b("Origine de la pollution : "), origine_pollution, tags$br(),
-#                                 tags$b("Pollution : "), pollution,tags$br(),
-#                                 tags$b("Risques de pollution : "), risque_pollution, tags$br(),
-#                                 tags$b("Site en sécurité : "), site_en_securite, tags$br(),
-#                                 tags$b("Fiches de dépollution : "), docs_depollution
-#     )
-#     
-#   }
-#   bloc_pollution <- tagList(tags$b("Type de sol : "), coalesce(f$type_sol, "Non renseigné"), tags$br(), 
-#                             bloc_pollution_1)
-#   
-#   # SOURCES
-#   source <- f$source_r
-#   
-#   ## Source des données
-#   if(!is.na(f$url_source) & f$url_source != "") {
-#     bloc_source_data <- tagList(
-#       h4("Source des données"),
-#       tagList(
-#         tags$b("Source de la donnée : "), ifelse(is.na(f$nom_prodcartofriches),"Non renseigné",nom_prodcartofriches),
-#         icon("database"),
-#               tags$a(href=f$url_source, target="_blank", "Source des données")))
-#   } else {
-#     bloc_source_data <- tagList(
-#       
-#       tags$b("Source de la donnée : "), ifelse(is.na(f$nom_prodcartofriches),"Non renseigné",nom_prodcartofriches)
-#     )
-#     
-#   }
-#   
-#   #--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#--#
-#   
-#   # CONTENT
-#   content <- tagList(
-#     
-#     ##=##=##=##=##=##
-#     # Infos générales
-#     ##=##=##=##=##=##
-#     h4("Informations générales"),
-#     tags$b("Code du site : "), f$site_id, tags$br(),
-#     tags$b("Surface (de l'unité de propriété) : "), coalesce(format_number(f$site_surface), "Non calculée"), " m²", tags$br(),
-#     tags$b("Activité : "), ifelse(is.na(f$activite_libelle),
-#                                   "Non renseigné",
-#                                   f$activite_libelle %>% sapply(function(x) paste(x, collapse=","))), tags$br(),
-#     
-#     ##=##=##=##=##=##
-#     # Localisation
-#     ##=##=##=##=##=##
-#     h4("Localisation"),
-#     tags$b("Adresse : "), coalesce(f$loc_adresse, "Non renseignée"), tags$br(),
-#     tags$b("Commune : "), coalesce(f$nom_commune, "Non renseignée"), tags$br(),
-#     
-#     ##=##=##=##=##=##
-#     # Bâti
-#     ##=##=##=##=##=##
-#     h4("Bâti"),
-#     tags$b("Date de l'acte de mutation : "), coalesce(format(as.Date(f$jdatat, "%d%m%y"), format="%d/%m/%Y"), "Non renseignée"), tags$br(),
-#     tags$b("Nombre de bâtiments : "), coalesce(f$bati_nb %>% as.character, "Non renseigné"), tags$br(),
-#     tags$b("Année du local le plus ancien : "), coalesce(ifelse(f$jannatmin %in% c(-1, 0), "Non renseigné", f$jannatmin) %>% as.character, "Non renseignée"), tags$br(),
-#     tags$b("Année du local le plus récent : "), coalesce(ifelse(f$jannatmax %in% c(-1, 0), "Non renseigné", f$jannatmax) %>% as.character, "Non renseignée"), tags$br(),
-#     
-#     ##=##=##=##=##=##
-#     # Existence d'un projet
-#     ##=##=##=##=##=##
-#     h4("Existence d'un projet"),
-#     ifelse(is.na(f$projet), "Non renseigné", ifelse(f$projet, "Oui", "Non")),
-#     
-#     ##=##=##=##=##=##
-#     # Propriété
-#     ##=##=##=##=##=##
-#     h4("Propriété"),
-#     tags$b("Ancien propriétaire : "), ifelse(all(is.na(c(f$proprietaire_nom))),
-#                                              "Non renseigné",
-#                                              coalesce(f$proprietaire_nom, "Nom du propriétaire non renseigné")
-#     ), 
-#     tags$br(),
-#     tags$b("Propriétaire actuel : "), ifelse(is.na(f$ddenom),
-#                                              "Non renseigné",
-#                                              coalesce(f$ddenom, 
-#                                                       "Nom du propriétaire non renseigné")), 
-#     tags$br(),
-#     tagList(tags$b("Références cadastrales :"), 
-#             ifelse(is.null(f$ref_cad),
-#                    "Non renseignées",
-#                    get_texte(f$ref_cad)),
-#             tags$br()),
-#     
-#     ##=##=##=##=##=##
-#     # Urbanisme
-#     ##=##=##=##=##=##
-#     h4("Urbanisme"),
-#     bloc_urba,
-#     
-#     ##=##=##=##=##=##
-#     # Pollution des sols
-#     ##=##=##=##=##=##
-#     h4("Caractéristiques du sol"),
-#     bloc_pollution,
-#     
-#     # Source des données
-#     bloc_source_data
-#   )
-#   
-#   return(content)
-# }
 
 # FORM
 # Retourne le lien Remonter le temps associé aux coordonnées long lat du site
@@ -1959,7 +1794,6 @@ get_mapillary <- function(lng, lat) {
   link_mapillary
 }
 
-# FORM
 # Retourne le lien Street View associé aux coordonnées long lat du site
 get_street_view <- function(lng, lat){
   link_street_view <- glue("https://www.google.com/maps?layer=c&cbll={lat},{lng}")
@@ -1999,13 +1833,6 @@ transform_string <- function(s) {
 
 # Matomo (suivi consultation du site)
 get_matomo <- function() {
-  # if (file.exists(matomo)) {
-  #   s <- readLines(matomo) %>% paste(collapse = "\n")
-  #   res <- HTML(s)
-  #   return(res)
-  # } else {
-  #   return()
-  # }
   HTML(
     "<!-- Matomo -->
         <script type='text/javascript'>
@@ -2054,26 +1881,9 @@ get_img_logo <- function(source_r) {
 }
 
 # Récupère le nom d'un site friche
-# get_nom_site <- function(f) {
-#   toupper(f$site_nom)
-# }
 get_nom_site <- function(f) {
   if(is.na(f$site_nom)) {
     if (f$nature == "Ademe") {
-      "Friche avec potentiel solaire au sol"
-    } else {
-      glue("Friche {toupper(f$source_r)}")
-    }
-  } else {
-    toupper(f$site_nom)
-  }
-}
-
-get_nom_site_AVANTSTANDARD <- function(f) {
-  if(is.na(f$site_nom)) {
-    if(f$source_r == "Ademe") {
-      "Friche identifiée étude Ademe"
-    } else if (f$source_r == "MTE PV") {
       "Friche avec potentiel solaire au sol"
     } else {
       glue("Friche {toupper(f$source_r)}")
@@ -2149,11 +1959,6 @@ get_n_friches_AVANTSTANDARD <- function(f) {
 # Trouve l'icône de légende adapté selon le type
 get_icon_legende <- function(type_friche, 
                              type = "legende") {
-  
-  # get_icon_legende("avec projet")
-  # get_icon_legende("sans projet")
-  # get_icon_legende("potentielle")
-  # get_icon_legende("reconvertie")
   
   # Valeurs par défaut
   
@@ -2292,8 +2097,6 @@ get_elt_legende <- function(type, label, n = 10, popup) {
 # Crée la légende de la carte + légende popups des cercles régions/départements
 get_ui_legende <- function(stats, chk_all = FALSE, popup = FALSE) {
   
-  # get_ui_legende(stats)
-  
   # # Bloc sites non expertisés
   if(!chk_all) {
     bloc_potentielles <- ""
@@ -2303,16 +2106,12 @@ get_ui_legende <- function(stats, chk_all = FALSE, popup = FALSE) {
                                          stats$potentielles,
                                          popup)
   }
-  # 
-  # bloc_sites_non_expertises <- ""
   
   if(chk_all) {
     nFriches <- stats$avec_projet + stats$sans_projet + stats$reconverties + stats$potentielles
   } else {
     nFriches <- stats$avec_projet + stats$sans_projet + stats$reconverties
   }
-  
-  # nFriches <- stats$avec_projet + stats$sans_projet + stats$reconverties + stats$potentielles
   
   # Bloc final
   res <- fluidRow(
@@ -2342,7 +2141,7 @@ get_ui_nb_friches_accueil <- function() {
     nrow
   
   res <- div(
-
+    
     tags$p("Chiffres clés", style="
                               font-weight: 700;
                               font-size: 1.7em;
@@ -2359,7 +2158,7 @@ get_ui_nb_friches_accueil <- function() {
                               font-size: 1.4em;
                     margin-bottom: -15px;"), 
     
-    tags$p(19, " observatoires locaux", style="
+    tags$p(22, " observatoires locaux", style="
                               font-weight: 500;
                               font-size: 1.2em;
                     margin-bottom: -15px;"), 
@@ -2392,17 +2191,12 @@ get_ui_apropos_cartofriches <- function() {
   n_friches[["user"]]          <- f.xy %>% filter(site_statut %in% c("friche avec projet","friche sans projet"), nature %in% c("retour utilisateur")) %>% nrow
   n_friches[["aap"]]           <- f.xy %>% filter(site_statut %in% c("friche avec projet","friche sans projet"), nature %in% c("fond friche")) %>% nrow
   n_friches[["urbanvitaliz"]]  <- f.xy %>% filter(site_statut %in% c("friche avec projet","friche sans projet"), nature %in% c("startup Etat")) %>% nrow
-  # n_friches[["qualifiees"]]    <- f.xy %>% filter(site_statut != "friche reconvertie") %>% filter(is_mte) %>% nrow # Comprend les données Ademe puisqu'on n'a pas mis !is_ademe
-  # n_friches[["observatoires"]] <- f.xy %>% filter(site_statut != "friche reconvertie") %>% filter(is_observatoire) %>% nrow
-  # n_friches[["mte_pv"]]        <- f.xy %>% filter(site_statut != "friche reconvertie") %>% filter(is_mte_pv) %>% nrow
-  # n_friches[["user"]]          <- f.xy %>% filter(site_statut != "friche reconvertie") %>% filter(is_user) %>% nrow
-  # n_friches[["aap"]]           <- f.xy %>% filter(site_statut != "friche reconvertie") %>% filter(is_aap) %>% nrow
   
   # ui chiffres clés
   ui_chiffres_cles <- tagList(h2("Chiffres-clés"),
                               tags$p("À ce jour, l'application identifie ", 
                                      
-                               tags$span(sum(unlist(n_friches)) %>% format_number, 
+                                     tags$span(sum(unlist(n_friches)) %>% format_number, 
                                                class = "nb_friches_elt_accueil"),
                                      " friches (hors friches reconverties) :"),
                               
@@ -2446,10 +2240,6 @@ get_ui_apropos_cartofriches <- function() {
            LAST_UPDATE_DATE, 
            style="color: #808285;font-size: 1em;"),
     includeMarkdown("www/textes/apropos_cartofriches-1.md"),
-    
-    # includeMarkdown("www/textes/apropos_cartofriches-2.md"),
-    
-    # includeMarkdown("www/textes/apropos_cartofriches-3.md"),
     
     ui_chiffres_cles, # on affiche les chiffres clés : nombre de friches qualifiées et d'observatoires
     
@@ -2520,7 +2310,7 @@ petitTrait <- function(width="10%") {
 }
 
 # Crée l'encart avec texte et image
-get_ui_encart_nico <- function(titre, titreSuite, body, image, isMobile) {
+get_ui_encart <- function(titre, titreSuite, body, image, isMobile) {
   
   if(isMobile) {
     fluidRow(
@@ -2586,92 +2376,6 @@ get_ui_encart_nico <- function(titre, titreSuite, body, image, isMobile) {
   }
 }
 
-
-get_ui_encart <- function(titre, titreSuite, body, image, isMobile) {
-  
-  if(isMobile) {
-    fluidRow(
-      column(12,
-             div(
-               # petit trait
-               petitTrait("10%"),
-               
-               # Titre
-               div(
-                 tags$span(
-                   tags$span(titre, style="color:#EF7757; font-weight:700;"),
-                   titreSuite,
-                   style="font-size:2em; color:#464749")),
-               
-               # Corps
-               div(body, style="margin-bottom:40px;"),
-               
-               # Bouton
-               div(actionButton("btn_chercher", 
-                                "CHERCHER UNE FRICHE", 
-                                class="goto", 
-                                style="
-                                           padding-top:20px;
-                                           padding-bottom:20px;
-                                           padding-left:30px;
-                                           padding-right:30px;
-                                           ")),
-               style="
-                      margin-bottom:8%;
-                      margin-top:8%;                      
-                      width:80%;
-                          "), 
-             offset = 1),
-      style="background-color:white;"
-    )
-    
-  } else {
-    
-    fluidRow(
-      column(6, 
-             div(
-               petitTrait("10%"),
-               div(
-                 tags$span(
-                   tags$span(titre, style="color:#EF7757; font-weight:700;"),
-                   titreSuite,
-                   style="font-size:2em; color:#464749")),
-               div(body, style="margin-bottom:40px;"),
-               div(actionButton("btn_chercher", 
-                                "CHERCHER UNE FRICHE", 
-                                class="goto", 
-                                style="
-                                           padding-top:20px;
-                                           padding-bottom:20px;
-                                           padding-left:30px;
-                                           padding-right:30px;
-                                           ")),
-               style="
-                      margin-bottom:8%;
-                      margin-top:8%;
-                      width:80%
-                          "), 
-             offset = 1),
-      column(5,
-             fluidRow(
-               column(12,
-                      div(get_ui_nb_friches_accueil()))),
-             fluidRow(
-               column(12,
-                      div(
-                        span(
-                          tags$img(src=image,
-                                   align="right",
-                                   style="
-                                      margin-right: -15px;
-                                      margin-top:25%;")))))
-      ), 
-      
-      style="background-color:white;"
-    )
-  }
-}
-
 # Crée l'URL du site friche
 get_url_site <- function(site_id) {
   glue("https://cartofriches.cerema.fr/?site={site_id}")
@@ -2685,9 +2389,9 @@ get_mailto <- function(site_id) {
          "&body=Je vous contacte au sujet du site ", 
          get_url_site(site_id))
 }
-get_mailto_mutafriches <- function() {
+get_mailto_mutabilite <- function() {
   paste0("mailto:cartofriches@cerema.fr",
-         "?subject=[Cartofriches] Questions & accompagnements")
+         "?subject=[Cartofriches] Questions et accompagnements")
 }
 
 # Second bandeau
@@ -2719,63 +2423,6 @@ get_css <- function() {
   tags$link(rel = "stylesheet", type = "text/css", href = "styles.css")
 }
 
-# Premier bandeau
-get_bandeau1 <- function(titre, sous_titre, mobile, height = "400px") {
-  
-  if(mobile) {
-    
-    fluidRow(
-      div(
-        id="bandeau1",
-        style="background-color:black;height:200px;padding:30px;background-image:url(fonds.jpg);background-size: 100%;",
-        div(titre,
-            style="font-size:2em;text-align:center;margin-bottom:10px;font-family:Marianne-Bold;color:white;"),
-        div(tags$i(sous_titre),
-            style="font-size:1.2em;text-align:center;margin-bottom:10px;color:white;"),
-        modui_ban("search1", width="80%")
-      )
-    )
-    
-  } else {
-    
-    div(id="parent",
-        div(id="sous_parent",
-            # Enfant
-            div(id="enfant",
-                # titre
-                div(
-                  titre,
-                  style="font-size:3em;margin-bottom:10px;font-family:Marianne-Bold;"),
-                # Sous titre
-                div(tags$i(sous_titre),
-                    style="font-size:2em;margin-bottom:10px;"),
-                # Barre de recherche
-                modui_ban("search1", width="40%"),
-                style = "
-                  /*enfant*/
-                  text-align: center;
-                  color: white;
-                  display: table-cell;
-                  vertical-align: middle;"),
-            style=glue("
-                 /*sous_parent*/
-                display: table;
-                vertical-align: middle;
-                text-align: center;
-                width: 100%;
-                height: {height};")),
-        style=glue("
-              /*parent*/
-              height: {height};
-              margin-left: -15px;
-              margin-right: -15px;
-              background-image: url(fonds.jpg);
-              background-size: 100%;
-              background-position: center center;"))
-    
-  }
-}
-
 # logo
 get_logo <- function(appli) {
   div(actionLink("see_home", 
@@ -2796,8 +2443,6 @@ get_slc <- function(v, label = "Veuillez sélectionner un élément dans la list
 
 # Retourne la couleur des sites en fonction de leur type
 get_color <- function(f, map = FALSE) {
-  
-  # get_color(f.xy)
   
   if(map) {
     couleurs <- couleur_icone
@@ -2837,6 +2482,8 @@ my_modal <- function(labels) {
               footer = actionButton("btn_gototheadresse", 
                                     tagList(icon("paper-plane"), "Aller vers cette adresse")), 
               easyClose = TRUE)
+  
+  
 }
 
 # Reconstruit les éléments depuis la valeur sélectionnée dans le inputRadio
@@ -2932,7 +2579,7 @@ get_labels_depReg <- function(s) {
   
   message(">> get_labels_depReg : ", s)
   # s = "paris"
-
+  
   w.reg <- which(transform_string(regs$NOM_REG) == transform_string(s))
   w.dep <- which(transform_string(deps$NOM_DEP) == transform_string(s))
   
@@ -3114,12 +2761,7 @@ find_friches <- function(s, mode = "commune", distance = SEARCH_DISTANCE) {
   # Cas de région
   if(mode == "région") {
     f <- regs.pts %>% filter(libelle == s)
-    # n_friches <- f$n_friches_observatoires + 
-    #   f$n_friches_mte_qualifiees + 
-    #   f$n_friches_ademe + 
-    #   f$n_friches_user + 
-    #   f$n_friches_mte_pv + 
-    #   f$n_friches_aap
+    
     n_friches <- f$n_friches_avec_projet  + 
       f$n_friches_sans_projet + 
       f$n_friches_reconverties      +
@@ -3129,12 +2771,7 @@ find_friches <- function(s, mode = "commune", distance = SEARCH_DISTANCE) {
   # Cas de département
   if(mode == "département") {
     f <- deps.pts %>% filter(libelle == s) %>% slice(1) # !!! enlever après résolution du doublon Guyane
-    # n_friches <- f$n_friches_observatoires + 
-    #   f$n_friches_mte_qualifiees + 
-    #   f$n_friches_ademe +
-    #   f$n_friches_user + 
-    #   f$n_friches_mte_pv +
-    #   f$n_friches_aap
+    
     n_friches <- f$n_friches_avec_projet  + 
       f$n_friches_sans_projet + 
       f$n_friches_reconverties      +
@@ -3148,14 +2785,6 @@ find_friches <- function(s, mode = "commune", distance = SEARCH_DISTANCE) {
     n_friches <- length(i)
     n_friches
   }
-  
-  # comm <- comms %>% filter(INSEE_COM == s)
-  # value <- as.data.frame(comm$NOM_COM_M)
-  # print(value)
-  # i <- nrow(as.data.frame(Data$points) %>% filter(comm_nom == value))
-  # n_friches <- length(i)
-  
-  
   
   # Cas de référence cadastrale
   if(mode == "refCad") {
@@ -3190,9 +2819,7 @@ find_friches <- function(s, mode = "commune", distance = SEARCH_DISTANCE) {
       st_sfc %>%
       st_set_crs(4326) %>% 
       st_buffer(0.022) # st_buffer(distance) # Nicolas
-      
     
-
     i <- st_intersects(buffer, Data$points %>% filter(checked)) %>% unlist
     n_friches <- length(i)
     
@@ -3229,9 +2856,6 @@ is_parcelle <- function(s) {
 # Récupère le contour d'une commune
 getCommune <- function(codeInsee) {
   my_fun <- function(codeInsee) {
-    # geo.api.gouv.fr arguments
-    # geometry = contour pour avoir le contour
-    # fields = geometry car seule la géométrie nous intéresse
     url      <- glue("https://geo.api.gouv.fr/communes/{codeInsee}?format=geojson&geometry=contour&fields=geometry")
     coords   <- jsonlite::fromJSON(url)$geometry$coordinates[1,,]
     geometry <- st_polygon(list(coords)) %>% st_sfc %>% st_set_crs(4326)  

@@ -3,13 +3,40 @@ source("libraries.R", encoding = "UTF-8")
 source("load_data.R", encoding = "UTF-8")
 library("slickR")
 source("modules/mod_ban.R", encoding = "UTF-8")
+library(bslib)
+
+library(shiny)
+library(shinydashboard)
+library(DT)
+
 
 source("modules/module_fonds_friches.R", encoding = "UTF-8")
 
 Sys.setlocale("LC_TIME", "French")
 
 # DATE DE MISE A JOUR ####
-LAST_UPDATE_DATE <- "22 Avril 2025"
+LAST_UPDATE_DATE <- "13 Octobre 2025"
+
+data_stats_usage <-       
+  list(
+    nombre_friches = 15957,
+    nombres_obslocaux = 22,
+    visites_site = 70000,
+    telechargement_datagouv = 84000,
+    appel_API = 44083,
+    enrichissementdata = 30
+  )
+
+data_stats_impacts <-       
+  list(
+    gaintemps_montage = 800,
+    gaintemps_qualification = 3000,
+    contacts_uv = 389,
+    superficie_couverte = 40,
+    reut_outils = 4,
+    utilisation_OHF = 50,
+    visu_public = 1465
+  )
 
 # PALETTE CEREMA ####
 couleurs_cerema <- readRDS("data/couleurs_cerema.rds")
@@ -27,8 +54,6 @@ gris <- "#e4e4e4"
 baseGroups <- c("OpenStreetMap", "Ortho IGN","Plan IGN")
 baseGroups_anciennesortho <- c("OpenStreetMap", "Ortho IGN", "Ortho IGN 2011-2015", "Ortho IGN 2000-2005","Plan IGN")
 overlayGroups <- c("Parcelles IGN")
-# baseGroups <- c("Ortho IGN", "Plan IGN", "OpenStreetMap", "OSM Stamen")
-# overlayGroups <- c("Villes", "Parcelles IGN")
 
 # Icônes Leaflet
 icon <- awesomeIcons(
@@ -66,7 +91,10 @@ Observatoires <- c(
   "DDT du Loiret"                                = "Loiret",
   #"DDT de la Marne"                              = "Marne",
   "DDT de la Haute-Marne"                        = "Haute-Marne",
+  "DDT du Bas-Rhin"                              = "DDT 67",
+  "DDT du Haut-Rhin"                             = "DDT 68",
   "DDTM de la Somme"                             = "Somme",
+  "Limoges Métropole"                            = "Limoges Metropole",
   "Grand Angoulême"                              = "Grand Angouleme",
   "Communauté de communes Val de Gray"           = "CCVG",
   "Communauté d'agglomération Caux Seine"        = "Caux Seine",
@@ -77,11 +105,11 @@ Observatoires <- c(
 ) %>% get_slc(label = "Sélectionnez un observatoire")
 
 Secteurs <- c("Métropole", 
-  "Guadeloupe",
-  "Guyane",
-  "La Réunion",
-  "Martinique",
-  "Mayotte") %>% get_slc(label = "Sélectionnez un territoire")
+              "Guadeloupe",
+              "Guyane",
+              "La Réunion",
+              "Martinique",
+              "Mayotte") %>% get_slc(label = "Sélectionnez un territoire")
 
 SEARCH_DISTANCE <- 2000
 
@@ -107,7 +135,7 @@ icone_friche <- list()
 icone_friche$potentielles <- "fa-question-circle"
 icone_friche$sans_projet  <- "fa-industry"
 icone_friche$avec_projet  <- "fa-industry"
-icone_friche$reconverties <- "fa-check-circle" #building
+icone_friche$reconverties <- "fa-check-circle"
 
 # FILTRES ----
 Filtres <- c("Friches sans projet"  = "friche sans projet",
@@ -117,20 +145,20 @@ Filtres <- c("Friches sans projet"  = "friche sans projet",
 # LOGOS DES OBSERVATOIRES (IMAGE, TAILLE ET MESSAGE D'ACCUEIL) ----
 Logos <- list(
   UrbanVitaliz = list(img = "logos/logo_UrbanVitaliz.png", 
-             height = 50, 
-             message = "UrbanVitaliz"),
+                      height = 50, 
+                      message = "UrbanVitaliz"),
   MTE = list(img = "logos/logo-brgm-mtes.png", 
-               height = 60, 
-               message = "Friches vérifiées MTE"),
+             height = 60, 
+             message = "Friches vérifiées MTE"),
   "MTE PV" = list(img = "logos/logo-mte.png", 
-              height = 80, 
-              message = "Friches qualifiées MTE"),
+                  height = 80, 
+                  message = "Friches qualifiées MTE"),
   ADEME = list(img = "logos/logo-brgm-mtes.png", 
-              height = 60, 
-              message = "Friches vérifiées Ademe"),
+               height = 60, 
+               message = "Friches vérifiées Ademe"),
   AAP = list(img = "logos/logo-app.png", 
-               height = 70, 
-               message = "Friches qualifiées AAP"),
+             height = 70, 
+             message = "Friches qualifiées AAP"),
   ADUGA = list(img = "logos/logo-org-aduga.png", 
                height = 60, 
                message = "Bienvenue sur le Grand Amiénois"),
@@ -141,8 +169,8 @@ Logos <- list(
                   height = 80, 
                   message = "Bienvenue sur le territoire des Ardennes"),
   "Grand Angouleme" = list(img = "logos/grand-angouleme.jpg", 
-                  height = 80, 
-                  message = "Bienvenue sur le territoire du Grand Angoulême"),
+                           height = 80, 
+                           message = "Bienvenue sur le territoire du Grand Angoulême"),
   # Marne = list(img = "logos/logo-org-marne.png", 
   #              height = 110, 
   #              message = "Bienvenue sur le territoire de la Marne"),
@@ -153,64 +181,73 @@ Logos <- list(
                    height = 70, 
                    message = "Bienvenue en Région Occitanie"),
   "Grand Est" = list(img = "logos/Logo_EPFGE.png", 
-                  height = 70, 
-                  message = "Bienvenue en territoire Grand Est"),
+                     height = 70, 
+                     message = "Bienvenue en territoire Grand Est"),
   
   Normandie = list(img = "logos/Logo_EPFNormandie.jpg", 
                    height = 70, 
                    message = "Bienvenue en territoire Normandie"),
   
   Somme = list(img = "logos/logo-DDTM-Somme.jpg", 
-                   height = 70, 
-                   message = "Bienvenue en territoire de la Somme"),
+               height = 70, 
+               message = "Bienvenue en territoire de la Somme"),
   
   Cantal = list(img = "logos/logo-DDT-Cantal.jpg", 
-               height = 70, 
-               message = "Bienvenue en territoire du Cantal"),
+                height = 70, 
+                message = "Bienvenue en territoire du Cantal"),
   
   Loire = list(img = "logos/logo-DDT-Loire.png", 
-                height = 70, 
-                message = "Bienvenue en territoire de la Loire"),
+               height = 70, 
+               message = "Bienvenue en territoire de la Loire"),
   
   Loiret = list(img = "logos/logo-DDT-Loiret.jpg", 
-               height = 70, 
-               message = "Bienvenue en territoire du Loiret"),
+                height = 70, 
+                message = "Bienvenue en territoire du Loiret"),
   
   "Sud Foncier Eco" = list(img = "logos/logo_SFE.png", 
-                height = 70, 
-                message = "Bienvenue en Région Sud"),
+                           height = 70, 
+                           message = "Bienvenue en Région Sud"),
   
   CCVG = list(img = "logos/logo_CCVG.png", 
-                           height = 70, 
-                           message = "Bienvenue sur le territoire de la CCVG"),
+              height = 70, 
+              message = "Bienvenue sur le territoire de la CCVG"),
   
   AUDRR = list(img = "logos/logo_AUDRR.png", 
-                           height = 70, 
-                           message = "Bienvenue sur le territoire de l'AUDRR"),
+               height = 70, 
+               message = "Bienvenue sur le territoire de l'AUDRR"),
   
   Ajaccio = list(img = "logos/logo_Ajaccio.png", 
-               height = 70, 
-               message = "Bienvenue sur le territoire d'Ajaccio"),
+                 height = 70, 
+                 message = "Bienvenue sur le territoire d'Ajaccio"),
   
   "Caux Seine" = list(img = "logos/logo_CauxSeine.png", 
-               height = 70, 
-               message = "Bienvenue sur le territoire de Caux Sein Agglo"),
+                      height = 70, 
+                      message = "Bienvenue sur le territoire de Caux Sein Agglo"),
   
   IPR = list(img = "logos/logo_IPR.png", 
-                                 height = 70, 
-                                 message = "Bienvenue sur le territoire d'Ile de France"),
+             height = 70, 
+             message = "Bienvenue sur le territoire d'Ile de France"),
   
   "Haute-Marne" = list(img = "logos/logo_DDT52.png", 
-                                 height = 70, 
-                                 message = "Bienvenue sur le territoire de la Haute-Marne") 
+                       height = 70, 
+                       message = "Bienvenue sur le territoire de la Haute-Marne"),
   
+  "Haut-Rhin" = list(img = "logos/logo-DDT68.png", 
+                     height = 70, 
+                     message = "Bienvenue sur le territoire du Haut-Rhin"),
   
+  "DDT 67" = list(img = "logos/logo-DDT67.png", 
+                  height = 70, 
+                  message = "Bienvenue sur le territoire du Bas-Rhin")  ,
   
+  "Limoges Metropole" = list(img = "logos/logo-LimogesMetropole.png", 
+                             height = 70, 
+                             message = "Bienvenue sur le territoire de Limoges Métropole")    
   
   
 )
 
 # UI ----
-Txt_search <- "Adresse, commune, département, région ou parcelle"
+Txt_search <- "Adresse, commune ou département"
 
 br_code <- "<br style='content: \"\"; margin: -5px;display: block;'>"

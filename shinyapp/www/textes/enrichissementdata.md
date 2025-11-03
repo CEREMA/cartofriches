@@ -24,4 +24,7 @@ Cartofriches réalise de nombreux enrichissement de données, en proposant plus 
 - **Distance à un poste électrique :** calculée à partir des données ENEDIS
 
 ### Potentiel de gain écologique : 
-A venir grâce au calcul de potentiel de gain écologique issu d'une méthodologie OFB/Cerema : https://professionnels.ofb.fr/fr/node/1662
+- **Potentiel de gain écologique :** indicateur issu d'une d'une méthodologie OFB/Cerema : https://professionnels.ofb.fr/fr/node/1662
+
+### Indices de mutabilité
+La méthodologie de calcul des indices de mutabilité est détaillée dans l'onglet "Indices de mutabilité".
