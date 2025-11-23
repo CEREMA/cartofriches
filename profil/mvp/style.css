@@ -1,0 +1,44 @@
+body {
+    font-family: sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    background-color: #f4f4f4;
+}
+
+/* Styles de la fenêtre modale */
+.modal {
+    display: none; /* Masqué par défaut */
+    position: fixed; /* Reste en place */
+    z-index: 1; /* Se superpose à tout le reste */
+    left: 0;
+    top: 0;
+    width: 100%; /* Largeur totale */
+    height: 100%; /* Hauteur totale */
+    overflow: auto; /* Permet le défilement si le contenu est trop grand */
+    background-color: rgba(0,0,0,0.4); /* Couleur de fond semi-transparente */
+    justify-content: center; /* Centrer le contenu horizontalement */
+    align-items: center; /* Centrer le contenu verticalement */
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: auto; /* Auto-centrage (pour les navigateurs plus anciens) */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%; /* Largeur du contenu modale */
+    max-width: 1100px; /* Largeur maximale pour un meilleur rendu */
+    border-radius: 8px;
+    position: relative;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+    animation-name: animatetop;
+    animation-duration: 0.4s
+}
+
+/* Animation de la fenêtre modale */
+@keyframes animatetop {
+    from {top: -300px; opacity: 0}
+    to {top: 0; opacity: 1}
+}

@@ -8,3 +8,4 @@ rsconnect
 cartofriches.Rproj
 shinyapp/files
 *ignore*
+profil/ml/.ipynb_checkpoints/
